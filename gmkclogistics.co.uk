@@ -1,0 +1,13 @@
+server {
+
+    listen 80;
+    server_name gmkclogistics.co.uk;
+
+    # Admin
+    location / {
+        root /var/www/GMKC_Logistic/dist;
+        index index.html;
+        try_files $uri $uri /index.html;
+    }
+
+}
