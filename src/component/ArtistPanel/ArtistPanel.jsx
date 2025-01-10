@@ -8,10 +8,11 @@ import Customer from "./Customer/Customer";
 import FaqForm from "./Faq/Faq";
 import Inquiry from "./Inquiry/Inquiry";
 import Request from "./Shipment/Request";
+import User from "./Users";
 
 const ArtistPanel = () => {
   return (
-    <div className="flex w-full h-screen bg-gray-200">
+    <div className="flex w-full min-h-screen bg-gray-200">
       <div className="xl:w-[15%] lg:w-[20%] md:w-[10%] sm:w-[10%] w-[20%]">
         <Sidebar />
       </div>
@@ -24,6 +25,7 @@ const ArtistPanel = () => {
           <Route path="vehicles" element={<Vehicles />} />  
           <Route path="customer" element={<Customer />} />  
           <Route path="inquiry" element={<Inquiry />} />
+          <Route path="users" element={<User/>} />
         </Routes>
       </div>
     </div>

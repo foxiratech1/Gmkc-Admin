@@ -3,6 +3,7 @@ import { MdHomeRepairService } from "react-icons/md";
 import { FaBoxes } from "react-icons/fa";
 import Table from "./Table";
 
+
 const stats = [
   {
     label: "Shipment",
@@ -10,10 +11,11 @@ const stats = [
     dash: <FaBoxes size={20} />,
   },
   { label: "Vehicles", value: 5200, dash: <TbTruckDelivery size={20} /> },
-  { label: "Services", value: 5130, dash: <MdHomeRepairService size={20} /> },
+  // { label: "Services", value: 5130, dash: <MdHomeRepairService size={20} /> },
 ];
 
 const Dashboard = () => {
+  
   return (
     <>
         <div className="xl:w-[70%] w-[90%] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 sm:gap-6 rounded-3xl">

@@ -7,15 +7,17 @@ import password_icon from "../../assets/password_icon'.png";
 import { Link } from "react-router-dom";
 
 
+
 const ResetPassword = () => {
+   
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Form Submitted: ", data);
+  const onSubmit = async(data) => {
+    
   };
   return (
     <div className="flex flex-col md:flex-row h-screen">
@@ -112,8 +114,9 @@ const ResetPassword = () => {
             <button
               type="submit"
               className="w-full bg-black text-white p-3 rounded-md font-semibold mt-6"
-            >
-              Reset Password
+            > 
+            Reset Password
+
             </button>
           </form>
         </div>

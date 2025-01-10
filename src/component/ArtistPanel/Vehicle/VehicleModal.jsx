@@ -1,8 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
 import { AiFillDelete } from "react-icons/ai";
 import { useForm } from "react-hook-form";
 import DeleteModal from "../../utils/DeleteModal";
+
+import toast from "react-hot-toast";
+import postVehicleData from "./https/addvehiclemutation";
+import { useSelector } from "react-redux";
+import { GetVehicleData } from "./https/GetVehicleList";
+import LoadingPage from "../../Loader";
+import UpdateVehicleData from "./https/updateVehicle";
+import DeleteVehicle from "./https/deletevehicle";
+import { Pagination } from "../../pagination";
 
 const table_head = [
   {
@@ -12,16 +21,16 @@ const table_head = [
     head: "Vehicle Name",
   },
   {
-    head: "Length",
+    head: "length",
   },
   {
-    head: "Height",
+    head: "height",
   },
   {
-    head: "Width",
+    head: "width",
   },
   {
-    head: "Pallets",
+    head: "pallets",
   },
   {
     head: "Maximum Weight",
@@ -32,12 +41,28 @@ const table_head = [
 ];
 
 const VehicleModal = () => {
+  const BASE_URL = import.meta.env.VITE_APP_BASE_URL
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [vehicleData, setVehicleData] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [deleteVehicleId, setDeleteVehicleId] = useState(null);
   const [currentVehicle, setCurrentVehicle] = useState(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [currentPage,setCurrentPage] = useState([])
+  const {token} = useSelector((state) => state.user)
+  const ITEM_PER_PAGE = 10
+  
+   const {mutateAsync,isPending} = postVehicleData()
+   const {data,isLoading,isError,error} = GetVehicleData({token,page:currentPage,limit:ITEM_PER_PAGE})
+   const {mutateAsync:updateMutation,isPending:updatepending} = UpdateVehicleData()
+   const {mutateAsync:deletvehicle,} = DeleteVehicle()
+   useEffect(() => {
+      if(data){
+        setVehicleData(data?.data)
+        setCurrentPage(data?.paginationData?.page)
+      }
+   },[data])
+  
   const {
     register,
     handleSubmit,
@@ -57,38 +82,66 @@ const VehicleModal = () => {
     reset();
   };
 
-  const onSubmit = (data) => {
+
+  const onSubmit = async(data) => {
+  
+    const formData = new FormData()
+    
+    if (data.vehicalImg[0]) { 
+      formData.append('vehicalImg', data.vehicalImg[0]);
+    }
+     formData.append('name', data.name)
+     formData.append('length', data.length)
+     formData.append('height', data.height)
+     formData.append('width', data.width)
+     formData.append('pallets', data.pallets)
+     formData.append('maxWeight', data.maxWeight)
+     formData.append('_id', data._id)
+     formData.append('token', token)
+    
     if (editMode && currentVehicle) {
-      setVehicleData(
-        vehicleData.map((item) =>
-          item.id === currentVehicle.id
-            ? {
-                ...item,
-                Vehicle: data.vehicleImage[0] || item.Vehicle,
-                Vehiclename: data.vehicleName,
-                Length: data.length,
-                Height: data.height,
-                Width: data.width,
-                Pallets: data.pallets,
-                MaximumWeight: data.maxWeight,
-              }
-            : item
-        )
-      );
+      try{
+        await updateMutation(formData)
+      }catch(error){
+        console.error(error)
+      }
+      // setVehicleData(
+      //   vehicleData.map((item) =>
+      //     item.id === currentVehicle.id
+      //       ? {
+      //           ...item,
+      //           Vehicle: data.vehicalImg[0] || item.Vehicle,
+      //           name: data.name,
+      //           length: data.length,
+      //           height: data.height,
+      //           width: data.width,
+      //           pallets: data.pallets,
+      //           maxWeight: data.maxWeight,
+      //         }
+      //       : item
+      //   )
+      // );
     } else {
-      setVehicleData([
-        ...vehicleData,
-        {
-          id: vehicleData.length + 1,
-          Vehicle: URL.createObjectURL(data.vehicleImage[0]),
-          Vehiclename: data.vehicleName,
-          Length: data.length,
-          Height: data.height,
-          Width: data.width,
-          Pallets: data.pallets,
-          MaximumWeight: data.maxWeight,
-        },
-      ]);
+      try{
+        console.log(formData,"formData")
+         await mutateAsync(formData)
+      }catch(error){
+        console.error(error)
+        toast.error(error?.response?.data?.message || "error accure")
+      }
+      // setVehicleData([
+      //   ...vehicleData,
+      //   {
+      //     id: vehicleData.length + 1,
+      //     Vehicle: URL.createObjectURL(data.vehicalImg[0]),
+      //     name: data.name,
+      //     length: data.length,
+      //     height: data.height,
+      //     width: data.width,
+      //     pallets: data.pallets,
+      //     maxWeight: data.maxWeight,
+      //   },
+      // ]);
     }
 
     closeModal();
@@ -98,17 +151,19 @@ const VehicleModal = () => {
     setEditMode(true);
     setCurrentVehicle(vehicle);
     openModal();
-    setValue("vehicleName", vehicle.Vehiclename);
-    setValue("length", vehicle.Length);
-    setValue("height", vehicle.Height);
-    setValue("width", vehicle.Width);
-    setValue("pallets", vehicle.Pallets);
-    setValue("maxWeight", vehicle.MaximumWeight);
+    setValue("vehicalImg",  `${BASE_URL}/uploads/vehicalImg/${vehicle.vehicalImg}`)
+    setValue("name", vehicle.name);
+    setValue("length", vehicle.length);
+    setValue("height", vehicle.height);
+    setValue("width", vehicle.width);
+    setValue("pallets", vehicle.pallets);
+    setValue("maxWeight", vehicle.maxWeight);
+    setValue("_id",vehicle._id)
   };
 
-  const handleOpenDeleteModal = (id) => {
+  const handleOpenDeleteModal = async(id) => {
     setDeleteModalOpen(true);
-    // setDeleteIndex(index);
+    
     setDeleteVehicleId(id);
   };
 
@@ -116,8 +171,9 @@ const VehicleModal = () => {
   //   setDeleteVehicleId(id);
   // };
 
-  const confirmDelete = () => {
-    setVehicleData(vehicleData.filter((item) => item.id !== deleteVehicleId));
+  const confirmDelete = async(id) => {
+    // setVehicleData(vehicleData.filter((item) => item.id !== deleteVehicleId));
+    await deletvehicle({'id': deleteVehicleId,token})
     setDeleteVehicleId(null);
   };
 
@@ -126,6 +182,17 @@ const VehicleModal = () => {
       closeModal();
     }
   };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  if(isLoading){
+    return <LoadingPage/>
+  }
+  if(isError){
+    return <div>{error?.response?.data?.message}</div>
+  }
 
   return (
     <>
@@ -158,40 +225,42 @@ const VehicleModal = () => {
                 <input
                   type="file"
                   accept="image/*"
-                  {...register("vehicleImage", {
+                  {...register("vehicalImg", {
                     required: !editMode ? "Vehicle image is required" : false,
                   })}
                   className="w-full p-2 border rounded"
                 />
-                {errors.vehicleImage && (
+                {errors.vehicalImg && (
                   <p className="text-red-500 text-sm">
-                    {errors.vehicleImage.message}
+                    {errors.vehicalImg.message}
                   </p>
                 )}
+                
+                
 
                 <label className="block mb-2 text-sm font-medium mt-2">
                   Vehicle Name
                 </label>
                 <input
                   type="text"
-                  {...register("vehicleName", {
+                  {...register("name", {
                     required: "Vehicle name is required",
                   })}
                   className="w-full p-2 border rounded"
                 />
-                {errors.vehicleName && (
+                {errors.name && (
                   <p className="text-red-500 text-sm">
-                    {errors.vehicleName.message}
+                    {errors.name.message}
                   </p>
                 )}
 
                 <label className="block mb-2 text-sm font-medium mt-2">
-                  Length
+                  length
                 </label>
                 <input
                   type="number"
                   {...register("length", {
-                    required: "Length is required",
+                    required: "length is required",
                     valueAsNumber: true,
                   })}
                   className="w-full p-2 border rounded"
@@ -203,12 +272,12 @@ const VehicleModal = () => {
                 )}
 
                 <label className="block mb-2 text-sm font-medium mt-2">
-                  Height
+                  height
                 </label>
                 <input
                   type="number"
                   {...register("height", {
-                    required: "Height is required",
+                    required: "height is required",
                     valueAsNumber: true,
                   })}
                   className="w-full p-2 border rounded"
@@ -220,12 +289,12 @@ const VehicleModal = () => {
                 )}
 
                 <label className="block mb-2 text-sm font-medium mt-2">
-                  Width
+                  width
                 </label>
                 <input
                   type="number"
                   {...register("width", {
-                    required: "Width is required",
+                    required: "width is required",
                     valueAsNumber: true,
                   })}
                   className="w-full p-2 border rounded"
@@ -235,12 +304,12 @@ const VehicleModal = () => {
                 )}
 
                 <label className="block mb-2 text-sm font-medium mt-2">
-                  Pallets
+                  pallets
                 </label>
                 <input
                   type="number"
                   {...register("pallets", {
-                    required: "Pallets is required",
+                    required: "pallets is required",
                     valueAsNumber: true,
                   })}
                   className="w-full p-2 border rounded"
@@ -273,7 +342,7 @@ const VehicleModal = () => {
                     type="submit"
                     className="bg-[#BFA75D] font-semibold text-white px-6 py-2 rounded"
                   >
-                    {editMode ? "Update" : "Submit"}
+                    {editMode ? updatepending? '...Loading' : "Update" : isPending ? '...Loading' : "Submit"}
                   </button>
                   <button
                     type="button"
@@ -323,23 +392,25 @@ const VehicleModal = () => {
             </tr>
           </thead>
           <tbody>
-            {vehicleData.map((item) => (
+            {vehicleData?.map((item) => (
               <tr key={item.id} className="border-t border-gray-300">
                 <td className="p-2 w-16">
                   <img
-                    src={item.Vehicle}
+                    // src={item.Vehicle}
+                    src={`${BASE_URL}/uploads/vehicalImg/${item.vehicalImg}`}
                     alt="vehicle"
                     className="w-10 h-10 object-contain"
                   />
+                  
                 </td>
                 <td className="w-36 p-2 text-[#12223D] font-normal">
-                  <p className="line-clamp-2">{item.Vehiclename}</p>
+                  <p className="line-clamp-2">{item.name}</p>
                 </td>
-                <td className="p-2 w-16">{item.Length}</td>
-                <td className="p-2 w-16">{item.Height}</td>
-                <td className="p-2 w-16">{item.Width}</td>
-                <td className="p-2 w-16">{item.Pallets}</td>
-                <td className="p-2 w-16">{item.MaximumWeight}</td>
+                <td className="p-2 w-16">{item.length}</td>
+                <td className="p-2 w-16">{item.height}</td>
+                <td className="p-2 w-16">{item.width}</td>
+                <td className="p-2 w-16">{item.pallets}</td>
+                <td className="p-2 w-16">{item.maxWeight}</td>
                 <td className="p-2 w-10">
                   <div className="flex gap-5">
                     <FaEdit
@@ -348,7 +419,7 @@ const VehicleModal = () => {
                       onClick={() => handleEdit(item)}
                     />
 
-                    <button onClick={() => handleOpenDeleteModal(item.id)}>
+                    <button onClick={() => handleOpenDeleteModal(item._id)}>
                       <AiFillDelete size={20} color="#BFA75D" />
                     </button>
 
@@ -368,6 +439,11 @@ const VehicleModal = () => {
           </tbody>
         </table>
       </div>
+      <Pagination 
+        currentPage={currentPage}
+        totalPages={data?.paginationData?.totalPages}
+        onPageChange={handlePageChange}
+      />
     </>
   );
 };

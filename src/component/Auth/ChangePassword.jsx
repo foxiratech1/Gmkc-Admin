@@ -7,11 +7,16 @@ import { Link } from "react-router-dom";
 import password_icon from "../../assets/password_icon'.png";
 import visible_icon from "../../assets/visible_icon.png";
 import logo from "../../assets/logo_2.png";
+import { useSelector } from "react-redux";
+import { resetPasswodMutation } from "./https/chenge-password";
+import toast from "react-hot-toast";
 
 
 const ChangePassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword1, setShowPassword1] = useState(false);
+  const {passwordChangeToken} = useSelector((state) => state.user)
+  const {mutateAsync,isPending} = resetPasswodMutation()
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -25,8 +30,14 @@ const ChangePassword = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Form Submitted: ", data);
+  const onSubmit = async(data) => {
+    data.token = passwordChangeToken
+    try{
+     await mutateAsync(data)
+    }catch(error){
+      console.error(error)
+      toast.error(error?.response?.data?.message)
+    }
   };
   return (
     <div className="flex flex-col md:flex-row h-screen ">
@@ -65,7 +76,7 @@ const ChangePassword = () => {
                 <div className="flex justify-between items-center relative">
                   <input
                     type={showPassword ? "text" : "password"}
-                    {...register("password", {
+                    {...register("newPassword", {
                       required: "Password is required",
                       minLength: {
                         value: 6,
@@ -97,12 +108,12 @@ const ChangePassword = () => {
             <div className="flex flex-col md:flex-row gap-4 mb-6">
               <div className="md:w-full">
                 <label className="block text-gray-700 mb-1 font-semibold">
-                  Password
+                Confirm Password
                 </label>
                 <div className="flex justify-between relative items-center">
                   <input
                     type={showPassword1 ? "text" : "password"}
-                    {...register("newpassword", {
+                    {...register("confirmPassword", {
                       required: "Password is required",
                       minLength: {
                         value: 6,
@@ -137,7 +148,8 @@ const ChangePassword = () => {
               type="submit"
               className="w-full bg-black text-white p-3 rounded-md font-semibold mt-6"
             >
-              Change Password
+            {isPending ? '...Loading' : 'Change Password'}
+              
             </button>
           </form>
         </div>

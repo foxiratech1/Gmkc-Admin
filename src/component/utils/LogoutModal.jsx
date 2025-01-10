@@ -1,6 +1,6 @@
 import React from "react";
 
-const LogoutModal = ({ isModalOpen, handleModalToggle }) => {
+const LogoutModal = ({ isModalOpen, handleModalToggle,logoutHendler }) => {
  
   const handleClickOutside = (e) => {
     if (e.target.id === "modalOverlay") {
@@ -63,7 +63,7 @@ const LogoutModal = ({ isModalOpen, handleModalToggle }) => {
                 <div className="flex items-center gap-5 text-center justify-center">
                   <button
                     onClick={() => {
-                      handleModalToggle();
+                      logoutHendler();
                     }}
                     className="text-white bg-[#BFA75D] font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
                   >

@@ -112,11 +112,19 @@ import ForgetPassword from "./component/Auth/ForgetPassword";
 import ResetPassword from "./component/Auth/ResetPassword";
 import ProtectedRoute from "./component/utils/ProtectedRoute";
 import Dashboard from "./component/ArtistPanel/Dashboard/Dashboard";
+import store from "./store/store";
+import { Provider } from "react-redux";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import toast, { Toaster } from 'react-hot-toast';
 
 function App() {
+  const queryClient = new QueryClient()
   const isLoggedIn = false;
 
   return (
+    <QueryClientProvider client={queryClient}>
+    <Provider store={store}>
+    <Toaster position="top-right"/>
     <Router>
       <Navbar />
       <Routes>
@@ -142,6 +150,8 @@ function App() {
         /> */}
       </Routes>
     </Router>
+        </Provider>
+    </QueryClientProvider>
   );
 }
 

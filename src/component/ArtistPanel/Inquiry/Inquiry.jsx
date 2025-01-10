@@ -1,9 +1,14 @@
+import { useSelector } from "react-redux";
 import contactData from "../../json/contactData";
+import { useEffect, useState } from "react";
+import { GetInquiryData } from "./https/GetInquiryList";
+import LoadingPage from "../../Loader";
+import { Pagination } from "../../pagination";
 
 const table_head = [
-  {
-    head: "Id",
-  },
+  // {
+  //   head: "Id",
+  // },
   {
     head: "Name",
   },
@@ -22,6 +27,30 @@ const table_head = [
 ];
 
 const Inquiry = () => {
+  const {token} = useSelector((state) => state.user)
+  const [inquiryData,setInquiryData] = useState([])
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10
+  const {data,isLoading,isError,error} = GetInquiryData({token,page: currentPage,
+    limit: ITEMS_PER_PAGE,})
+
+  useEffect(() => {
+    if(data){
+      setInquiryData(data?.data)
+      setCurrentPage(data?.paginationData?.page);
+    }
+  },[data])
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+  
+  if(isLoading){
+    return <LoadingPage/>
+  }
+  if(isError){
+    return <p>{error?.response?.data?.message}</p>
+  }
   return (
     <>
       <div className="w-full overflow-x-auto">
@@ -37,13 +66,13 @@ const Inquiry = () => {
             </tr>
           </thead>
           <tbody>
-            {contactData.map((user, index) => (
+            {inquiryData.map((user, index) => (
               <tr key={index} className="border-t border-gray-300">
-                <td className="px-2 py-3 text-[#12223D] font-normal">
+                {/* <td className="px-2 py-3 text-[#12223D] font-normal">
                   <p className="w-12 overflow-hidden text-sm text-ellipsis whitespace-wrap  line-clamp-2">
-                    {user.id}
+                    {user._id}
                   </p>
-                </td>
+                </td> */}
                 <td className="px-2 py-3 text-[#12223D] font-normal">
                   <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap  line-clamp-2">
                     {user.name}
@@ -56,7 +85,7 @@ const Inquiry = () => {
                 </td>
                 <td className="px-2 py-3">
                   <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-nowrap">
-                    {user.phone}
+                    {user.phoneNumber}
                   </p>
                 </td>
                 <td className="px-2 py-3">
@@ -74,6 +103,11 @@ const Inquiry = () => {
           </tbody>
         </table>
       </div>
+       <Pagination
+          currentPage={currentPage}
+          totalPages={data?.paginationData?.totalPages}
+          onPageChange={handlePageChange}
+        />
     </>
   );
 };

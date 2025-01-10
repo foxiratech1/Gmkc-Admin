@@ -1,14 +1,12 @@
 import { useSelector } from "react-redux";
-// import customerData from "../../json/customerData";
-import { GetCustomerData } from "./https/GetCustomerData";
 import { useEffect, useState } from "react";
 import LoadingPage from "../../Loader";
 import { Pagination } from "../../pagination";
+import { GetUserData } from "./https/GetUserData";
+
 
 const table_head = [
-  {
-    head: "Customer Id",
-  },
+  
   {
     head: "Customer Name",
   },
@@ -16,16 +14,19 @@ const table_head = [
     head: "Email",
   },
   {
+    head: "Created",
+  },
+  {
     head: "Phone",
   },
 ];
 
-const Customer = () => {
+const User = () => {
   const [customerData,setCustomerData] = useState([])
   const [currentPage,setCurrentPage] = useState([])
   const ITEM_PER_PAGE = 10
   const {token} = useSelector((state) => state.user)
-  const {data,isLoading,isError,error} = GetCustomerData({token,
+  const {data,isLoading,isError,error} = GetUserData({token,
     page:currentPage,
     limit:ITEM_PER_PAGE,
   })
@@ -34,6 +35,8 @@ const Customer = () => {
      setCustomerData(data?.data)
      setCurrentPage(data?.paginationData?.page)
   },[data])
+
+  console.log(customerData)
    const handlePageChange = (page) => {
      setCurrentPage(page)
    }
@@ -62,38 +65,29 @@ const Customer = () => {
             {customerData?.map((user, index) => (
               <tr key={index} className="border-t border-gray-300">
                 <td className="px-2 py-3 text-[#12223D] font-normal">
-                  <p className="w-24 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                    {user.shipmentId}
+                  <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                    {user.firstName} {user.lastName}
                   </p>
                 </td>
                 <td className="px-2 py-3 text-[#12223D] font-normal">
-                  {
-                    user?.contactDetail?.map((info) => (
-                        info.collectionInfo ? (
-                          <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                          {info.collectionInfo.name}
-                        </p>
-                        ) : null
-                    ))
-                  }
-                  
-                </td>
-                <td className="p-2">
-                  <p className="w-64 overflow-hidden text-sm text-ellipsis whitespace-nowrap">
-                    {user.email}
+                <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                    {user.email} 
                   </p>
                 </td>
                 <td className="p-2">
-                {
-                  user?.contactDetail?.map((info) => (
-                    info.collectionInfo ? (
-                      <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-nowrap">
-                     {info?.collectionInfo?.contactNumber}
-                      </p>
-                    ) : null
-                  ))
-                }
-                  
+                  <p className="w-64 overflow-hidden text-sm text-ellipsis whitespace-nowrap">
+                  {new Date(user.createdAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                  </p>
+                </td>
+                <td className="p-2">
+                
+                <p className="w-64 overflow-hidden text-sm text-ellipsis whitespace-nowrap">
+                    {user.phoneNumber}
+                  </p>
                 </td>
               </tr>
             ))}
@@ -109,7 +103,8 @@ const Customer = () => {
   );
 };
 
-export default Customer;
+export default User;
+
 
 
 

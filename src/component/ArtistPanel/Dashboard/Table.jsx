@@ -1,9 +1,14 @@
 import currentData from "../../json/shipmentData";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Tooltip from "../../utils/Tooltip";
 import OpenModalButton from "../../utils/OpenModalBtn";
 import { AiFillDelete } from "react-icons/ai";
 import DeleteModal from "../../utils/DeleteModal";
+import { GetAllShipmentData } from "./https/GetShipmentData";
+import { useSelector } from "react-redux";
+import { Pagination } from "../../pagination";
+import LoadingPage from "../../Loader";
+import { DeleteShipment } from "./https/deleteShipment";
 
 const table_head = [
   { head: "Id" },
@@ -20,8 +25,29 @@ const table_head = [
 
 const Table = () => {
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [data, setData] = useState(currentData);
+  const [shipmentData, setShipmentData] = useState([]);
   const [deleteIndex, setDeleteIndex] = useState(null);
+  const {token} = useSelector((state) => state.user)
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  const ITEMS_PER_PAGE = 10
+  const {mutateAsync,isPending} = DeleteShipment()
+  const { data, isLoading, isError, error } = GetAllShipmentData({
+    token,
+    page: currentPage,
+    limit: ITEMS_PER_PAGE,
+  });
+  useEffect(() => {
+    if (data) {
+      setShipmentData(data?.data)
+      setCurrentPage(data.paginationData.page);
+    }
+  }, [data]);
+  console.log(shipmentData)
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   const handleOpenDeleteModal = (index) => {
     setDeleteModalOpen(true);
@@ -34,7 +60,13 @@ const Table = () => {
     setData(updatedData);
     setDeleteModalOpen(false);
   };
+   if(isLoading){
+    return <LoadingPage/>
+   }
 
+   if(isError){
+    return <p>{error?.response?.data?.message}</p>
+   }
   return (
     <div className="rounded-lg mt-6">
       <h1 className="text-2xl mb-5 font-semibold text-[#333843] leading-7">
@@ -55,19 +87,28 @@ const Table = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((user, index) => (
+            {shipmentData?.map((user, index) => (
               <tr key={index} className="bg-white border-b border-[#C2C2C2]">
                 <td className="p-2">
-                  <p className="w-10 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                    {user.id}
+                  <p className="w-20 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                    {user.shipmentId}
                   </p>
                 </td>
                 <td className="p-2">
-                  <Tooltip text={user.customerName} position="top">
+                  {/* <Tooltip text={user.customerName} position="top">
                     <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                       {user.customerName}
                     </p>
-                  </Tooltip>
+                  </Tooltip> */}
+                  {user?.contactDetail?.map((detail) => (
+                      detail.collectionInfo ? (
+                        <Tooltip key={detail.collectionInfo.collectionAddress} text={user.customerName} position="top">
+                          <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                            {detail.collectionInfo.collectionAddress}
+                          </p>
+                        </Tooltip>
+                      ) : null
+                    ))}
                 </td>
                 <td className="p-2">
                   <Tooltip text={user.email} position="top">
@@ -77,11 +118,20 @@ const Table = () => {
                   </Tooltip>
                 </td>
                 <td className="p-2">
-                  <Tooltip text={user.phone} position="top">
+                  {/* <Tooltip text={user.phone} position="top">
                     <p className="w-28 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                       {user.phone}
                     </p>
-                  </Tooltip>
+                  </Tooltip> */}
+                  {user?.contactDetail?.map((detail) => (
+                      detail.collectionInfo ? (
+                        <Tooltip key={detail.collectionInfo.contactNumber} text={detail.collectionInfo.contactNumber} position="top">
+                          <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                            {detail.collectionInfo.contactNumber}
+                          </p>
+                        </Tooltip>
+                      ) : null
+                    ))}
                 </td>
                 <td className="p-2">
                   <Tooltip
@@ -101,11 +151,20 @@ const Table = () => {
                   </Tooltip>
                 </td>
                 <td className="p-2">
-                  <Tooltip text={user.pickupLocation} position="top">
+                  {/* <Tooltip text={user.pickupLocation} position="top">
                     <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                       {user.pickupLocation}
                     </p>
-                  </Tooltip>
+                  </Tooltip> */}
+                  {user?.contactDetail?.map((detail) => (
+                      detail.collectionInfo ? (
+                        <Tooltip key={detail.collectionInfo.collectionAddress} text={detail.collectionInfo.collectionAddress} position="top">
+                          <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                            {detail.collectionInfo.collectionAddress}
+                          </p>
+                        </Tooltip>
+                      ) : null
+                    ))}
                 </td>
                 <td className="p-2">
                   <Tooltip
@@ -113,16 +172,25 @@ const Table = () => {
                     position="top"
                   >
                     <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                      {`${user.pickupDate} ${user.pickupTime}`}
+                      {`${user.pickUpDateAndTime}`}
                     </p>
                   </Tooltip>
                 </td>
                 <td className="p-2">
-                  <Tooltip text={user.dropOffLocation} position="top">
+                  {/* <Tooltip text={user.dropOffLocation} position="top">
                     <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                       {user.dropOffLocation}
                     </p>
-                  </Tooltip>
+                  </Tooltip> */}
+                  {user?.contactDetail?.map((detail) => (
+                      detail.deliveryInfo ? (
+                        <Tooltip key={detail.deliveryInfo.deliveryAddress} text={detail.deliveryInfo.deliveryAddress} position="top">
+                          <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                            {detail.deliveryInfo.deliveryAddress}
+                          </p>
+                        </Tooltip>
+                      ) : null
+                    ))}
                 </td>
                 <td className="p-2">
                   <p className="w-16 overflow-hidden text-sm text-ellipsis whitespace-nowrap flex gap-5 item-center">
@@ -149,6 +217,11 @@ const Table = () => {
           </tbody>
         </table>
       </div>
+      <Pagination 
+        currentPage={currentPage}
+        totalPages={data?.paginationData?.totalPages}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

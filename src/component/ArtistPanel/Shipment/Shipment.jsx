@@ -8,6 +8,11 @@ import { AiFillDelete } from "react-icons/ai";
 import { IoEye } from "react-icons/io5";
 import DeleteModal from "../../utils/DeleteModal";
 import OpenModalButton from "../../utils/OpenModalBtn";
+import { useSelector } from "react-redux";
+import { GetAllShipmentData } from "./https/GetAllshipment";
+import LoadingPage from "../../Loader";
+import { Pagination } from "../../pagination";
+import { EditShipmentStop } from "./https/updateStop";
 
 const table_head = [
   {
@@ -43,16 +48,39 @@ const table_head = [
 ];
 
 const ShipmentTable = () => {
+  const {token} = useSelector((state) => state.user)
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [editMode, setEditMode] = useState(null);
   const [editedSteps, setEditedSteps] = useState(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [data, setData] = useState(shipmentData);
+  const [updatedStopsId, setUpdatedStopsId] = useState(null);
+  // const [data, setData] = useState(shipmentData);
   const [deleteIndex, setDeleteIndex] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10
+  const { data, isLoading, isError, error } = GetAllShipmentData({
+    token,
+    page: currentPage,
+    limit: ITEMS_PER_PAGE,
+  });
+  const {mutateAsync,isPending} = EditShipmentStop()
 
-  const openModal = (customerData) => {
-    setSelectedCustomer(customerData);
+  useEffect(() => {
+    if (data) {
+      setCurrentPage(data.paginationData.page);
+    }
+  }, [data]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+  // console.log(data)
+  const openModal = (detail,id) => {
+    console.log(detail)
+    console.log(id,"idddddd")
+    setUpdatedStopsId(id)
+    setSelectedCustomer(detail);
     setModalIsOpen(true);
   };
 
@@ -61,25 +89,71 @@ const ShipmentTable = () => {
     setSelectedCustomer(null);
   };
 
-  useEffect(() => {
-    if (selectedCustomer?.steps) {
-      setEditedSteps([...selectedCustomer.steps]);
-    }
-  }, [selectedCustomer]);
+  // useEffect(() => {
+  //   if (selectedCustomer?.steps) {
+  //     setEditedSteps([...selectedCustomer.steps]);
+  //   }
+  // }, [selectedCustomer]);
 
   const handleEditClick = (stepIndex) => {
     setEditMode(stepIndex);
   };
-
-  const handleInputChange = (e, stepIndex, field) => {
-    const updatedSteps = [...editedSteps];
-    updatedSteps[stepIndex][field] = e.target.value;
+  useEffect(() => {
+    if (selectedCustomer && selectedCustomer.deliveryInfo.intermediateStops) {
+      const stopsArray = Object.values(selectedCustomer.deliveryInfo.intermediateStops);
+      setEditedSteps(stopsArray);
+    }
+  }, [selectedCustomer]);
+  // const handleInputChange = (e, stepIndex, field) => {
+  //   const updatedSteps = [...editedSteps];
+  //   updatedSteps[stepIndex][field] = e.target.value;
+  //   setEditedSteps(updatedSteps);
+  // };
+  const handleInputChange = (e, index, field) => {
+    const currentSteps = Array.isArray(editedSteps) ? editedSteps : [];
+    const updatedSteps = [...currentSteps];
+  
+    if (!updatedSteps[index]) {
+      updatedSteps[index] = {};
+    }
+  
+    updatedSteps[index][field] = e.target.value;
+  
     setEditedSteps(updatedSteps);
   };
+  const handleSave = async() => {
+    // console.log("Updated Steps:", editedSteps);
+     try{
+      const updatedData = [];
+    editedSteps.forEach((step) => {
+      const updatedStep = {};
 
-  const handleSave = () => {
-    console.log("Updated Steps:", editedSteps);
+      
+      if (step.stopOneAddress) {
+        updatedStep.stopOneAddress = step.stopOneAddress || "";
+        updatedStep.stopOneContactNumber = step.stopOneContactNumber || "";
+        updatedStep.stopOneEmail = step.stopOneEmail || "";
+        updatedStep.stopOneName = step.stopOneName || "";
+      }
+
+      if (step.stopTwoAddress) {
+        updatedStep.stopTwoAddress = step.stopTwoAddress || "";
+        updatedStep.stopTwoContactNumber = step.stopTwoContactNumber || "";
+        updatedStep.stopTwoEmail = step.stopTwoEmail || "";
+        updatedStep.stopTwoName = step.stopTwoName || "";
+      }
+      // updatedStep.token = token
+      // updatedStep.id = updatedStopsId
+      updatedData.push(updatedStep);
+    });
+    console.log(updatedStopsId,"iddd")
+    await mutateAsync({updatedData,updatedStopsId,token})
+    console.log("Updated Data to Save:", updatedData);
+     }catch(error){
+      console.error(error)
+     }
     setEditMode(null);
+    setUpdatedStopsId(null);
   };
 
   const handleOpenDeleteModal = (index) => {
@@ -92,6 +166,13 @@ const ShipmentTable = () => {
     setData(updatedData);
     setDeleteModalOpen(false);
   };
+
+  if(isLoading){
+    return <LoadingPage/>
+  }
+  if(isError){
+    return <p>{error?.response?.data?.message}</p>
+  }
   return (
     <>
       <div className="w-full">
@@ -108,19 +189,32 @@ const ShipmentTable = () => {
               </tr>
             </thead>
             <tbody>
-              {data.map((user, index) => (
+              {data?.data?.map((user, index) => (
                 <tr key={index} className="border-t border-gray-300">
                   <td className="px-2 py-3 text-[#12223D] font-normal">
-                    <p className="w-10 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                      {user.id}
+                    <p className="w-20 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                      {user.shipmentId}
                     </p>
                   </td>
                   <td className="px-2 py-3 text-[#12223D] font-normal">
-                    <Tooltip text={user.customerName} position="top">
+                  {user?.contactDetail?.map((detail) => (
+                      detail.collectionInfo ? (
+                        <div key={detail.collectionInfo.contactNumber}>
+                          <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                            {detail.collectionInfo.name}
+                          </p>
+                          {/* <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                            {detail.deliveryInfo.deliveryAddress}
+                          </p> */}
+                        </div>
+                      ) : null
+                    ))}
+
+                    {/* <Tooltip text={user.customerName} position="top">
                       <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                        {user.customerName}
+                        
                       </p>
-                    </Tooltip>
+                    </Tooltip> */}
                   </td>
                   <td className="p-2">
                     <Tooltip text={user.email} position="top">
@@ -130,11 +224,23 @@ const ShipmentTable = () => {
                     </Tooltip>
                   </td>
                   <td className="p-2">
-                    <Tooltip text={user.phone} position="top">
+                  {user?.contactDetail?.map((detail) => (
+                      detail.collectionInfo ? (
+                        <div key={detail.collectionInfo.contactNumber}>
+                          <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                            {detail.collectionInfo.contactNumber}
+                          </p>
+                          {/* <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                            {detail.deliveryInfo.deliveryAddress}
+                          </p> */}
+                        </div>
+                      ) : null
+                    ))}
+                    {/* <Tooltip text={user.phone} position="top">
                       <p className="w-24 overflow-hidden text-sm text-ellipsis whitespace-nowrap">
                         {user.phone}
                       </p>
-                    </Tooltip>
+                    </Tooltip> */}
                   </td>
                   <td className="p-2">
                     <Tooltip text={user.orderDate} position="top">
@@ -151,21 +257,53 @@ const ShipmentTable = () => {
                     </Tooltip>
                   </td>
                   <td className="p-2">
-                    <Tooltip text={user.pickupLocation} position="top">
+                  {user?.contactDetail?.map((detail) => (
+                      detail.collectionInfo ? (
+                        <div key={detail.collectionInfo.collectionAddress}>
+                          <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                            {detail.collectionInfo.collectionAddress}
+                          </p>
+                          {/* <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                            {detail.deliveryInfo.deliveryAddress}
+                          </p> */}
+                        </div>
+                      ) : null
+                    ))}
+                    {/* <Tooltip text={user.pickupLocation} position="top">
                       <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                         {user.pickupLocation}
                       </p>
-                    </Tooltip>
+                    </Tooltip> */}
                   </td>
                   <td className="p-2">
-                    <Tooltip text={user.pickupDate} position="top">
+                    <Tooltip text={user.pickUpDateAndTime} position="top">
                       <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-nowrap">
-                        {`${user.pickupDate} ${user.pickupTime}`}
+                        {`${user.pickUpDateAndTime} ${user.pickupTime}`}
                       </p>
                     </Tooltip>
                   </td>
                   <td className="p-2">
-                    <Tooltip text={user.dropOffLocation} position="top">
+                  {user?.contactDetail?.map((detail) => (
+                      detail.deliveryInfo ? (
+                        <Tooltip text={detail.deliveryInfo.deliveryAddress} position="top">
+                        <div key={detail.deliveryInfo.deliveryAddress}>
+                          <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-nowrap flex items-center">
+                          <span className="flex-grow overflow-hidden text-sm text-ellipsis whitespace-nowrap">
+                          {detail.deliveryInfo.deliveryAddress}
+                          </span>
+                        <img
+                          src={arrow}
+                          alt="Arrow"
+                          onClick={() => openModal(detail,user._id)}
+                          className="ml-2 flex-shrink-0 w-4 h-4"
+                        />
+                          </p>
+                          
+                        </div>
+                        </Tooltip>
+                      ) : null
+                    ))}
+                    {/* <Tooltip text={user.dropOffLocation} position="top">
                       <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-nowrap flex items-center">
                         <span className="flex-grow overflow-hidden text-sm text-ellipsis whitespace-nowrap">
                           {user.dropOffLocation}
@@ -177,7 +315,7 @@ const ShipmentTable = () => {
                           className="ml-2 flex-shrink-0 w-4 h-4"
                         />
                       </p>
-                    </Tooltip>
+                    </Tooltip> */}
                   </td>
                   <td className="p-2">
                     <p className="w-16 overflow-hidden text-sm text-ellipsis whitespace-nowrap flex gap-5 item-center">
@@ -202,6 +340,11 @@ const ShipmentTable = () => {
             </tbody>
           </table>
         </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={data.paginationData.totalPages}
+          onPageChange={handlePageChange}
+        />
       </div>
 
       {modalIsOpen && selectedCustomer && (
@@ -214,15 +357,17 @@ const ShipmentTable = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-xl font-semibold mb-4">Delivery Detail</h2>
-
-            <p>
+               {/* {
+                selectedCustomer?.collectionInfo?.collectionAddress
+               } */}
+             <p>
               <p className="font-semibold text-lg">Pickup Location:</p>
-              {selectedCustomer.pickupLocation}
+              {selectedCustomer?.collectionInfo?.collectionAddress}
             </p>
 
-            <div className="mt-4">
+            {/* <div className="mt-4">
               {editedSteps && editedSteps.length > 0 ? (
-                <>
+                <>  
                   <ul className="mt-2">
                     {editedSteps.slice(0, 2).map((step, idx) => (
                       <div
@@ -347,11 +492,198 @@ const ShipmentTable = () => {
                       </>
                     )}
                   </div>
-                </>
+                </> 
               ) : (
                 <p>No intermediate steps available.</p>
               )}
+            </div> */}
+            
+                    <p className="font-semibold text-lg pt-3">Drop Location:</p>
+                    
+                    {!selectedCustomer?.deliveryInfo?.intermediateStops ||
+    Object.keys(selectedCustomer.deliveryInfo.intermediateStops).length === 0 ? (
+      <p>No intermediate stops available.</p>
+    ) : (
+      Object.values(selectedCustomer.deliveryInfo.intermediateStops).map((stop, index) => {
+        const isStopOne = stop.stopOneName || stop.stopOneEmail || stop.stopOneContactNumber || stop.stopOneAddress;
+        const isStopTwo = stop.stopTwoName || stop.stopTwoEmail || stop.stopTwoContactNumber || stop.stopTwoAddress;
+        
+        const disableStopInputs = !isStopOne && !isStopTwo && !isFinalStop;
+
+    return (
+      <div key={index}>
+        {isStopOne && (
+          editMode === index ? (
+            <div>
+              <input
+                type="text"
+                className="w-full p-2 border mt-1 rounded"
+                value={stop.stopOneName || ""}
+                onChange={(e) => handleInputChange(e, index, "stopOneName")}
+                placeholder="Stop One Name"
+                disabled={disableStopInputs}
+              />
+              <input
+                type="email"
+                className="w-full p-2 border mt-1 rounded"
+                value={stop.stopOneEmail || ""}
+                onChange={(e) => handleInputChange(e, index, "stopOneEmail")}
+                placeholder="Stop One Email"
+                disabled={disableStopInputs}
+              />
+              <input
+                type="text"
+                className="w-full p-2 border mt-1 rounded"
+                value={stop.stopOneContactNumber || ""}
+                onChange={(e) => handleInputChange(e, index, "stopOneContactNumber")}
+                placeholder="Stop One Contact Number"
+                disabled={disableStopInputs}
+              />
+              <input
+                type="text"
+                className="w-full p-2 border mt-1 rounded"
+                value={stop.stopOneAddress || ""}
+                onChange={(e) => handleInputChange(e, index, "stopOneAddress")}
+                placeholder="Stop One Address"
+                disabled={disableStopInputs}
+              />
             </div>
+          ) : (
+            <div className="mt-4 border border-[#BFA75D] shadow-lg p-3 rounded-lg">
+              <div className="flex items-center justify-between">
+                <p className="text-lg font-medium text-gray-800">
+                  Intermediate Stop One: {index + 1}
+                </p>
+                <FaEdit
+                  size={20}
+                  color="#BFA75D"
+                  className="cursor-pointer"
+                  onClick={() => handleEditClick(index)}
+                />
+              </div>
+              <div className="flex gap-3 flex-wrap py-1">
+                <p>Name:</p>
+                <p>{stop.stopOneName || ""}</p>
+              </div>
+              <div className="flex gap-3 flex-wrap py-1">
+                <p>Email:</p>
+                <p>{stop.stopOneEmail || ""}</p>
+              </div>
+              <div className="flex gap-3 flex-wrap py-1">
+                <p>Contact Number:</p>
+                <p>{stop.stopOneContactNumber || ""}</p>
+              </div>
+              <div className="flex gap-3 flex-wrap py-1">
+                <p>Address:</p>
+                <p>{stop.stopOneAddress || ""}</p>
+              </div>
+            </div>
+          )
+        )}
+
+        {isStopTwo && (
+          editMode === index ? (
+            <div>
+              <input
+                type="text"
+                className="w-full p-2 border mt-1 rounded"
+                value={stop.stopTwoName || ""}
+                onChange={(e) => handleInputChange(e, index, "stopTwoName")}
+                placeholder="Stop Two Name"
+                disabled={disableStopInputs}
+              />
+              <input
+                type="email"
+                className="w-full p-2 border mt-1 rounded"
+                value={stop.stopTwoEmail || ""}
+                onChange={(e) => handleInputChange(e, index, "stopTwoEmail")}
+                placeholder="Stop Two Email"
+                disabled={disableStopInputs}
+              />
+              <input
+                type="text"
+                className="w-full p-2 border mt-1 rounded"
+                value={stop.stopTwoContactNumber || ""}
+                onChange={(e) => handleInputChange(e, index, "stopTwoContactNumber")}
+                placeholder="Stop Two Contact Number"
+                disabled={disableStopInputs}
+              />
+              <input
+                type="text"
+                className="w-full p-2 border mt-1 rounded"
+                value={stop.stopTwoAddress || ""}
+                onChange={(e) => handleInputChange(e, index, "stopTwoAddress")}
+                placeholder="Stop Two Address"
+                disabled={disableStopInputs}
+              />
+            </div>
+          ) : (
+            <div className="mt-4 border border-[#BFA75D] shadow-lg p-3 rounded-lg">
+              <div className="flex items-center justify-between">
+                <p className="text-lg font-medium text-gray-800">
+                  Intermediate Stop Two: {index + 1}
+                </p>
+                <FaEdit
+                  size={20}
+                  color="#BFA75D"
+                  className="cursor-pointer"
+                  onClick={() => handleEditClick(index)}
+                />
+              </div>
+              <div className="flex gap-3 flex-wrap py-1">
+                <p>Name:</p>
+                <p>{stop.stopTwoName || ""}</p>
+              </div>
+              <div className="flex gap-3 flex-wrap py-1">
+                <p>Email:</p>
+                <p>{stop.stopTwoEmail || ""}</p>
+              </div>
+              <div className="flex gap-3 flex-wrap py-1">
+                <p>Contact Number:</p>
+                <p>{stop.stopTwoContactNumber || ""}</p>
+              </div>
+              <div className="flex gap-3 flex-wrap py-1">
+                <p>Address:</p>
+                <p>{stop.stopTwoAddress || ""}</p>
+              </div>
+            </div>
+          )
+        )}   
+      </div>
+    );
+  })
+)}
+
+{/* try start*/}
+         
+
+{/* try end */}
+
+
+
+                        <div className="mt-4 border border-[#BFA75D] shadow-lg border border-gray-100 p-2 rounded-lg">
+                        <div className="flex items-center justify-between">
+                      <p className="text-lg font-medium text-gray-900">
+                        Final Stop
+                      </p>
+                      <FaEdit
+                        size={20}
+                        color="#BFA75D"
+                        className="cursor-pointer"
+                        onClick={() => handleEditClick(2)}
+                      />
+                    </div>
+                    <div>
+                    <p className="text-sm py-1">
+                          Name: {selectedCustomer?.deliveryInfo?.deliveryName}
+                        </p>
+                        <p className="text-sm py-1">Phone: {selectedCustomer?.deliveryInfo?.deliveryContactNumber}</p>
+                        <p className="text-sm py-1">Email: {selectedCustomer?.deliveryInfo?.deliveryEmail}</p>
+                        <p className="text-sm py-1">
+                          Address: {selectedCustomer?.deliveryInfo?.deliveryAddress}
+                        </p>
+                    </div>
+               </div>
 
             {editMode !== null && (
               <button

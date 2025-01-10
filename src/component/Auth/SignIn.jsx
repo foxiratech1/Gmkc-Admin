@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 // import signin from "../assets/signin.png";
 import signImg from "../../assets/signin.png";
@@ -7,15 +8,15 @@ import email_icon from "../../assets/email_icon.png";
 import logo from "../../assets/logo_2.png";
 import password_icon from "../../assets/password_icon'.png";
 import visible_icon from "../../assets/visible_icon.png";
+import SigInInMutation from "./https/LoginMutation";
+import toast from "react-hot-toast";
+
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword1, setShowPassword1] = useState(false);
   const navigate = useNavigate()
-
-  const redireToDashboard = ()=>{
-    navigate("/forget-password")
-  }
+   const {mutateAsync, isPending} = SigInInMutation()
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -29,8 +30,15 @@ const SignIn = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Form Submitted: ", data);
+  const onSubmit = async(data) => {
+    
+     try{
+      console.log("Form Submitted: ", data);
+      await mutateAsync(data);
+     }catch(error){
+      console.log(error)
+        toast.error("some error accure")  
+     }
   };
   return (
     <div className="flex flex-col md:flex-row h-screen">
@@ -143,9 +151,10 @@ const SignIn = () => {
             <button
               type="submit"
               className="w-full bg-black text-white p-3 rounded-md font-bold"
-              onClick={redireToDashboard}
+              
             >
-              Sign In
+            {isPending ? '...Loading' : 'Sign In'}
+              
             </button>
 
             {/* Already a member */}

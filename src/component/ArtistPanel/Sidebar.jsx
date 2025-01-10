@@ -10,6 +10,8 @@ import { LuMessageSquareQuote } from "react-icons/lu";
 import { LuNotebookPen } from "react-icons/lu";
 import { FaRegQuestionCircle } from "react-icons/fa";
 import { HiMiniArrowLeftStartOnRectangle } from "react-icons/hi2";
+import { useDispatch } from "react-redux";
+import { setIsAuthorized, setToken } from "../../store/userSlice/userSlice";
 
 export const sections = [
   {
@@ -49,6 +51,12 @@ export const sections = [
     path: "inquiry",
   },
   {
+    key: "users",
+    icon: <FaRegUser size={28} />,
+    label: "Users",
+    path: "users",
+  },
+  {
     key: "faq",
     icon: <FaRegQuestionCircle size={28} />,
     label: "Faq",
@@ -62,6 +70,7 @@ const SideBar = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch()
 
   const redirectToHome = () => {
     navigate("/");
@@ -78,6 +87,11 @@ const SideBar = () => {
     setIsModalOpen(!isModalOpen);
   };
 
+  const logoutHendler = () => {
+      dispatch(setToken(''))
+      dispatch(setIsAuthorized(false))
+  }
+
   return (
     <>
       {isOpen && (
@@ -86,7 +100,7 @@ const SideBar = () => {
           onClick={toggleSideBar}
         ></div>
       )}
-
+ 
       <div className="flex transition-all duration-300 h-full">
         <div
           className={`fixed lg:static top-0 left-0 h-full z-40 transition-all duration-300 bg-black text-white flex flex-col ${
@@ -102,12 +116,12 @@ const SideBar = () => {
             {isOpen ? <IoIosArrowBack /> : <IoIosArrowForward />}
           </button>
           <div className="px-10 py-2 lg:hidden block">
-            <img
-              src={logo}
-              alt="logo"
-              className="w-44"
-              onClick={redirectToHome}
-            />
+              <img
+                src={logo}
+                alt="logo"
+                className="w-44"
+                onClick={redirectToHome}
+              />
           </div>
 
           <div className="flex relative flex-col justify-between h-auto mt-12">
@@ -172,6 +186,7 @@ const SideBar = () => {
         <LogoutModal
           isModalOpen={isModalOpen}
           handleModalToggle={handleModalToggle}
+          logoutHendler={logoutHendler}
         />
       </div>
     </>

@@ -5,21 +5,25 @@ import arrow from "../../assets/left_arrow.png";
 import email from "../../assets/email_icon.png";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo_2.png";
+import ForgetPasswordOtp from "./https/ForgetPasswordOtp";
+import toast from "react-hot-toast";
 
 const ForgetPassword = () => {
+  const {mutateAsync,isPending} = ForgetPasswordOtp()
+  const navigate = useNavigate()
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Form Submitted: ", data);
-  };
-
-  const navigate = useNavigate();
-  const redireToNext = () => {
-    navigate("/otp");
+  const onSubmit = async(data) => {
+      try{
+       await  mutateAsync(data)
+      }catch(error){
+        console.error(error)
+        toast.error(error?.response?.data?.message)
+      }
   };
 
   return (
@@ -89,9 +93,9 @@ const ForgetPassword = () => {
             <button
               type="submit"
               className="w-full bg-black text-white p-3 rounded-md font-bold mt-6"
-              onClick={redireToNext}
             >
-              Send OTP
+            {isPending ? '...Loading' : 'Send OTP'}
+              
             </button>
 
             {/* Already a member */}

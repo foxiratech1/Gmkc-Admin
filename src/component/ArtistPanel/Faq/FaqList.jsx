@@ -3,12 +3,12 @@ import { AiFillDelete } from "react-icons/ai";
 import { FaEdit } from "react-icons/fa";
 import { IoMdAddCircleOutline, IoMdRemoveCircleOutline } from "react-icons/io";
 
-const FAQList = ({ faqs, toggledIndex, toggleAccordion, onEdit, onDelete }) => {
+const FAQList = ({ faqs, toggledIndex, toggleAccordion, onEdit, onDelete,setEditId }) => {
   return (
     <div>
-      {faqs.length > 0 ? (
+      {faqs?.length > 0 ? (
         <ul className="space-y-4">
-          {faqs.map((faq, index) => (
+          {faqs?.map((faq, index) => (
             <li key={index} className="border rounded shadow-md">
               <div className="">
                 <div className="flex justify-between">
@@ -31,10 +31,10 @@ const FAQList = ({ faqs, toggledIndex, toggleAccordion, onEdit, onDelete }) => {
                         onClick={() => toggleAccordion(index)}
                       />
                     )}
-                    <button onClick={() => onEdit(index)}>
+                    <button onClick={() => onEdit(faq._id,index)}>
                       <FaEdit size={20} color="#BFA75D" />
                     </button>
-                    <button onClick={() => onDelete(index)}>
+                    <button onClick={() => onDelete(faq._id)}>
                       <AiFillDelete size={20} color="#BFA75D" />
                     </button>
                   </div>
