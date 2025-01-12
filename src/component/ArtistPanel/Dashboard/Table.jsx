@@ -1,4 +1,4 @@
-import currentData from "../../json/shipmentData";
+
 import { useEffect, useState } from "react";
 import Tooltip from "../../utils/Tooltip";
 import OpenModalButton from "../../utils/OpenModalBtn";
@@ -43,7 +43,6 @@ const Table = () => {
       setCurrentPage(data.paginationData.page);
     }
   }, [data]);
-  console.log(shipmentData)
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -52,6 +51,12 @@ const Table = () => {
   const handleOpenDeleteModal = (index) => {
     setDeleteModalOpen(true);
     setDeleteIndex(index);
+  };
+
+  const confirmDeleteshipment = async() => {
+    await mutateAsync({'id': deleteIndex,token})
+    setDeleteModalOpen(false);
+    setDeleteIndex(null);
   };
 
   const confirmDelete = () => {
@@ -205,7 +210,7 @@ const Table = () => {
                       <DeleteModal
                         title="Confirm Delete"
                         onClose={() => setDeleteModalOpen(false)}
-                        onConfirm={confirmDelete}
+                        onConfirm={confirmDeleteshipment}
                       >
                         <p>Are you sure you want to delete this item?</p>
                       </DeleteModal>

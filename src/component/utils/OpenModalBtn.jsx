@@ -22,11 +22,19 @@ const OpenModalButton = ({ user }) => {
           <div className="space-y-4">
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">ID:</strong>
-              <span> {user.id}</span>
+              <span> {user.shipmentId}</span>
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Name:</strong>
-              <span> {user.customerName}</span>
+              {user?.contactDetail?.map((detail) => (
+                      detail.collectionInfo ? (
+                        <div key={detail.collectionInfo.name}>
+                          <span>
+                            {detail.collectionInfo.name}
+                          </span>
+                        </div>
+                      ) : null
+                    ))}
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Email:</strong>
@@ -34,7 +42,15 @@ const OpenModalButton = ({ user }) => {
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Phone:</strong>
-              <span> {user.phone}</span>
+              {user?.contactDetail?.map((detail) => (
+                      detail.collectionInfo ? (
+                        <div key={detail.collectionInfo.contactNumber}>
+                          <span>
+                            {detail.collectionInfo.contactNumber}
+                          </span>
+                        </div>
+                      ) : null
+                ))}
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Order Date:</strong>
@@ -49,18 +65,18 @@ const OpenModalButton = ({ user }) => {
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Pickup Location:</strong>
-              <span> {user.pickupLocation}</span>
+              <span> {user.collectionAddress}</span>
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Pickup Date & Time:</strong>
               <span>
                 {" "}
-                {user.pickupDate} {user.pickupTime}
+                {user.pickUpDateAndTime}
               </span>
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Drop Off Location:</strong>
-              <span> {user.dropOffLocation}</span>
+              <span> {user.deliveryAddress}</span>
             </p>
           </div>
         </div>

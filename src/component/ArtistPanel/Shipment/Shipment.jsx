@@ -13,6 +13,7 @@ import { GetAllShipmentData } from "./https/GetAllshipment";
 import LoadingPage from "../../Loader";
 import { Pagination } from "../../pagination";
 import { EditShipmentStop } from "./https/updateStop";
+import { DeleteShipment } from "./https/shipmentDelete";
 
 const table_head = [
   {
@@ -53,6 +54,7 @@ const ShipmentTable = () => {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [editMode, setEditMode] = useState(null);
   const [editedSteps, setEditedSteps] = useState(null);
+  const [finalStep,setFinalStep] = useState(null)
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [updatedStopsId, setUpdatedStopsId] = useState(null);
   // const [data, setData] = useState(shipmentData);
@@ -65,6 +67,7 @@ const ShipmentTable = () => {
     limit: ITEMS_PER_PAGE,
   });
   const {mutateAsync,isPending} = EditShipmentStop()
+  const {mutateAsync:deleteShipment} = DeleteShipment()
 
   useEffect(() => {
     if (data) {
@@ -101,14 +104,40 @@ const ShipmentTable = () => {
   useEffect(() => {
     if (selectedCustomer && selectedCustomer.deliveryInfo.intermediateStops) {
       const stopsArray = Object.values(selectedCustomer.deliveryInfo.intermediateStops);
+      const stopFinal = (selectedCustomer?.deliveryInfo)
+      console.log(stopFinal,"stopfine\al")
+      setFinalStep(stopFinal)
       setEditedSteps(stopsArray);
     }
   }, [selectedCustomer]);
-  // const handleInputChange = (e, stepIndex, field) => {
-  //   const updatedSteps = [...editedSteps];
-  //   updatedSteps[stepIndex][field] = e.target.value;
-  //   setEditedSteps(updatedSteps);
-  // };
+
+  useEffect(() => {
+    if (selectedCustomer && selectedCustomer.deliveryInfo) {
+        
+        setFinalStep([selectedCustomer.deliveryInfo]); 
+    }
+}, [selectedCustomer]);
+
+
+  
+const handleInputChangeFinal = (e, index, field) => {
+ 
+  let currentStep = Array.isArray(finalStep) ? finalStep : [];
+
+  const updatedFinalStep = currentStep.map((step, idx) => {
+      if (idx === index) {
+          return { ...step, [field]: e.target.value };
+      }
+      return step;
+  });
+
+  setFinalStep(updatedFinalStep);
+};
+
+
+
+
+
   const handleInputChange = (e, index, field) => {
     const currentSteps = Array.isArray(editedSteps) ? editedSteps : [];
     const updatedSteps = [...currentSteps];
@@ -125,10 +154,9 @@ const ShipmentTable = () => {
     // console.log("Updated Steps:", editedSteps);
      try{
       const updatedData = [];
-    editedSteps.forEach((step) => {
+      const deliveryInfo = {}
+     editedSteps.forEach((step) => {
       const updatedStep = {};
-
-      
       if (step.stopOneAddress) {
         updatedStep.stopOneAddress = step.stopOneAddress || "";
         updatedStep.stopOneContactNumber = step.stopOneContactNumber || "";
@@ -142,11 +170,19 @@ const ShipmentTable = () => {
         updatedStep.stopTwoEmail = step.stopTwoEmail || "";
         updatedStep.stopTwoName = step.stopTwoName || "";
       }
-      // updatedStep.token = token
-      // updatedStep.id = updatedStopsId
+      
       updatedData.push(updatedStep);
     });
-    console.log(updatedStopsId,"iddd")
+    finalStep.forEach((final) => {
+      deliveryInfo.deliveryName = final.deliveryName || '';
+      deliveryInfo.deliveryContactNumber = final.deliveryContactNumber || '';
+      deliveryInfo.deliveryEmail = final.deliveryEmail || '';
+      deliveryInfo.deliveryAddress = final.deliveryAddress || '';
+      updatedData.push(deliveryInfo);
+    }) 
+      
+    
+    console.log(updatedData,"stoooooooo")
     await mutateAsync({updatedData,updatedStopsId,token})
     console.log("Updated Data to Save:", updatedData);
      }catch(error){
@@ -156,15 +192,15 @@ const ShipmentTable = () => {
     setUpdatedStopsId(null);
   };
 
-  const handleOpenDeleteModal = (index) => {
+  const handleOpenDeleteModal = (id) => {
     setDeleteModalOpen(true);
-    setDeleteIndex(index);
+    setDeleteIndex(id);
   };
 
-  const confirmDelete = () => {
-    const updatedData = data.filter((_, index) => index !== deleteIndex);
-    setData(updatedData);
-    setDeleteModalOpen(false);
+  const confirmDelete = async() => {
+     await deleteShipment({'id': deleteIndex,token})
+      setDeleteModalOpen(false);
+      setDeleteIndex(null)
   };
 
   if(isLoading){
@@ -320,7 +356,7 @@ const ShipmentTable = () => {
                   <td className="p-2">
                     <p className="w-16 overflow-hidden text-sm text-ellipsis whitespace-nowrap flex gap-5 item-center">
                       <OpenModalButton size={20} user={user} />
-                      <button onClick={() => handleOpenDeleteModal(index)}>
+                      <button onClick={() => handleOpenDeleteModal(user._id)}>
                         <AiFillDelete size={20} color="#BFA75D" />
                       </button>
 
@@ -508,7 +544,7 @@ const ShipmentTable = () => {
         const isStopOne = stop.stopOneName || stop.stopOneEmail || stop.stopOneContactNumber || stop.stopOneAddress;
         const isStopTwo = stop.stopTwoName || stop.stopTwoEmail || stop.stopTwoContactNumber || stop.stopTwoAddress;
         
-        const disableStopInputs = !isStopOne && !isStopTwo && !isFinalStop;
+        const disableStopInputs = !isStopOne && !isStopTwo;
 
     return (
       <div key={index}>
@@ -655,13 +691,67 @@ const ShipmentTable = () => {
 )}
 
 {/* try start*/}
-         
+          <div className="mt-4 border border-[#BFA75D] shadow-lg border border-gray-100 p-2 rounded-lg">
+                        <div className="flex items-center justify-between">
+                      <p className="text-lg font-medium text-gray-900">
+                        Final Stop
+                      </p>
+                      <FaEdit
+                        size={20}
+                        color="#BFA75D"
+                        className="cursor-pointer"
+                        onClick={() => handleEditClick(2)}
+                      />
+                    </div>
+                    
+                    {editMode === 2 ? (
+  <>
+    <input
+      type="text"
+      className="w-full p-2 border mt-1 rounded"
+      value={finalStep[0]?.deliveryName || selectedCustomer?.deliveryInfo?.deliveryName || ''}
+      onChange={(e) => handleInputChangeFinal(e, 0, 'deliveryName')}
+      placeholder="Name"
+    />
+    <input
+      type="email"
+      className="w-full p-2 border mt-1 rounded"
+      value={finalStep[0]?.deliveryEmail || selectedCustomer?.deliveryInfo?.deliveryEmail || ''}
+      onChange={(e) => handleInputChangeFinal(e, 0, 'deliveryEmail')}
+      placeholder="Email"
+    />
+    <input
+      type="text"
+      className="w-full p-2 border mt-1 rounded"
+      value={finalStep[0]?.deliveryContactNumber || selectedCustomer?.deliveryInfo?.deliveryContactNumber || ''}
+      onChange={(e) => handleInputChangeFinal(e, 0, 'deliveryContactNumber')}
+      placeholder="Phone"
+    />
+    <input
+      type="text"
+      className="w-full p-2 border mt-1 rounded"
+      value={finalStep[0]?.deliveryAddress || selectedCustomer?.deliveryInfo?.deliveryAddress || ''}
+      onChange={(e) => handleInputChangeFinal(e, 0, 'deliveryAddress')}
+      placeholder="Address"
+    />
+  </>
+) : (
+  <div>
+    <p className="text-sm py-1">Name: {selectedCustomer?.deliveryInfo?.deliveryName}</p>
+    <p className="text-sm py-1">Phone: {selectedCustomer?.deliveryInfo?.deliveryContactNumber}</p>
+    <p className="text-sm py-1">Email: {selectedCustomer?.deliveryInfo?.deliveryEmail}</p>
+    <p className="text-sm py-1">Address: {selectedCustomer?.deliveryInfo?.deliveryAddress}</p>
+  </div>
+)}
+
+                  </div>
+               
 
 {/* try end */}
 
 
 
-                        <div className="mt-4 border border-[#BFA75D] shadow-lg border border-gray-100 p-2 rounded-lg">
+                        {/* <div className="mt-4 border border-[#BFA75D] shadow-lg border border-gray-100 p-2 rounded-lg">
                         <div className="flex items-center justify-between">
                       <p className="text-lg font-medium text-gray-900">
                         Final Stop
@@ -683,7 +773,7 @@ const ShipmentTable = () => {
                           Address: {selectedCustomer?.deliveryInfo?.deliveryAddress}
                         </p>
                     </div>
-               </div>
+               </div> */}
 
             {editMode !== null && (
               <button
