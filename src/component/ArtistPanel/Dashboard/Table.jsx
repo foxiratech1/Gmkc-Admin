@@ -4,7 +4,7 @@ import Tooltip from "../../utils/Tooltip";
 import OpenModalButton from "../../utils/OpenModalBtn";
 import { AiFillDelete } from "react-icons/ai";
 import DeleteModal from "../../utils/DeleteModal";
-import { GetAllShipmentData } from "./https/GetShipmentData";
+
 import { useSelector } from "react-redux";
 import { Pagination } from "../../pagination";
 import LoadingPage from "../../Loader";
@@ -23,33 +23,32 @@ const table_head = [
   { head: "Action" },
 ];
 
-const Table = () => {
+const Table = ({shipmentData,currentPage,setCurrentPage,data}) => {
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [shipmentData, setShipmentData] = useState([]);
+  // const [shipmentData, setShipmentData] = useState([]);
   const [deleteIndex, setDeleteIndex] = useState(null);
   const {token} = useSelector((state) => state.user)
-  const [currentPage, setCurrentPage] = useState(1);
+  // const [currentPage, setCurrentPage] = useState(1);
   
-  const ITEMS_PER_PAGE = 10
+  // const ITEMS_PER_PAGE = 10
   const {mutateAsync,isPending} = DeleteShipment()
-  const { data, isLoading, isError, error } = GetAllShipmentData({
-    token,
-    page: currentPage,
-    limit: ITEMS_PER_PAGE,
-  });
-  useEffect(() => {
-    if (data) {
-      setShipmentData(data?.data)
-      setCurrentPage(data.paginationData.page);
-    }
-  }, [data]);
+  // const { data, isLoading, isError, error } = GetAllShipmentData({
+  //   token,
+  //   page: currentPage,
+  //   limit: ITEMS_PER_PAGE,
+  // });
+  // useEffect(() => {
+  //   if (data) {
+  //     setShipmentData(data?.data)
+  //     setCurrentPage(data.paginationData.page);
+  //   }
+  // }, [data]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
   const handleOpenDeleteModal = (id) => {
-    console.log(id,"mmmmmm")
     setDeleteModalOpen(true);
     setDeleteIndex(id);
   };
@@ -67,13 +66,13 @@ const Table = () => {
     setData(updatedData);
     setDeleteModalOpen(false);
   };
-   if(isLoading){
-    return <LoadingPage/>
-   }
+  //  if(isLoading){
+  //   return <LoadingPage/>
+  //  }
 
-   if(isError){
-    return <p>{error?.response?.data?.message}</p>
-   }
+  //  if(isError){
+  //   return <p>{error?.response?.data?.message}</p>
+  //  }
   return (
     <div className="rounded-lg mt-6">
       <h1 className="text-2xl mb-5 font-semibold text-[#333843] leading-7">
