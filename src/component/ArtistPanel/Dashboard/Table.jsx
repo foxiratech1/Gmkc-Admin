@@ -48,13 +48,15 @@ const Table = () => {
     setCurrentPage(page);
   };
 
-  const handleOpenDeleteModal = (index) => {
+  const handleOpenDeleteModal = (id) => {
+    console.log(id,"mmmmmm")
     setDeleteModalOpen(true);
     setDeleteIndex(index);
   };
 
   const confirmDeleteshipment = async() => {
-    await mutateAsync({'id': deleteIndex,token})
+    console.log(deleteIndex,"ing")
+    // await mutateAsync({'id': deleteIndex,token})
     setDeleteModalOpen(false);
     setDeleteIndex(null);
   };
@@ -203,7 +205,7 @@ const Table = () => {
                       <OpenModalButton size={20} user={user} />
                     </button>
 
-                    <button onClick={() => handleOpenDeleteModal(index)}>
+                    <button onClick={() => handleOpenDeleteModal(user._id)}>
                       <AiFillDelete size={20} color="#BFA75D" />
                     </button>
                     {isDeleteModalOpen && (

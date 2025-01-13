@@ -11,7 +11,7 @@ async function ShipmentDelete({id,token}){
             Authorization: `Bearer ${token}`
         }
     })
-}
+}  
 
 export const DeleteShipment = () => {
     const queryClient = useQueryClient()

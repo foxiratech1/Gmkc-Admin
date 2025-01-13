@@ -151,7 +151,7 @@ const VehicleModal = () => {
     setEditMode(true);
     setCurrentVehicle(vehicle);
     openModal();
-    setValue("vehicalImg",  `${BASE_URL}/uploads/vehicalImg/${vehicle.vehicalImg}`)
+    setValue("vehicalImg",  `${BASE_URL}/images/vehicalImg/${vehicle.vehicalImg}`)
     setValue("name", vehicle.name);
     setValue("length", vehicle.length);
     setValue("height", vehicle.height);
@@ -397,7 +397,7 @@ const VehicleModal = () => {
                 <td className="p-2 w-16">
                   <img
                     // src={item.Vehicle}
-                    src={`${BASE_URL}/uploads/vehicalImg/${item.vehicalImg}`}
+                    src={`${BASE_URL}/images/vehicalImg/${item.vehicalImg}`}
                     alt="vehicle"
                     className="w-10 h-10 object-contain"
                   />
