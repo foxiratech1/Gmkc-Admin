@@ -51,12 +51,12 @@ const Table = () => {
   const handleOpenDeleteModal = (id) => {
     console.log(id,"mmmmmm")
     setDeleteModalOpen(true);
-    setDeleteIndex(index);
+    setDeleteIndex(id);
   };
 
   const confirmDeleteshipment = async() => {
-    console.log(deleteIndex,"ing")
-    // await mutateAsync({'id': deleteIndex,token})
+    // console.log(deleteIndex,"ing")
+    await mutateAsync({'id': deleteIndex,token})
     setDeleteModalOpen(false);
     setDeleteIndex(null);
   };
