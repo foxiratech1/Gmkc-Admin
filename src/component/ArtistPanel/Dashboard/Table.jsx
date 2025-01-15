@@ -141,11 +141,11 @@ const Table = ({shipmentData,currentPage,setCurrentPage,data}) => {
                 </td>
                 <td className="p-2">
                   <Tooltip
-                    text={`${user.orderDate} ${user.orderTime}`}
+                    text={`${user.orderDate}`}
                     position="top"
                   >
                     <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                      {`${user.orderDate} ${user.orderTime}`}
+                      {`${user.orderDate}`}
                     </p>
                   </Tooltip>
                 </td>

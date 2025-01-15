@@ -116,6 +116,7 @@ import store from "./store/store";
 import { Provider } from "react-redux";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import toast, { Toaster } from 'react-hot-toast';
+import { AuthProvider } from "./auth/Authprovider";
 
 function App() {
   const queryClient = new QueryClient()
@@ -125,6 +126,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
     <Provider store={store}>
     <Toaster position="top-right"/>
+    <AuthProvider>
     <Router>
       <Navbar />
       <Routes>
@@ -136,12 +138,14 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Protected routes */}
+        
         <Route
           path="/*" 
           element={
             <ProtectedRoute isLoggedIn={isLoggedIn} component={ArtistPanel} />
           }
         />
+        
         {/* <Route
           path="/*"
           element={
@@ -150,6 +154,7 @@ function App() {
         /> */}
       </Routes>
     </Router>
+    </AuthProvider>
         </Provider>
     </QueryClientProvider>
   );

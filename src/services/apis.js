@@ -5,6 +5,7 @@ export const authendpoints = {
     FORGET_PASSWORD_OTP: BASE_URL + "/api/admin/forgot-password-otp",
     VALID_OTP: BASE_URL + "/api/admin/validate-otp",
     RESET_PASSWORD: BASE_URL + "/api/admin/reset-password",
+    IS_AUTORIZED: BASE_URL + "/api/admin/dashboard",
 }
 
 export const vehicalendpoints = {

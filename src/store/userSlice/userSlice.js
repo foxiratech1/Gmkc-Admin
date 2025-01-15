@@ -5,7 +5,14 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   user: null,
-  token: JSON.parse(localStorage.getItem('token')) || '',
+  // token: JSON.parse(localStorage.getItem('token')) || '',
+  token: (() => {
+    try {
+      return JSON.parse(localStorage.getItem('token')) || '';
+    } catch {
+      return '';
+    }
+  })(),
   isAuthorized: false,
   userRole: JSON.parse(localStorage.getItem('userRole')) || '',
   email: '',

@@ -36,7 +36,7 @@ const User = () => {
      setCurrentPage(data?.paginationData?.page)
   },[data])
 
-  console.log(customerData)
+  console.log(customerData,"data")
    const handlePageChange = (page) => {
      setCurrentPage(page)
    }
@@ -86,7 +86,7 @@ const User = () => {
                 <td className="p-2">
                 
                 <p className="w-64 overflow-hidden text-sm text-ellipsis whitespace-nowrap">
-                    {user.phoneNumber}
+                    {user.phoneNumber ? user.phoneNumber : 'null'}
                   </p>
                 </td>
               </tr>
