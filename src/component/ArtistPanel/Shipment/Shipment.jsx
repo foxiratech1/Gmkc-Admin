@@ -85,12 +85,11 @@ const ShipmentTable = () => {
       setCustomerData(popupdata)
     }
   },[popupdata,userId])
-   console.log(customerData,"customerData")
+   
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-  console.log(selectedCustomer,"selectedCustomer")
-  console.log(data)
+  
   const openModal = (detail,user,id) => {
     setUserId(user._id)
     setUpdatedStopsId(id)
@@ -118,7 +117,7 @@ const ShipmentTable = () => {
     if (selectedCustomer && selectedCustomer.deliveryInfo.intermediateStops) {
       const stopsArray = Object.values(selectedCustomer.deliveryInfo.intermediateStops);
       const stopFinal = (selectedCustomer?.deliveryInfo)
-      console.log(stopFinal,"stopfine\al")
+      
       setFinalStep(stopFinal)
       setEditedSteps(stopsArray);
     }
@@ -195,9 +194,11 @@ const handleInputChangeFinal = (e, index, field) => {
     }) 
       
     
-    console.log(updatedData,"stoooooooo")
+   
+    
     await mutateAsync({updatedData,updatedStopsId,token})
-    console.log("Updated Data to Save:", updatedData);
+    
+    
      }catch(error){
       console.error(error)
      }
@@ -228,6 +229,7 @@ const handleInputChangeFinal = (e, index, field) => {
         <h1 className="text-2xl font-semibold mb-10">Shipment</h1>
         {
           data?.data?.length > 0 ?
+           <div>
           <div className="overflow-x-auto">
           <table className="table-auto bg-white w-full border-collapse border border-gray-300">
             <thead className="bg-black text-white text-left">
@@ -382,16 +384,16 @@ const handleInputChangeFinal = (e, index, field) => {
               ))}
             </tbody>
           </table>
-        </div> : 
-        <div><p className="flex items-center text-gray-700">Shipment list is empty</p></div>
-        }
-        
-        <Pagination
+          </div>
+          <Pagination
           currentPage={currentPage}
           totalPages={data.paginationData.totalPages}
           totalCount={data?.totalCount}
           onPageChange={handlePageChange}
         />
+            </div> : 
+        <div><p className="flex items-center text-gray-700">Shipment list is empty</p></div>
+        }
       </div>
 
       {modalIsOpen && selectedCustomer && (

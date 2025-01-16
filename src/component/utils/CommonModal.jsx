@@ -8,7 +8,7 @@ const CommonModal = ({ isOpen, onClose, children }) => {
       onRequestClose={onClose}
       contentLabel="Example Modal"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-      className="top-1/2 left-1/2 md:p-5 p-3 lg:w-[60%] w-[75%] sm:ml-0 ml-14 overflow-y-scroll translate-y-[10%] bg-white"
+      className="top-1/2 left-1/2 md:p-5 p-3 lg:w-[45%] w-[75%] sm:ml-0 ml-14  translate-y-[10%] bg-white rounded-lg shadow-lg"
     >
       <button
         onClick={onClose}

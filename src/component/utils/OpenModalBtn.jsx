@@ -4,7 +4,7 @@ import CommonModal from "./CommonModal";
 
 const OpenModalButton = ({ user }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-
+  console.log(user,"userrrrrrr")
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
 
@@ -30,7 +30,7 @@ const OpenModalButton = ({ user }) => {
                       detail.collectionInfo ? (
                         <div key={detail.collectionInfo.name}>
                           <span>
-                            {detail.collectionInfo.name}
+                            {detail.collectionInfo.name ? detail.collectionInfo.name: null }
                           </span>
                         </div>
                       ) : null
@@ -38,7 +38,15 @@ const OpenModalButton = ({ user }) => {
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Email:</strong>
-              <span> {user.email}</span>
+              {user?.contactDetail?.map((detail) => (
+                      detail.collectionInfo ? (
+                        <div key={detail.collectionInfo.email}>
+                          <span>
+                            {detail.collectionInfo.email ? detail.collectionInfo.email: null }
+                          </span>
+                        </div>
+                      ) : null
+                    ))}
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Phone:</strong>
@@ -65,7 +73,15 @@ const OpenModalButton = ({ user }) => {
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Pickup Location:</strong>
-              <span> {user.collectionAddress}</span>
+              {user?.contactDetail?.map((detail) => (
+                      detail.collectionInfo ? (
+                        <div key={detail.collectionInfo.collectionAddress}>
+                          <span>
+                            {detail.collectionInfo.collectionAddress}
+                          </span>
+                        </div>
+                      ) : null
+                ))}
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Pickup Date & Time:</strong>

@@ -110,9 +110,9 @@ const Table = ({shipmentData,currentPage,setCurrentPage,data}) => {
                   </Tooltip> */}
                   {user?.contactDetail?.map((detail) => (
                       detail.collectionInfo ? (
-                        <Tooltip key={detail.collectionInfo.collectionAddress} text={user.customerName} position="top">
+                        <Tooltip key={detail.collectionInfo.name} text={detail.collectionInfo.name} position="top">
                           <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                            {detail.collectionInfo.collectionAddress}
+                            {detail.collectionInfo.name}
                           </p>
                         </Tooltip>
                       ) : null
@@ -176,11 +176,11 @@ const Table = ({shipmentData,currentPage,setCurrentPage,data}) => {
                 </td>
                 <td className="p-2">
                   <Tooltip
-                    text={`${user.pickupDate} ${user.pickupTime}`}
+                    text={`${user.pickUpDateAndTime}`}
                     position="top"
                   >
                     <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                      {`${user.pickUpDateAndTime}`}
+                      {`${user.pickUpDateAndTime ? user.pickUpDateAndTime : null}`}
                     </p>
                   </Tooltip>
                 </td>

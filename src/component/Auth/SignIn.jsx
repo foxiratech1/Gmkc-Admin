@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // import signin from "../assets/signin.png";
 import signImg from "../../assets/signin.png";
 import { useForm } from "react-hook-form";
@@ -26,14 +26,46 @@ const SignIn = () => {
   };
   const {
     register,
+    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm();
+  
+  const setCookie = (name, value, days) => {
+    const date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
+  };
+  const getCookie = (name) => {
+    const cookies = document.cookie.split('; ');
+    for (let i = 0; i < cookies.length; i++) {
+      const [cookieName, cookieValue] = cookies[i].split('=');
+      if (cookieName === name) return cookieValue;
+    }
+    return null;
+  };
+
+  const deleteCookie = (name) => {
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+  };
+
+  // Load saved email from cookies if available
+  useEffect(() => {
+    const savedEmail = getCookie('rememberedEmail');
+    if (savedEmail) {
+      setValue('email', savedEmail);
+    }
+  }, []);
+
+
 
   const onSubmit = async(data) => {
-    
      try{
-      console.log("Form Submitted: ", data);
+      if (data.remember) {
+        setCookie('rememberedEmail', data.email, 30);
+      } else {
+        deleteCookie('rememberedEmail');
+      }
       await mutateAsync(data);
      }catch(error){
       console.log(error)
@@ -132,10 +164,10 @@ const SignIn = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-0 justify-between w-full mb-4  ">
-              <div className=" flex items-center">
-                <input type="checkbox" name="rememberMe" className="w-4 h-4" />
-                <label className="ml-2 text-gray-700 font-bold">
+              <div className=" flex gap-2 items-center">
+                <label className="ml-2 text-gray-700 font-bold flex gap-2 items-center flex-row-reverse">
                   Remember me
+                <input type="checkbox" {...register("remember")} name="remember" className="w-4 h-4" />
                 </label>
               </div>
 
