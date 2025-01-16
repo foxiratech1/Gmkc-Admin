@@ -78,7 +78,9 @@ const Table = ({shipmentData,currentPage,setCurrentPage,data}) => {
       <h1 className="text-2xl mb-5 font-semibold text-[#333843] leading-7">
         Shipment
       </h1>
-      <div className="overflow-x-auto">
+      {
+        shipmentData?.length > 0 ? 
+        <div className="overflow-x-auto">
         <table className="w-full border-collapse border border-gray-300">
           <thead className="bg-black">
             <tr className="text-white">
@@ -222,10 +224,14 @@ const Table = ({shipmentData,currentPage,setCurrentPage,data}) => {
             ))}
           </tbody>
         </table>
-      </div>
+      </div> :
+      <div><p className="flex items-center text-gray-700">Shipment list is empty</p></div>
+      }
+      
       <Pagination 
         currentPage={currentPage}
         totalPages={data?.paginationData?.totalPages}
+        totalCount = {data?.totalCount}
         onPageChange={handlePageChange}
       />
     </div>

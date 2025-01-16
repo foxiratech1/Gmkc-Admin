@@ -52,7 +52,10 @@ const Inquiry = () => {
     return <p>{error?.response?.data?.message}</p>
   }
   return (
-    <>
+    <>  
+    {
+      inquiryData?.length > 0 ? 
+      <div>
       <div className="w-full overflow-x-auto">
         <h1 className="text-2xl font-semibold mb-10">Inquiry</h1>
         <table className="table-auto bg-white w-full border-collapse border border-gray-300">
@@ -106,8 +109,13 @@ const Inquiry = () => {
        <Pagination
           currentPage={currentPage}
           totalPages={data?.paginationData?.totalPages}
+          totalCount = {data?.totalCount}
           onPageChange={handlePageChange}
         />
+        </div> : 
+        <div><p className="flex text-center text-gray-700">Inquiry list is empty</p></div>
+    }
+        
     </>
   );
 };

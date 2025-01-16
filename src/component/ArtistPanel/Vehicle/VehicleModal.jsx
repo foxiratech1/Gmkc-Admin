@@ -379,8 +379,10 @@ const VehicleModal = () => {
           </DeleteModal>
         </>
       )} */}
-
-      <div className="overflow-x-auto mt-8">
+      {
+        vehicleData?.length > 0 ? 
+          <div>
+          <div className="overflow-x-auto mt-8">
         <table className="table-auto bg-white w-full border-collapse border border-gray-300">
           <thead className="bg-black text-white">
             <tr className="text-white">
@@ -443,7 +445,11 @@ const VehicleModal = () => {
         currentPage={currentPage}
         totalPages={data?.paginationData?.totalPages}
         onPageChange={handlePageChange}
+        totalCount = {data?.totalCount}
       />
+          </div> : <div><p className=" flex item-center text-gray-700">Vehicle list is empty</p></div>
+      }
+      
     </>
   );
 };

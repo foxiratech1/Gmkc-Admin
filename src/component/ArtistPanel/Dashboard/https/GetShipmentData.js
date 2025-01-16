@@ -8,7 +8,7 @@ async function fatchAllShipmentList({token,limit = 8, page = 1 }) {
     page,
     limit
  }
-  const { data } = await axiosInstance.get(shipmentendpoints.ALL_SHIPMENT_LIST, {
+  const { data } = await axiosInstance.get(shipmentendpoints.ALL_SHIPMENT_DASHBOARD_LIST, {
     params,
     headers: {
       Authorization: `Bearer ${token}`,
@@ -19,7 +19,7 @@ async function fatchAllShipmentList({token,limit = 8, page = 1 }) {
 
 export function GetAllShipmentData({token,limit = 8, page = 1}) {
   return useQuery({
-    queryKey: [shipmentendpoints.ALL_SHIPMENT_LIST,{ limit, page }],
+    queryKey: [shipmentendpoints.ALL_SHIPMENT_DASHBOARD_LIST,{ limit, page }],
     queryFn: () => fatchAllShipmentList({token,page,limit}),
   });
 }

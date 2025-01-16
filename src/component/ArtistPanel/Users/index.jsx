@@ -48,9 +48,13 @@ const User = () => {
     return <div>{error?.response?.data?.message}</div>
   }
   return (
-    <>
+    <> 
+    <h1 className="text-2xl font-semibold mb-10">Customer</h1>
+    {
+      customerData?.length > 0 ? 
+      <div>
       <div className="w-full overflow-x-auto">
-        <h1 className="text-2xl font-semibold mb-10">Customer</h1>
+        
         <table className="table-auto bg-white w-full border-collapse border border-gray-300">
           <thead className="bg-black text-white text-left">
             <tr className="text-white">
@@ -97,8 +101,12 @@ const User = () => {
       <Pagination 
         currentPage={currentPage}
         totalPages={data?.paginationData?.totalPages}
+        totalCount = {data?.totalCounts}
         onPageChange={handlePageChange}
       />
+      </div> : <div><p className="flex text-center text-gray-700">User list is empry</p></div>
+    }
+      
     </>
   );
 };

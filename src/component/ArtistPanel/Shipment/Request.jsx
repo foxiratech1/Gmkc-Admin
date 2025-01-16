@@ -187,7 +187,9 @@ const Request = () => {
     <>
       <div className="w-full h-full">
         <h1 className="text-2xl font-semibold mb-10">Requests</h1>
-        <div className="overflow-x-auto">
+        {
+          data?.data?.length > 0 ? 
+          <div className="overflow-x-auto">
           <table className="table-auto bg-white w-full border-collapse border border-gray-300">
             <thead className="bg-black text-white text-left">
               <tr>
@@ -261,11 +263,15 @@ const Request = () => {
               ))}
             </tbody>
           </table>
-        </div>
+        </div> :
+        <div><p className="flex text-center text-gray-700">Request list is empty</p></div>
+        }
+        
   
       <Pagination
           currentPage={currentPage}
           totalPages={data?.paginationData?.totalPages}
+          totalCount = {data?.totalCounts}
           onPageChange={handlePageChange}
         />
 

@@ -24,11 +24,14 @@ export const requestendpoints = {
     REQUEST_LIST: BASE_URL + '/api/admin/all-request-quote-list'
 }
 export const shipmentendpoints = {
-    ALL_SHIPMENT_LIST: BASE_URL + '/api/admin/all-shipment-quote-list',
+    ALL_SHIPMENT_DASHBOARD_LIST: BASE_URL + '/api/admin/all-shipment-quote-list',
+    ALL_SHIPMENT_LIST: BASE_URL +  '/api/admin/shipment-quote-list',
     SINGLE_SHIPMENT_DETAIL: BASE_URL + '/api/admin/single-shipment-detail',
     SHIPMENT_DELIVERY_DETAIL:BASE_URL + '/api/admin/shipment-delivery-detail',
     DELETE_SHIPMENT:BASE_URL + '/api/admin/shipment-delete',
     UPDATE_SHIPMENT_STOP: BASE_URL + '/api/admin/shipment-detail-update',
+    SHIPMENT_DELEVERY_DETAIL: BASE_URL + '/api/admin/shipment-delivery-detail'
+    
 }
 
 export const faqendpoints = {

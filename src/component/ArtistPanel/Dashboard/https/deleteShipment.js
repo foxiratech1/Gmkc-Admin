@@ -20,10 +20,10 @@ export const DeleteShipment = () => {
 
         onSuccess:(res) => {
             queryClient.invalidateQueries({
-                queryKey:[shipmentendpoints.ALL_SHIPMENT_LIST],
+                queryKey:[shipmentendpoints.ALL_SHIPMENT_DASHBOARD_LIST],
                 refetchType:'all'
              })
-             queryClient.refetchQueries([shipmentendpoints.ALL_SHIPMENT_LIST])
+             queryClient.refetchQueries([shipmentendpoints.ALL_SHIPMENT_DASHBOARD_LIST])
            toast.success(res?.data?.message)
         },
         onError:(res) => {
