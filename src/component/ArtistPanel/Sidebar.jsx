@@ -12,7 +12,7 @@ import { FaRegQuestionCircle } from "react-icons/fa";
 import { HiMiniArrowLeftStartOnRectangle } from "react-icons/hi2";
 import { useDispatch } from "react-redux";
 import { setIsAuthorized, setToken } from "../../store/userSlice/userSlice";
-
+import { AiOutlineMail } from "react-icons/ai";
 export const sections = [
   {
     key: "dashboard",
@@ -57,6 +57,12 @@ export const sections = [
     path: "users",
   },
   {
+    key: "promotion",
+    icon: <AiOutlineMail size={28} />,
+    label: "Promotions",
+    path: "promotion",
+  },
+  {
     key: "faq",
     icon: <FaRegQuestionCircle size={28} />,
     label: "Faq",
@@ -70,7 +76,7 @@ const SideBar = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const redirectToHome = () => {
     navigate("/");
@@ -88,9 +94,9 @@ const SideBar = () => {
   };
 
   const logoutHendler = () => {
-      dispatch(setToken(''))
-      dispatch(setIsAuthorized(false))
-  }
+    dispatch(setToken(""));
+    dispatch(setIsAuthorized(false));
+  };
 
   return (
     <>
@@ -100,7 +106,7 @@ const SideBar = () => {
           onClick={toggleSideBar}
         ></div>
       )}
- 
+
       <div className="flex transition-all duration-300 h-full">
         <div
           className={`fixed lg:static top-0 left-0 h-full z-40 transition-all duration-300 bg-black text-white flex flex-col ${
@@ -116,12 +122,12 @@ const SideBar = () => {
             {isOpen ? <IoIosArrowBack /> : <IoIosArrowForward />}
           </button>
           <div className="px-10 py-2 lg:hidden block">
-              <img
-                src={logo}
-                alt="logo"
-                className="w-44"
-                onClick={redirectToHome}
-              />
+            <img
+              src={logo}
+              alt="logo"
+              className="w-44"
+              onClick={redirectToHome}
+            />
           </div>
 
           <div className="flex relative flex-col justify-between h-auto mt-12">
