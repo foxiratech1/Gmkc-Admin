@@ -16,7 +16,6 @@ const stats = [
   { label: "Vehicles", value: 5200, dash: <TbTruckDelivery size={20} /> },
   // { label: "Services", value: 5130, dash: <MdHomeRepairService size={20} /> },
 ];
-console.log(stats);
 
 const Dashboard = () => {
   const { token } = useSelector((state) => state.user);

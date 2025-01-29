@@ -27,10 +27,10 @@ export const sections = [
     path: "shipment",
   },
   {
-    key: "request",
+    key: "quotes",
     icon: <LuMessageSquareQuote size={28} />,
-    label: "Requests",
-    path: "request",
+    label: "Quotes",
+    path: "quotes",
   },
   {
     key: "vehicle",
@@ -51,6 +51,12 @@ export const sections = [
     path: "inquiry",
   },
   {
+    key: "quotes-email",
+    icon: <AiOutlineMail size={28} />,
+    label: "Quots Email",
+    path: "quotes-email",
+  },
+  {
     key: "users",
     icon: <FaRegUser size={28} />,
     label: "Users",
@@ -62,6 +68,7 @@ export const sections = [
     label: "Promotions",
     path: "promotion",
   },
+
   {
     key: "faq",
     icon: <FaRegQuestionCircle size={28} />,

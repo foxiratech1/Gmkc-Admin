@@ -10,6 +10,7 @@ import Inquiry from "./Inquiry/Inquiry";
 import Request from "./Shipment/Request";
 import User from "./Users";
 import Promotion from "./Promotion/Promotion";
+import QuoteEmail from "./QuotesEmail/QuoteEmail";
 
 const ArtistPanel = () => {
   return (
@@ -21,10 +22,11 @@ const ArtistPanel = () => {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="shipment" element={<Shipment />} />
-          <Route path="request" element={<Request />} />
+          <Route path="quotes" element={<Request />} />
           <Route path="faq" element={<FaqForm />} />
           <Route path="promotion" element={<Promotion />} />
           <Route path="vehicles" element={<Vehicles />} />
+          <Route path="quotes-email" element={<QuoteEmail />} />
           <Route path="customer" element={<Customer />} />
           <Route path="inquiry" element={<Inquiry />} />
           <Route path="users" element={<User />} />

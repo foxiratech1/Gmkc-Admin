@@ -17,12 +17,17 @@ export const vehicalendpoints = {
 };
 export const customerendpoints = {
   CUSTOMER_LIST: BASE_URL + "/api/admin/customer-list",
+  CUSTOMER_Update: BASE_URL + "/api/admin/customer-edit",
+  CUSTOMER_Delete: BASE_URL + "/api/admin/customer-delete",
 };
 export const allinquiryendpoinds = {
   INQUIRY_LIST: BASE_URL + "/api/admin/all-inqurues",
 };
 export const requestendpoints = {
   REQUEST_LIST: BASE_URL + "/api/admin/all-request-quote-list",
+};
+export const quoteendpoints = {
+  QUOTE_LIST: BASE_URL + "/api/admin/quote-email-data",
 };
 export const shipmentendpoints = {
   ALL_SHIPMENT_DASHBOARD_LIST: BASE_URL + "/api/admin/all-quote-list",
