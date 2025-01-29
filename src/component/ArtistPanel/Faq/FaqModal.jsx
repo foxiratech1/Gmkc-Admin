@@ -10,14 +10,14 @@ const FAQModal = ({
   onClose,
 }) => {
   const handleClickOutside = (e) => {
-    if (e.target.id === "modalOverlay") {
-      onClose();
-    }
+    // if (e.target.id === "modalOverlay") {
+    //   onClose();
+    // }
   };
 
   return (
     <div
-      id="modalOverlay"
+      // id="modalOverlay"
       onClick={handleClickOutside}
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
     >

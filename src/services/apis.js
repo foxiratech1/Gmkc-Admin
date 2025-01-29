@@ -1,5 +1,5 @@
-const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
-// const BASE_URL = "http://localhost:5000";
+// const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+const BASE_URL = "http://localhost:5000";
 
 export const authendpoints = {
   SIGNIN_API: BASE_URL + "/api/admin/login",
@@ -25,6 +25,9 @@ export const allinquiryendpoinds = {
 };
 export const requestendpoints = {
   REQUEST_LIST: BASE_URL + "/api/admin/all-request-quote-list",
+  Accept_Quote: BASE_URL + "/api/admin/quote-accept",
+  Reject_Quote: BASE_URL + "/api/admin/reject-quote",
+  Send_Email_Quote: BASE_URL + "/api/admin/send-quote-price-email",
 };
 export const quoteendpoints = {
   QUOTE_LIST: BASE_URL + "/api/admin/quote-email-data",
@@ -48,6 +51,9 @@ export const faqendpoints = {
 };
 export const userendpoints = {
   USER_LIST: BASE_URL + "/api/admin/user-list",
+  USER_Create: BASE_URL + "/api/admin/create-user",
+  USER_Update: BASE_URL + "/api/admin/update-user",
+  USER_Delete: BASE_URL + "/api/admin/delete-user",
 };
 
 export const promotionEmailSendApi = {

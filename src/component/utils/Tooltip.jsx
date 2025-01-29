@@ -20,7 +20,7 @@ const Tooltip = ({ text, children, position = "top" }) => {
 
   return (
     <div
-      className="relative flex items-center"
+      className="relative flex items-center justify-center"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -38,4 +38,3 @@ const Tooltip = ({ text, children, position = "top" }) => {
 };
 
 export default Tooltip;
-

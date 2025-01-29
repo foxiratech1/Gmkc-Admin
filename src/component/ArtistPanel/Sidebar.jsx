@@ -13,6 +13,8 @@ import { HiMiniArrowLeftStartOnRectangle } from "react-icons/hi2";
 import { useDispatch } from "react-redux";
 import { setIsAuthorized, setToken } from "../../store/userSlice/userSlice";
 import { AiOutlineMail } from "react-icons/ai";
+import { HiOutlineMailOpen } from "react-icons/hi";
+import { FaUsers } from "react-icons/fa";
 export const sections = [
   {
     key: "dashboard",
@@ -47,18 +49,18 @@ export const sections = [
   {
     key: "inquiry",
     icon: <LuNotebookPen size={28} />,
-    label: "Inquiry",
+    label: "Inquiries",
     path: "inquiry",
   },
   {
     key: "quotes-email",
-    icon: <AiOutlineMail size={28} />,
-    label: "Quots Email",
+    icon: <HiOutlineMailOpen size={28} />,
+    label: "Quotes Email ",
     path: "quotes-email",
   },
   {
     key: "users",
-    icon: <FaRegUser size={28} />,
+    icon: <FaUsers size={28} />,
     label: "Users",
     path: "users",
   },

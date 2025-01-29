@@ -151,7 +151,7 @@ const Customer = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold mb-10">Customesr</h1>
+      <h1 className="text-2xl font-semibold mb-10">Customers</h1>
       {customerData?.length > 0 ? (
         <div>
           <div className="w-full overflow-x-auto">
