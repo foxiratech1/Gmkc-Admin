@@ -16,6 +16,8 @@ import { Pagination } from "../../pagination";
 import { EditShipmentStop } from "./https/updateStop";
 import { DeleteShipment } from "./https/shipmentDelete";
 import { GetSingleShipmentData } from "./https/GetShipmentDetails";
+import axios from "axios";
+import { shipmentendpoints } from "../../../services/apis";
 
 const table_head = [
   {
@@ -53,6 +55,7 @@ const table_head = [
 const ShipmentTable = () => {
   const { token } = useSelector((state) => state.user);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalIsOpen2, setModalIsOpen2] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [editMode, setEditMode] = useState(null);
   const [editedSteps, setEditedSteps] = useState(null);
@@ -72,9 +75,10 @@ const ShipmentTable = () => {
     limit: ITEMS_PER_PAGE,
   });
   const { data: popupdata } = GetSingleShipmentData({ token, userId });
-  const { mutateAsync, isPending } = EditShipmentStop();
+  const { mutateAsync, isPending } = EditShipmentStop(userId);
   const { mutateAsync: deleteShipment } = DeleteShipment();
 
+  const [datas, setDatas] = useState([]);
   useEffect(() => {
     if (data) {
       setCurrentPage(data.paginationData.page);
@@ -89,8 +93,9 @@ const ShipmentTable = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-
-  const openModal = (detail, user, id) => {
+  const [reqShip, setReqShip] = useState();
+  const openModal = (detail, user, id, reqship) => {
+    console.log("detaildetail", detail);
     setUserId(user._id);
     setUpdatedStopsId(id);
     setSelectedCustomer(detail);
@@ -109,14 +114,13 @@ const ShipmentTable = () => {
   //     setEditedSteps([...selectedCustomer.steps]);
   //   }
   // }, [selectedCustomer]);
-
   const handleEditClick = (stepIndex) => {
     setEditMode(stepIndex);
   };
   useEffect(() => {
-    if (selectedCustomer && selectedCustomer.deliveryInfo.intermediateStops) {
+    if (selectedCustomer && selectedCustomer.deliveryInfo?.intermediateStops) {
       const stopsArray = Object.values(
-        selectedCustomer.deliveryInfo.intermediateStops
+        selectedCustomer.deliveryInfo?.intermediateStops
       );
       const stopFinal = selectedCustomer?.deliveryInfo;
 
@@ -192,13 +196,73 @@ const ShipmentTable = () => {
           updatedData.push(deliveryInfo);
         });
       }
-
-      await mutateAsync({ updatedData, updatedStopsId, token });
+      window.location.reload();
+      await mutateAsync({ updatedData, userId, token });
     } catch (error) {
       console.error(error);
     }
     setEditMode(null);
     setUpdatedStopsId(null);
+  };
+  const handleInputChangeFinal2 = (e, index, field) => {
+    const updatedValue = e.target.value;
+
+    // Update the relevant field in datas
+    setDatas((prevState) => ({
+      ...prevState,
+      [field]: updatedValue, // Dynamically update the field based on input name
+    }));
+  };
+
+  const handleSave2 = async (id) => {
+    try {
+      console.log("fdds", datas.deliveryAddress);
+      const contactDetail = [
+        {
+          deliveryInfo: {
+            deliveryName: datas?.deliveryName || "",
+            deliveryAddress: datas?.deliveryAddress || "", // Assuming you want to include this as well
+            deliveryContactNumber: datas?.deliveryContactNumber || "",
+            deliveryEmail: datas?.deliveryEmail || "",
+          },
+          intermediateStops: {
+            intermediateStopOne: {
+              stopOneName: datas?.intermediateStopOne?.stopOneName || "",
+            },
+          },
+        },
+      ];
+
+      // Now include this structure in the updatedData
+      const updatedData = {
+        contactDetail,
+        // Any other properties you need, for example:
+        // someOtherKey: datas.someOtherValue,
+      };
+
+      console.log(updatedData);
+
+      const response = await axios.put(
+        `${shipmentendpoints.UPDATE_SHIPMENT_STOP}/${id}`,
+        updatedData, // Send the updated data in the request body
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Handle the response (e.g., show success message, close modal)
+      if (response.status === 200) {
+        console.log("Data updated successfully:", response.data);
+        // Optionally, you can close the modal here
+        closeModal();
+      }
+    } catch (error) {
+      console.error("Error updating data:", error);
+      // Optionally, show an error message
+    }
   };
 
   const handleOpenDeleteModal = (id) => {
@@ -219,6 +283,21 @@ const ShipmentTable = () => {
     return <p>{error?.response?.data?.message}</p>;
   }
   console.log("data?.data", data?.data);
+  const handleClick = async (customer) => {
+    const response = await axios.get(
+      `${shipmentendpoints.SHIPMENT_DELIVERY_DETAIL}/${customer}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    setDatas(response.data.data);
+    setSelectedCustomer(customer); // Set the selected customer details
+    setModalIsOpen2(true); // Open the modal
+  };
+  console.log("data2", datas);
 
   return (
     <>
@@ -247,30 +326,36 @@ const ShipmentTable = () => {
                       </td>
                       <td className="px-2 py-3 text-[#12223D] font-normal">
                         {/* {user.status == "accept" && {}  */}
-                        {user.status === "accept"
-                          ? "Not Available"
-                          : user?.contactDetail?.map((detail) =>
-                              detail.collectionInfo ? (
-                                <div key={detail.collectionInfo.name}>
-                                  <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                                    {detail.collectionInfo.name}
-                                  </p>
-                                </div>
-                              ) : null
-                            )}
+                        {user.status === "accept" ? (
+                          <p className="text-sm">Not Available</p>
+                        ) : (
+                          user?.contactDetail?.map((detail) =>
+                            detail.collectionInfo ? (
+                              <div key={detail.collectionInfo.name}>
+                                <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                                  {detail.collectionInfo.name}
+                                </p>
+                              </div>
+                            ) : null
+                          )
+                        )}
                       </td>
                       <td className="p-2">
-                        {user.status === "accept"
-                          ? user.email
-                          : user?.contactDetail?.map((detail) =>
-                              detail.collectionInfo ? (
-                                <div key={detail.collectionInfo.email}>
-                                  <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                                    {detail.collectionInfo.email}
-                                  </p>
-                                </div>
-                              ) : null
-                            )}
+                        {user.status === "accept" ? (
+                          <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                            {user.email}
+                          </p>
+                        ) : (
+                          user?.contactDetail?.map((detail) =>
+                            detail.collectionInfo ? (
+                              <div key={detail.collectionInfo.email}>
+                                <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                                  {detail.collectionInfo.email}
+                                </p>
+                              </div>
+                            ) : null
+                          )
+                        )}
                       </td>
                       <td className="p-2">
                         {user.status === "accept" ? (
@@ -342,24 +427,28 @@ const ShipmentTable = () => {
                       </td>
                       <td className="p-2">
                         <p className="w-16 overflow-hidden text-sm text-ellipsis whitespace-nowrap flex gap-5 item-center justify-end">
-                          {user?.contactDetail?.map((detail) =>
-                            detail.deliveryInfo ? (
-                              <div key={detail.deliveryInfo.deliveryAddress}>
-                                {/* <img
-                          src={arrow}
-                          alt="Arrow"
-                          onClick={() => openModal(detail,user,user._id)}
-                          className="ml-2 flex-shrink-0 w-4 h-4"
-                        /> */}
-                                <MdOutlineRemoveRedEye
-                                  onClick={() =>
-                                    openModal(detail, user, user._id)
-                                  }
-                                  className="text-yellow-300 text-[20px] hover:cursor-pointer"
-                                />
-                              </div>
-                            ) : null
+                          {user.status === "accept" ? (
+                            <div>
+                              <MdOutlineRemoveRedEye
+                                className="text-yellow-300 text-[20px] hover:cursor-pointer"
+                                onClick={() => handleClick(user._id)}
+                              />
+                            </div>
+                          ) : (
+                            user?.contactDetail?.map((detail) =>
+                              detail.deliveryInfo ? (
+                                <div key={detail.deliveryInfo.deliveryAddress}>
+                                  <MdOutlineRemoveRedEye
+                                    onClick={() =>
+                                      openModal(detail, user, user._id)
+                                    }
+                                    className="text-yellow-300 text-[20px] hover:cursor-pointer"
+                                  />
+                                </div>
+                              ) : null
+                            )
                           )}
+
                           {/* <OpenModalButton size={20} user={user} /> */}
                           <button
                             onClick={() => handleOpenDeleteModal(user._id)}
@@ -784,7 +873,184 @@ const ShipmentTable = () => {
                       </div>
                     ))
                   ) : (
-                    <div className="px-7">This is not customer</div>
+                    <div className="px-7">Not Available</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {modalIsOpen2 && datas && (
+        <div
+          className="fixed inset-0 bg-gray-500 bg-opacity-50 flex mt-3 justify-center"
+          onClick={closeModal}
+        >
+          <div
+            className="bg-white md:p-8 p-4 rounded-lg shadow-lg md:max-w-[70%] w-[70%] sm:ml-0 ml-10 overflow-y-auto md:grid grid-cols-2 gap-3"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Shipment Detail</h2>
+              {/* {
+                selectedCustomer?.collectionInfo?.collectionAddress
+               } */}
+              <div>
+                <p className="font-semibold text-md">Pickup Location:</p>
+                <div className="py-[4px] px-7 bg-gray-400 text-black font-semibold rounded-md mt-1 text-[14px]">
+                  <div className="flex gap-2 py-[2px]">
+                    <h3 className="pr-6">Name:</h3>
+                    <p>Not Available</p>
+                  </div>
+                  <div className="flex gap-2 py-[2px]">
+                    <h3 className="pr-7">Email:</h3>
+                    <p>{datas?.email}</p>
+                  </div>
+                  <div className="flex gap-2 py-[2px]">
+                    <h3 className="pr-4">Mobile:</h3>
+                    <p>Not Available</p>
+                  </div>
+                  <div className="flex gap-2 py-[2px]">
+                    <h3 className="pr-3">Address:</h3>
+                    <p>{datas?.collectionAddress}</p>
+                  </div>
+                </div>
+              </div>
+              <p className="font-semibold text-md pt-3">Drop Location:</p>
+
+              <div className="mt-1 rounded-md">
+                {editMode === 2 ? (
+                  <div className="bg-gray-300 py-3 px-3 rounded-md mt-1">
+                    <input
+                      type="text"
+                      className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                      value={data?.contactDetail?.[0].deliveryInfo.deliveryName}
+                      onChange={(e) =>
+                        handleInputChangeFinal2(e, 0, "deliveryName")
+                      }
+                      placeholder="Name"
+                    />
+                    {/* <input
+                      type="email"
+                      className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                      value={""}
+                      onChange={(e) =>
+                        handleInputChangeFinal2(e, 0, "deliveryEmail")
+                      }
+                      placeholder="Email"
+                    />
+                    <input
+                      type="text"
+                      className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                      value={""}
+                      onChange={(e) =>
+                        handleInputChangeFinal2(e, 0, "deliveryContactNumber")
+                      }
+                      placeholder="Phone"
+                    /> */}
+                    <input
+                      type="text"
+                      className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                      value={data?.deliveryAddress}
+                      onChange={(e) =>
+                        handleInputChangeFinal2(e, 0, "deliveryAddress")
+                      }
+                      placeholder="Address"
+                    />
+                  </div>
+                ) : (
+                  <div className="mt-1 rounded-md text-black font-semibold py-2 px-7 bg-gray-400 text-[14px]">
+                    <div className="flex items-center justify-between">
+                      <p className="text-md font-medium text-gray-900 py-1">
+                        Final Stop
+                      </p>
+                      <FaEdit
+                        size={20}
+                        color="black"
+                        className="cursor-pointer"
+                        onClick={() => handleEditClick(2)}
+                      />
+                    </div>
+                    <div className="flex gap-2 flex-wrap py-[2px]">
+                      <p className="pr-6">Name:</p>
+                      <p>{datas?.deliveryName}</p>
+                    </div>
+                    <div className="flex gap-2 flex-wrap py-[2px]">
+                      <p className="pr-7">Email:</p>
+                      <p>{datas?.deliveryEmail}</p>
+                    </div>
+                    <div className="flex gap-2 flex-wrap py-[2px]">
+                      <p className="pr-4">Mobile:</p>
+                      <p>{datas?.deliveryContactNumber}</p>
+                    </div>
+                    <div className="flex gap-2 flex-wrap py-[2px]">
+                      <p className="pr-3">Address:</p>
+                      <p>{datas?.deliveryAddress}</p>
+                    </div>
+                    {/* <p className="text-sm py-1">Name: {selectedCustomer?.deliveryInfo?.deliveryName}</p>
+                        <p className="text-sm py-1">Phone: {selectedCustomer?.deliveryInfo?.deliveryContactNumber}</p>
+                        <p className="text-sm py-1">Email: {selectedCustomer?.deliveryInfo?.deliveryEmail}</p>
+                        <p className="text-sm py-1">Address: {selectedCustomer?.deliveryInfo?.deliveryAddress}</p> */}
+                  </div>
+                )}
+              </div>
+              {editMode !== null && (
+                <button
+                  className="mt-4 bg-[#BFA75D] font-medium text-white py-2 px-4 rounded mr-2"
+                  onClick={() => handleSave2(datas._id)}
+                >
+                  Save
+                </button>
+              )}
+              <button
+                className="mt-4 bg-black font-medium text-white py-2 px-4 rounded"
+                onClick={closeModal}
+              >
+                Close
+              </button>
+            </div>
+            <div>
+              <div>
+                <p className="pt-10 font-semibold text-md">Order Detail</p>
+                <div className="p-4 mt-2 bg-gray-300 rounded-md text-[14px] font-semibold py-2">
+                  <div className="flex gap-2 px-3 py-1">
+                    <h4 className="pr-[5.3rem]">Oredre Id:</h4>
+                    <p>{userDetail?.shipmentId}</p>
+                  </div>
+                  <div className="flex gap-2 px-3 py-1">
+                    <h4 className="pr-5">Oredre date & Time:</h4>
+                    <p>{userDetail?.orderDate}</p>
+                  </div>
+                </div>
+                <div>
+                  <h2 className="text-md font-semibold py-1 mt-1">
+                    Customer Details
+                  </h2>
+                  {customerData?.customerDetail?.length > 0 ? (
+                    customerData?.customerDetail?.map((user, index) => (
+                      <div
+                        className="p-4 mt-2 bg-gray-300 rounded-md text-[14px] font-semibold py-2"
+                        key={index}
+                      >
+                        <div className="flex gap-2 px-3 py-1">
+                          <h4 className="pr-[3.3rem]">name:</h4>
+                          <p>
+                            {user.firstName} {user.lastName}
+                          </p>
+                        </div>
+                        <div className="flex overflow-clip gap-2 px-3 py-1">
+                          <h4 className="pr-[3.3rem]">Email:</h4>
+                          <p>{user.email}</p>
+                        </div>
+                        <div className="flex gap-2 px-3 py-1">
+                          <h4 className="pr-[2.7rem]">Mobile:</h4>
+                          <p>{user.phoneNumber}</p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="px-7">Not Available</div>
                   )}
                 </div>
               </div>

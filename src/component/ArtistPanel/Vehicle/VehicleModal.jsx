@@ -108,22 +108,6 @@ const VehicleModal = () => {
       } catch (error) {
         console.error(error);
       }
-      // setVehicleData(
-      //   vehicleData.map((item) =>
-      //     item.id === currentVehicle.id
-      //       ? {
-      //           ...item,
-      //           Vehicle: data.vehicalImg[0] || item.Vehicle,
-      //           name: data.name,
-      //           length: data.length,
-      //           height: data.height,
-      //           width: data.width,
-      //           pallets: data.pallets,
-      //           maxWeight: data.maxWeight,
-      //         }
-      //       : item
-      //   )
-      // );
     } else {
       try {
         console.log(formData, "formData");
@@ -132,19 +116,6 @@ const VehicleModal = () => {
         console.error(error);
         toast.error(error?.response?.data?.message || "error accure");
       }
-      // setVehicleData([
-      //   ...vehicleData,
-      //   {
-      //     id: vehicleData.length + 1,
-      //     Vehicle: URL.createObjectURL(data.vehicalImg[0]),
-      //     name: data.name,
-      //     length: data.length,
-      //     height: data.height,
-      //     width: data.width,
-      //     pallets: data.pallets,
-      //     maxWeight: data.maxWeight,
-      //   },
-      // ]);
     }
 
     closeModal();
@@ -178,7 +149,6 @@ const VehicleModal = () => {
   // };
 
   const confirmDelete = async (id) => {
-    // setVehicleData(vehicleData.filter((item) => item.id !== deleteVehicleId));
     await deletvehicle({ id: deleteVehicleId, token });
     setDeleteVehicleId(null);
   };

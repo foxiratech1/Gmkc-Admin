@@ -3,12 +3,12 @@ import toast from "react-hot-toast";
 import axiosInstance from "../../../../services/axios";
 import { shipmentendpoints } from "../../../../services/apis";
 
-async function Updatestop({ updatedData, updatedStopsId, token }) {
-  console.log(updatedData, updatedStopsId, token, "hhhhh");
+async function Updatestop({ updatedData, userId, token }) {
+  console.log(userId, "hhhhh");
   // const token = updatedData.token
   // const id = updatedData.id
   return axiosInstance.put(
-    shipmentendpoints.UPDATE_SHIPMENT_STOP + `/${updatedStopsId}`,
+    shipmentendpoints.UPDATE_SHIPMENT_STOP + `/${userId}`,
     updatedData,
     {
       headers: {
@@ -18,10 +18,18 @@ async function Updatestop({ updatedData, updatedStopsId, token }) {
   );
 }
 export const EditShipmentStop = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: Updatestop,
 
-    onSuccess: (res) => {
+    onSuccess: (res, variable) => {
+      console.log(variable, "variable");
+      console.log(res, "resdddddddddd");
+      queryClient.invalidateQueries({
+        queryKey: [shipmentendpoints.SHIPMENT_DELEVERY_DETAIL],
+        refetchType: "all",
+      });
+      queryClient.refetchQueries([shipmentendpoints.SHIPMENT_DELEVERY_DETAIL]);
       toast.success(res?.data?.message);
     },
 

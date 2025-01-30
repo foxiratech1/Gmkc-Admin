@@ -46,13 +46,14 @@ const User = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-  const [isCreate, useCreate] = useState("");
+  const [isCreate, setIsCreate] = useState("");
   const [userId, setUserId] = useState("");
-  const openModal = (user) => {
+  const openModal = (user, val) => {
     setSelectedCustomer(user);
     setModalOpen(true);
-    setUserId(user._id);
-    console.log("Modal Opened for User:", user._id);
+    setUserId(user?._id);
+    setIsCreate(val); // Set isCreate to "create"
+    console.log("Modal Opened for User:", user?._id);
   };
 
   const closeModal = () => {
@@ -63,25 +64,30 @@ const User = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted with:", selectedCustomer);
+    console.log("Form submitted with:", isCreate);
 
     try {
       let url =
         isCreate === "create"
           ? userendpoints.USER_Create
           : `${userendpoints.USER_Update}/${userId}`;
-      let methods = isCreate === "create" ? axios.post : axios.put;
-      const response = await methods(url, selectedCustomer, {
+      let method = isCreate === "create" ? axios.post : axios.put;
+
+      const response = await method(url, selectedCustomer, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
+      if (response.status === 200) {
+        setCustomerData(data?.data);
+      }
       closeModal();
     } catch (error) {
-      throw error;
+      console.error("Error during API call:", error);
     }
   };
+
   const handleDeleteCustomer = async (customerId) => {
     try {
       const response = await axios.delete(
@@ -119,7 +125,7 @@ const User = () => {
   }
 
   if (isError) {
-    console.log("Error:", error?.response?.data?.message); // Logs any errors
+    console.log("Error:", error?.response?.data?.message);
     return <div>{error?.response?.data?.message}</div>;
   }
 
@@ -129,7 +135,7 @@ const User = () => {
         <h1 className="text-2xl font-semibold">Users</h1>
         <button
           className="text-white bg-[#BFA75D] font-medium mt-2 rounded-md text-md px-5 py-3"
-          onClick={() => openModal()}
+          onClick={() => openModal(null, "create")}
         >
           Create User
         </button>
