@@ -248,7 +248,7 @@ const ShipmentTable = () => {
                       <td className="px-2 py-3 text-[#12223D] font-normal">
                         {/* {user.status == "accept" && {}  */}
                         {user.status === "accept"
-                          ? user.collectionAddress
+                          ? "Not Available"
                           : user?.contactDetail?.map((detail) =>
                               detail.collectionInfo ? (
                                 <div key={detail.collectionInfo.name}>
