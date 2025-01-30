@@ -447,7 +447,7 @@ const Request = () => {
           <div className="bg-white rounded-lg p-6 w-96">
             <h2 className="text-xl mb-4">Enter Price</h2>
             <input
-              type="number"
+              type="text"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder="Enter price"
