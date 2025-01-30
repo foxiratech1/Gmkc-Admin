@@ -158,8 +158,6 @@ const ShipmentTable = () => {
   };
   const handleSave = async () => {
     try {
-      console.log("editedSteps", editedSteps);
-
       const updatedData = [];
       const deliveryInfo = {};
 
@@ -220,6 +218,7 @@ const ShipmentTable = () => {
   if (isError) {
     return <p>{error?.response?.data?.message}</p>;
   }
+  console.log("data?.data", data?.data);
 
   return (
     <>
@@ -247,47 +246,44 @@ const ShipmentTable = () => {
                         </p>
                       </td>
                       <td className="px-2 py-3 text-[#12223D] font-normal">
-                        {user?.contactDetail?.map((detail) =>
-                          detail.collectionInfo ? (
-                            <div key={detail.collectionInfo.name}>
-                              <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                                {detail.collectionInfo.name}
-                              </p>
-                            </div>
-                          ) : null
-                        )}
+                        {/* {user.status == "accept" && {}  */}
+                        {user.status === "accept"
+                          ? user.collectionAddress
+                          : user?.contactDetail?.map((detail) =>
+                              detail.collectionInfo ? (
+                                <div key={detail.collectionInfo.name}>
+                                  <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                                    {detail.collectionInfo.name}
+                                  </p>
+                                </div>
+                              ) : null
+                            )}
                       </td>
                       <td className="p-2">
-                        {/* <Tooltip text={user.email} position="top">
-                      <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-nowrap">
-                        {user.email}
-                      </p>
-                    </Tooltip> */}
-                        {user?.contactDetail?.map((detail) =>
-                          detail.collectionInfo ? (
-                            <Tooltip
-                              text={detail.collectionInfo.email}
-                              hgh
-                              position="top"
-                              key={detail.collectionInfo.email}
-                            >
-                              <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                                {detail.collectionInfo.email}
-                              </p>
-                            </Tooltip>
-                          ) : null
-                        )}
+                        {user.status === "accept"
+                          ? user.email
+                          : user?.contactDetail?.map((detail) =>
+                              detail.collectionInfo ? (
+                                <div key={detail.collectionInfo.email}>
+                                  <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                                    {detail.collectionInfo.email}
+                                  </p>
+                                </div>
+                              ) : null
+                            )}
                       </td>
                       <td className="p-2">
-                        {user?.contactDetail?.map((detail) =>
-                          detail.collectionInfo ? (
-                            <div key={detail.collectionInfo.contactNumber}>
-                              <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                                {detail.collectionInfo.contactNumber}
-                              </p>
-                            </div>
-                          ) : null
-                        )}
+                        {user.status === "accept"
+                          ? "Not Available"
+                          : user?.contactDetail?.map((detail) =>
+                              detail.collectionInfo ? (
+                                <div key={detail.collectionInfo.contactNumber}>
+                                  <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                                    {detail.collectionInfo.contactNumber}
+                                  </p>
+                                </div>
+                              ) : null
+                            )}
                       </td>
                       <td className="p-2">
                         <Tooltip text={user.orderDate} position="top">
@@ -304,15 +300,19 @@ const ShipmentTable = () => {
                         </Tooltip>
                       </td>
                       <td className="p-2">
-                        {user?.contactDetail?.map((detail) =>
-                          detail.collectionInfo ? (
-                            <div key={detail.collectionInfo.collectionAddress}>
-                              <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                                {detail.collectionInfo.collectionAddress}
-                              </p>
-                            </div>
-                          ) : null
-                        )}
+                        {user.status === "accept"
+                          ? user.collectionAddress
+                          : user?.contactDetail?.map((detail) =>
+                              detail.collectionInfo ? (
+                                <div
+                                  key={detail.collectionInfo.collectionAddress}
+                                >
+                                  <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                                    {detail.collectionInfo.collectionAddress}
+                                  </p>
+                                </div>
+                              ) : null
+                            )}
                       </td>
                       <td className="p-2">
                         <Tooltip text={user.pickUpDateAndTime} position="top">
@@ -326,28 +326,17 @@ const ShipmentTable = () => {
                         </Tooltip>
                       </td>
                       <td className="p-2">
-                        {user?.contactDetail?.map((detail) =>
-                          detail.deliveryInfo ? (
-                            <Tooltip
-                              text={detail.deliveryInfo.deliveryAddress}
-                              position="top"
-                            >
-                              <div key={detail.deliveryInfo.deliveryAddress}>
-                                <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-nowrap flex items-center">
-                                  <span className="flex-grow overflow-hidden text-sm text-ellipsis whitespace-nowrap">
+                        {user.status === "accept"
+                          ? user.deliveryAddress
+                          : user?.contactDetail?.map((detail) =>
+                              detail.collectionInfo ? (
+                                <div key={detail.deliveryInfo.deliveryAddress}>
+                                  <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                                     {detail.deliveryInfo.deliveryAddress}
-                                  </span>
-                                  {/* <img
-                          src={arrow}
-                          alt="Arrow"
-                          onClick={() => openModal(detail,user._id)}
-                          className="ml-2 flex-shrink-0 w-4 h-4"
-                        /> */}
-                                </p>
-                              </div>
-                            </Tooltip>
-                          ) : null
-                        )}
+                                  </p>
+                                </div>
+                              ) : null
+                            )}
                       </td>
                       <td className="p-2">
                         <p className="w-16 overflow-hidden text-sm text-ellipsis whitespace-nowrap flex gap-5 item-center justify-end">

@@ -214,7 +214,6 @@ const Request = () => {
     }
   };
 
-  // Handle Reject Quote
   const handleRejectQuote = async (id) => {
     try {
       const response = await axios.delete(
@@ -228,13 +227,13 @@ const Request = () => {
       );
       setShowConfirmModal(false);
       toast.success("Quote rejected successfully!");
+      window.location.reload();
     } catch (error) {
       console.error("Error rejecting quote:", error);
       setShowConfirmModal(false);
     }
   };
 
-  // Handle Accept Quote
   const handleAcceptQuote = async (id) => {
     try {
       const response = await axios.put(
