@@ -4,7 +4,7 @@ import CommonModal from "./CommonModal";
 
 const OpenModalButton = ({ user }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  console.log(user,"userrrrrrr")
+  console.log(user, "userrrrrrr");
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
 
@@ -26,44 +26,43 @@ const OpenModalButton = ({ user }) => {
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Name:</strong>
-              {user?.contactDetail?.map((detail) => (
-                      detail.collectionInfo ? (
-                        <div key={detail.collectionInfo.name}>
-                          <span>
-                            {detail.collectionInfo.name ? detail.collectionInfo.name: null }
-                          </span>
-                        </div>
-                      ) : null
-                    ))}
+              {user.status === "accept"
+                ? "Not Available"
+                : user?.contactDetail?.map((detail) =>
+                    detail.collectionInfo ? (
+                      <div key={detail.collectionInfo.name}>
+                        <span>{detail.collectionInfo.name}</span>
+                      </div>
+                    ) : null
+                  )}
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Email:</strong>
-              {user?.contactDetail?.map((detail) => (
-                      detail.collectionInfo ? (
-                        <div key={detail.collectionInfo.email}>
-                          <span>
-                            {detail.collectionInfo.email ? detail.collectionInfo.email: null }
-                          </span>
-                        </div>
-                      ) : null
-                    ))}
+              {user.status === "accept"
+                ? user.email
+                : user?.contactDetail?.map((detail) =>
+                    detail.collectionInfo ? (
+                      <div key={detail.collectionInfo.email}>
+                        <span>{detail.collectionInfo.email}</span>
+                      </div>
+                    ) : null
+                  )}
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Phone:</strong>
-              {user?.contactDetail?.map((detail) => (
-                      detail.collectionInfo ? (
-                        <div key={detail.collectionInfo.contactNumber}>
-                          <span>
-                            {detail.collectionInfo.contactNumber}
-                          </span>
-                        </div>
-                      ) : null
-                ))}
+              {user.status === "accept"
+                ? "Not Available"
+                : user?.contactDetail?.map((detail) =>
+                    detail.collectionInfo ? (
+                      <div key={detail.collectionInfo.contactNumber}>
+                        <span>{detail.collectionInfo.contactNumber}</span>
+                      </div>
+                    ) : null
+                  )}
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Order Date:</strong>
               <span>
-                {" "}
                 {user.orderDate} {user.orderTime}
               </span>
             </p>
@@ -73,22 +72,17 @@ const OpenModalButton = ({ user }) => {
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Pickup Location:</strong>
-              {user?.contactDetail?.map((detail) => (
-                      detail.collectionInfo ? (
-                        <div key={detail.collectionInfo.collectionAddress}>
-                          <span>
-                            {detail.collectionInfo.collectionAddress}
-                          </span>
-                        </div>
-                      ) : null
-                ))}
+              {user?.contactDetail?.map((detail) =>
+                detail.collectionInfo ? (
+                  <div key={detail.collectionInfo.collectionAddress}>
+                    <span>{detail.collectionInfo.collectionAddress}</span>
+                  </div>
+                ) : null
+              )}
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Pickup Date & Time:</strong>
-              <span>
-                {" "}
-                {user.pickUpDateAndTime}
-              </span>
+              <span> {user.pickUpDateAndTime}</span>
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Drop Off Location:</strong>

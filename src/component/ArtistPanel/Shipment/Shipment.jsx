@@ -273,17 +273,19 @@ const ShipmentTable = () => {
                             )}
                       </td>
                       <td className="p-2">
-                        {user.status === "accept"
-                          ? "Not Available"
-                          : user?.contactDetail?.map((detail) =>
-                              detail.collectionInfo ? (
-                                <div key={detail.collectionInfo.contactNumber}>
-                                  <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                                    {detail.collectionInfo.contactNumber}
-                                  </p>
-                                </div>
-                              ) : null
-                            )}
+                        {user.status === "accept" ? (
+                          <p className="text-sm">Not Available</p>
+                        ) : (
+                          user?.contactDetail?.map((detail) =>
+                            detail.collectionInfo ? (
+                              <div key={detail.collectionInfo.contactNumber}>
+                                <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                                  {detail.collectionInfo.contactNumber}
+                                </p>
+                              </div>
+                            ) : null
+                          )
+                        )}
                       </td>
                       <td className="p-2">
                         <Tooltip text={user.orderDate} position="top">
