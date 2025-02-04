@@ -72,13 +72,22 @@ const OpenModalButton = ({ user }) => {
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Pickup Location:</strong>
-              {user?.contactDetail?.map((detail) =>
+              {user.status === "accept"
+                ? "Not Available"
+                : user?.contactDetail?.map((detail) =>
+                    detail.collectionInfo ? (
+                      <div key={detail.collectionInfo.collectionAddress}>
+                        <span>{detail.collectionInfo.collectionAddress}</span>
+                      </div>
+                    ) : null
+                  )}
+              {/* {user?.contactDetail?.map((detail) =>
                 detail.collectionInfo ? (
                   <div key={detail.collectionInfo.collectionAddress}>
                     <span>{detail.collectionInfo.collectionAddress}</span>
                   </div>
                 ) : null
-              )}
+              )} */}
             </p>
             <p className="w-full flex gap-5">
               <strong className="!w-[25%]">Pickup Date & Time:</strong>

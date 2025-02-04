@@ -51,21 +51,13 @@ const table_head = [
     head: "Action",
   },
 ];
-
 const ShipmentTable = () => {
   const { token } = useSelector((state) => state.user);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [modalIsOpen2, setModalIsOpen2] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const [editMode, setEditMode] = useState(null);
-  const [editedSteps, setEditedSteps] = useState(null);
-  const [finalStep, setFinalStep] = useState(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [updatedStopsId, setUpdatedStopsId] = useState(null);
   const [userDetail, setUserDetail] = useState(null);
   const [userId, setUserId] = useState(null);
   const [customerData, setCustomerData] = useState([]);
-  // const [data, setData] = useState(shipmentData);
   const [deleteIndex, setDeleteIndex] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
@@ -77,13 +69,43 @@ const ShipmentTable = () => {
   const { data: popupdata } = GetSingleShipmentData({ token, userId });
   const { mutateAsync, isPending } = EditShipmentStop(userId);
   const { mutateAsync: deleteShipment } = DeleteShipment();
+  const [isModalOpen, setIsModalOpen] = useState(false); // To control modal visibility
+  const [selectedShipment, setSelectedShipment] = useState(null);
+  const [statuss, setStatus] = useState("");
+  const [editMode, setEditMode] = useState(null);
+  const [editableCollectionInfo, setEditableCollectionInfo] = useState({
+    name: "",
+    email: "",
+    contactNumber: "",
+    collectionAddress: "",
+  });
 
-  const [datas, setDatas] = useState([]);
+  const [editableDeliveryInfo, setEditableDeliveryInfo] = useState({
+    deliveryName: "",
+    deliveryEmail: "",
+    deliveryContactNumber: "",
+    deliveryAddress: "",
+  });
+
+  const [editableIntermediateStops, setEditableIntermediateStops] = useState({
+    stopOneName: "",
+    stopOneEmail: "",
+    stopOneContactNumber: "",
+    stopOneAddress: "",
+  });
+  const [editableIntermediateStops2, setEditableIntermediateStops2] = useState({
+    stopTwoName: "",
+    stopTwoEmail: "",
+    stopTwoContactNumber: "",
+    stopTwoAddress: "",
+  });
+
   useEffect(() => {
     if (data) {
       setCurrentPage(data.paginationData.page);
     }
   }, [data]);
+
   useEffect(() => {
     if (popupdata) {
       setCustomerData(popupdata);
@@ -92,177 +114,6 @@ const ShipmentTable = () => {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-  };
-  const [reqShip, setReqShip] = useState();
-  const openModal = (detail, user, id, reqship) => {
-    console.log("detaildetail", detail);
-    setUserId(user._id);
-    setUpdatedStopsId(id);
-    setSelectedCustomer(detail);
-    setUserDetail(user);
-    setModalIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalIsOpen(false);
-    setSelectedCustomer(null);
-    // setUserId(null)
-  };
-
-  // useEffect(() => {
-  //   if (selectedCustomer?.steps) {
-  //     setEditedSteps([...selectedCustomer.steps]);
-  //   }
-  // }, [selectedCustomer]);
-  const handleEditClick = (stepIndex) => {
-    setEditMode(stepIndex);
-  };
-  useEffect(() => {
-    if (selectedCustomer && selectedCustomer.deliveryInfo?.intermediateStops) {
-      const stopsArray = Object.values(
-        selectedCustomer.deliveryInfo?.intermediateStops
-      );
-      const stopFinal = selectedCustomer?.deliveryInfo;
-
-      setFinalStep(stopFinal);
-      setEditedSteps(stopsArray);
-    }
-  }, [selectedCustomer]);
-
-  useEffect(() => {
-    if (selectedCustomer && selectedCustomer.deliveryInfo) {
-      setFinalStep([selectedCustomer.deliveryInfo]);
-    }
-  }, [selectedCustomer]);
-
-  const handleInputChangeFinal = (e, index, field) => {
-    let currentStep = Array.isArray(finalStep) ? finalStep : [];
-
-    const updatedFinalStep = currentStep.map((step, idx) => {
-      if (idx === index) {
-        return { ...step, [field]: e.target.value };
-      }
-      return step;
-    });
-
-    setFinalStep(updatedFinalStep);
-  };
-
-  const handleInputChange = (e, index, field) => {
-    const currentSteps = Array.isArray(editedSteps) ? editedSteps : [];
-    const updatedSteps = [...currentSteps];
-
-    if (!updatedSteps[index]) {
-      updatedSteps[index] = {};
-    }
-
-    updatedSteps[index][field] = e.target.value;
-
-    setEditedSteps(updatedSteps);
-  };
-  const handleSave = async () => {
-    try {
-      const updatedData = [];
-      const deliveryInfo = {};
-
-      if (Array.isArray(editedSteps)) {
-        editedSteps.forEach((step) => {
-          const updatedStep = {};
-          if (step.stopOneAddress) {
-            updatedStep.stopOneAddress = step.stopOneAddress || "";
-            updatedStep.stopOneContactNumber = step.stopOneContactNumber || "";
-            updatedStep.stopOneEmail = step.stopOneEmail || "";
-            updatedStep.stopOneName = step.stopOneName || "";
-          }
-
-          if (step.stopTwoAddress) {
-            updatedStep.stopTwoAddress = step.stopTwoAddress || "";
-            updatedStep.stopTwoContactNumber = step.stopTwoContactNumber || "";
-            updatedStep.stopTwoEmail = step.stopTwoEmail || "";
-            updatedStep.stopTwoName = step.stopTwoName || "";
-          }
-
-          updatedData.push(updatedStep);
-        });
-      }
-
-      if (Array.isArray(finalStep)) {
-        finalStep.forEach((final) => {
-          deliveryInfo.deliveryName = final.deliveryName || "";
-          deliveryInfo.deliveryContactNumber =
-            final.deliveryContactNumber || "";
-          deliveryInfo.deliveryEmail = final.deliveryEmail || "";
-          deliveryInfo.deliveryAddress = final.deliveryAddress || "";
-          updatedData.push(deliveryInfo);
-        });
-      }
-      window.location.reload();
-      await mutateAsync({ updatedData, userId, token });
-    } catch (error) {
-      console.error(error);
-    }
-    setEditMode(null);
-    setUpdatedStopsId(null);
-  };
-  const handleInputChangeFinal2 = (e, index, field) => {
-    const updatedValue = e.target.value;
-
-    // Update the relevant field in datas
-    setDatas((prevState) => ({
-      ...prevState,
-      [field]: updatedValue, // Dynamically update the field based on input name
-    }));
-  };
-
-  const handleSave2 = async (id) => {
-    try {
-      console.log("fdds", datas.deliveryAddress);
-      const contactDetail = [
-        {
-          deliveryInfo: {
-            deliveryName: datas?.deliveryName || "",
-            deliveryAddress: datas?.deliveryAddress || "", // Assuming you want to include this as well
-            deliveryContactNumber: datas?.deliveryContactNumber || "",
-            deliveryEmail: datas?.deliveryEmail || "",
-          },
-          intermediateStops: {
-            intermediateStopOne: {
-              stopOneName: datas?.intermediateStopOne?.stopOneName || "",
-            },
-          },
-        },
-      ];
-
-      // Now include this structure in the updatedData
-      const updatedData = {
-        contactDetail,
-        // Any other properties you need, for example:
-        // someOtherKey: datas.someOtherValue,
-      };
-
-      console.log(updatedData);
-
-      const response = await axios.put(
-        `${shipmentendpoints.UPDATE_SHIPMENT_STOP}/${id}`,
-        updatedData, // Send the updated data in the request body
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      // Handle the response (e.g., show success message, close modal)
-      if (response.status === 200) {
-        console.log("Data updated successfully:", response.data);
-        // Optionally, you can close the modal here
-        closeModal();
-      }
-    } catch (error) {
-      console.error("Error updating data:", error);
-      // Optionally, show an error message
-    }
   };
 
   const handleOpenDeleteModal = (id) => {
@@ -276,29 +127,155 @@ const ShipmentTable = () => {
     setDeleteIndex(null);
   };
 
+  const handleOpenModal = (shipment) => {
+    setSelectedShipment(shipment);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedShipment(null);
+  };
+
   if (isLoading) {
     return <LoadingPage />;
   }
   if (isError) {
     return <p>{error?.response?.data?.message}</p>;
   }
-  console.log("data?.data", data?.data);
-  const handleClick = async (customer) => {
-    const response = await axios.get(
-      `${shipmentendpoints.SHIPMENT_DELIVERY_DETAIL}/${customer}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+  const handleClick = async (user, stat) => {
+    try {
+      console.log("948585490", stat);
+      setIsModalOpen(true);
+      const response = await axios.get(
+        `${shipmentendpoints.SHIPMENT_DELIVERY_DETAIL}/${user}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Check if the response contains the necessary data
+      if (response?.data?.data) {
+        // Set the data to selectedCustomer and open the modal
+        setSelectedCustomer(response.data.data);
+        preFillData(response.data.data);
+        if (stat == "accept") {
+          setStatus(response.data.data.status);
+        }
+        localStorage.setItem("formId", response.data.data._id);
+        setIsModalOpen(true);
+      } else {
+        console.error("No data found in response");
       }
-    );
-
-    setDatas(response.data.data);
-    setSelectedCustomer(customer); // Set the selected customer details
-    setModalIsOpen2(true); // Open the modal
+    } catch (error) {
+      console.error("Error fetching shipment delivery details:", error);
+    }
   };
-  console.log("data2", datas);
 
+  const handleInputChangeCollection = (e, field) => {
+    setEditableCollectionInfo({
+      ...editableCollectionInfo,
+      [field]: e.target.value,
+    });
+  };
+
+  const handleInputChangeDelivery = (e, field) => {
+    setEditableDeliveryInfo({
+      ...editableDeliveryInfo,
+      [field]: e.target.value,
+    });
+  };
+  const handleInputChangeIntermediateStop = (e, field) => {
+    setEditableIntermediateStops({
+      ...editableIntermediateStops,
+      [field]: e.target.value,
+    });
+  };
+  const handleInputChangeIntermediateStop2 = (e, field) => {
+    setEditableIntermediateStops2({
+      ...editableIntermediateStops2,
+      [field]: e.target.value,
+    });
+  };
+
+  const preFillData = (customerData) => {
+    setEditableCollectionInfo({
+      ...customerData?.contactDetail?.[0]?.collectionInfo,
+    });
+    setEditableDeliveryInfo({
+      ...customerData?.contactDetail?.[0]?.deliveryInfo,
+    });
+    setEditableIntermediateStops({
+      stopOneName:
+        customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+          .intermediateStopOne.stopOneName,
+      stopOneEmail:
+        customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+          .intermediateStopOne.stopOneEmail,
+      stopOneContactNumber:
+        customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+          .intermediateStopOne.stopOneContactNumber,
+      stopOneAddress:
+        customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+          ?.intermediateStopOne.stopOneAddress,
+    });
+    setEditableIntermediateStops2({
+      stopTwoName:
+        customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+          .intermediateStopTwo.stopTwoName,
+      stopTwoEmail:
+        customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+          .intermediateStopTwo.stopTwoEmail,
+      stopTwoContactNumber:
+        customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+          .intermediateStopTwo.stopTwoContactNumber,
+      stopTwoAddress:
+        customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+          ?.intermediateStopTwo.stopTwoAddress,
+    });
+  };
+
+  const handleEditClick = (mode) => {
+    setEditMode(mode);
+  };
+
+  const handleSave = async () => {
+    try {
+      const updatedData = {
+        contactDetail: {
+          collectionInfo: editableCollectionInfo,
+          deliveryInfo: {
+            ...editableDeliveryInfo,
+            intermediateStops: {
+              intermediateStopOne: editableIntermediateStops,
+              intermediateStopTwo: editableIntermediateStops2,
+            },
+          },
+          status: statuss,
+        },
+      };
+
+      const response = await axios.put(
+        `${shipmentendpoints.UPDATE_SHIPMENT_STOP}/${selectedCustomer._id}`,
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status == 200) {
+        setEditMode(null);
+        setIsModalOpen(false);
+        closeModal();
+      }
+    } catch (error) {
+      console.error("Error updating shipment data:", error);
+    }
+  };
   return (
     <>
       <div className="w-full">
@@ -310,7 +287,10 @@ const ShipmentTable = () => {
                 <thead className="bg-black text-white text-left">
                   <tr className="text-white">
                     {table_head.map((item, index) => (
-                      <th className="px-2 py-3 text-sm font-semibold text-left">
+                      <th
+                        key={index}
+                        className="px-2 py-3 text-sm font-semibold text-left"
+                      >
                         {item.head}
                       </th>
                     ))}
@@ -325,7 +305,6 @@ const ShipmentTable = () => {
                         </p>
                       </td>
                       <td className="px-2 py-3 text-[#12223D] font-normal">
-                        {/* {user.status == "accept" && {}  */}
                         {user.status === "accept" ? (
                           <p className="text-sm">Not Available</p>
                         ) : (
@@ -357,7 +336,7 @@ const ShipmentTable = () => {
                           )
                         )}
                       </td>
-                      <td className="p-2">
+                      <td className="px-2 py-3 text-[#12223D] font-normal">
                         {user.status === "accept" ? (
                           <p className="text-sm">Not Available</p>
                         ) : (
@@ -372,12 +351,18 @@ const ShipmentTable = () => {
                           )
                         )}
                       </td>
-                      <td className="p-2">
-                        <Tooltip text={user.orderDate} position="top">
-                          <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-nowrap">
-                            {`${user.orderDate}`}
-                          </p>
-                        </Tooltip>
+                      <td className="px-2 py-3 text-[#12223D] font-normal">
+                        {user.status === "accept" ? (
+                          <p className="text-sm">{user.orderDate}</p>
+                        ) : (
+                          <>
+                            <Tooltip text={user.orderDate} position="top">
+                              <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-nowrap">
+                                {`${user.orderDate}`}
+                              </p>
+                            </Tooltip>
+                          </>
+                        )}
                       </td>
                       <td className="p-2">
                         <Tooltip text={user.vehicleType} position="top">
@@ -387,19 +372,25 @@ const ShipmentTable = () => {
                         </Tooltip>
                       </td>
                       <td className="p-2">
-                        {user.status === "accept"
-                          ? user.collectionAddress
-                          : user?.contactDetail?.map((detail) =>
-                              detail.collectionInfo ? (
-                                <div
-                                  key={detail.collectionInfo.collectionAddress}
-                                >
-                                  <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                                    {detail.collectionInfo.collectionAddress}
-                                  </p>
-                                </div>
-                              ) : null
-                            )}
+                        {user.status === "accept" ? (
+                          <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                            {user.collectionAddress}
+                          </p>
+                        ) : (
+                          user?.contactDetail?.map((detail) =>
+                            detail.collectionInfo ? (
+                              <div
+                                key={detail.collectionInfo.collectionAddress}
+                              >
+                                <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                                  {detail.collectionInfo.collectionAddress}
+                                </p>
+                              </div>
+                            ) : (
+                              <p className="text-sm">Not Available</p>
+                            )
+                          )
+                        )}
                       </td>
                       <td className="p-2">
                         <Tooltip text={user.pickUpDateAndTime} position="top">
@@ -413,46 +404,34 @@ const ShipmentTable = () => {
                         </Tooltip>
                       </td>
                       <td className="p-2">
-                        {user.status === "accept"
-                          ? user.deliveryAddress
-                          : user?.contactDetail?.map((detail) =>
-                              detail.collectionInfo ? (
-                                <div key={detail.deliveryInfo.deliveryAddress}>
-                                  <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                                    {detail.deliveryInfo.deliveryAddress}
-                                  </p>
-                                </div>
-                              ) : null
-                            )}
+                        {user.status === "accept" ? (
+                          <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                            {user.collectionAddress}
+                          </p>
+                        ) : (
+                          user?.contactDetail?.map((detail) =>
+                            detail.deliveryInfo ? (
+                              <div key={detail.deliveryInfo.deliveryAddress}>
+                                <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                                  {detail.deliveryInfo.deliveryAddress}
+                                </p>
+                              </div>
+                            ) : (
+                              <p className="text-sm">Not Available</p>
+                            )
+                          )
+                        )}
                       </td>
                       <td className="p-2">
                         <p className="w-16 overflow-hidden text-sm text-ellipsis whitespace-nowrap flex gap-5 item-center justify-end">
-                          {user.status === "accept" ? (
-                            <div>
-                              <MdOutlineRemoveRedEye
-                                className="text-yellow-300 text-[20px] hover:cursor-pointer"
-                                onClick={() => handleClick(user._id)}
-                              />
-                            </div>
-                          ) : (
-                            user?.contactDetail?.map((detail) =>
-                              detail.deliveryInfo ? (
-                                <div key={detail.deliveryInfo.deliveryAddress}>
-                                  <MdOutlineRemoveRedEye
-                                    onClick={() =>
-                                      openModal(detail, user, user._id)
-                                    }
-                                    className="text-yellow-300 text-[20px] hover:cursor-pointer"
-                                  />
-                                </div>
-                              ) : null
-                            )
-                          )}
-
-                          {/* <OpenModalButton size={20} user={user} /> */}
+                          <MdOutlineRemoveRedEye
+                            className="text-yellow-300 text-[20px] hover:cursor-pointer"
+                            onClick={() =>
+                              handleClick(user._id, user.status === "accept")
+                            }
+                          />
                           <button
                             onClick={() => handleOpenDeleteModal(user._id)}
-                            className=""
                           >
                             <AiFillDelete size={20} color="#BFA75D" />
                           </button>
@@ -488,372 +467,417 @@ const ShipmentTable = () => {
         )}
       </div>
 
-      {modalIsOpen && selectedCustomer && (
-        <div
-          className="fixed inset-0 bg-gray-500 bg-opacity-50 flex mt-3 justify-center"
-          onClick={closeModal}
-        >
+      {isModalOpen && selectedCustomer && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex mt-3 justify-center">
           <div
-            className="bg-white md:p-8 p-4 rounded-lg shadow-lg md:max-w-[70%] w-[70%] sm:ml-0 ml-10 overflow-y-auto md:grid grid-cols-2 gap-3"
+            className="bg-white md:p-8 p-4 rounded-lg shadow-lg md:max-w-[70%] w-[70%] sm:ml-0 ml-10 overflow-y-auto "
             onClick={(e) => e.stopPropagation()}
           >
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Shipment Detail</h2>
-              {/* {
-                selectedCustomer?.collectionInfo?.collectionAddress
-               } */}
+            <div className="md:grid grid-cols-2 gap-3">
               <div>
-                <p className="font-semibold text-md">Pickup Location:</p>
-                <div className="py-[4px] px-7 bg-gray-400 text-black font-semibold rounded-md mt-1 text-[14px]">
-                  <div className="flex gap-2 py-[2px]">
-                    <h3 className="pr-6">Name:</h3>
-                    <p>{selectedCustomer?.collectionInfo?.name}</p>
+                <h2 className="text-xl font-semibold mb-4">
+                  Shipment Delivery Detail
+                </h2>
+
+                <div>
+                  <p className="font-semibold text-md">Pickup Location:</p>
+                  <div className="py-[4px] px-7 bg-gray-400 text-black font-semibold rounded-md mt-1 text-[14px]">
+                    {editMode === 1 ? (
+                      <>
+                        <input
+                          type="text"
+                          value={editableCollectionInfo.name}
+                          onChange={(e) =>
+                            handleInputChangeCollection(e, "name")
+                          }
+                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                          placeholder="Name"
+                        />
+                        <input
+                          type="email"
+                          value={editableCollectionInfo.email}
+                          onChange={(e) =>
+                            handleInputChangeCollection(e, "email")
+                          }
+                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                          placeholder="Email"
+                        />
+                        <input
+                          type="text"
+                          value={editableCollectionInfo.contactNumber}
+                          onChange={(e) =>
+                            handleInputChangeCollection(e, "contactNumber")
+                          }
+                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                          placeholder="Contact Number"
+                        />
+                        <input
+                          type="text"
+                          value={editableCollectionInfo.collectionAddress}
+                          onChange={(e) =>
+                            handleInputChangeCollection(e, "collectionAddress")
+                          }
+                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                          placeholder="Address"
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex justify-between">
+                          <div>
+                            <p className="py-1 pt-2">
+                              Name:{" "}
+                              {selectedCustomer.status == "accept"
+                                ? "Not Available"
+                                : selectedCustomer?.contactDetail?.[0]
+                                    ?.collectionInfo?.name}
+                            </p>
+                            <p className="py-1">
+                              Email :{" "}
+                              {selectedCustomer.status == "accept"
+                                ? selectedCustomer.email
+                                : selectedCustomer?.contactDetail?.[0]
+                                    ?.collectionInfo?.email}
+                            </p>
+                            <p className="py-1">
+                              Contact:{" "}
+                              {selectedCustomer.status == "accept"
+                                ? "Not Available"
+                                : selectedCustomer?.contactDetail?.[0]
+                                    ?.collectionInfo?.contactNumber}
+                            </p>
+                            <p className="py-1">
+                              Address:{" "}
+                              {selectedCustomer.status == "accept"
+                                ? selectedCustomer.collectionAddress
+                                : selectedCustomer?.contactDetail?.[0]
+                                    ?.collectionInfo?.collectionAddress}
+                            </p>
+                          </div>
+
+                          <FaEdit
+                            onClick={() => handleEditClick(1)}
+                            className="text-[20px] mt-3"
+                          />
+                        </div>
+                      </>
+                    )}
                   </div>
-                  <div className="flex gap-2 py-[2px]">
-                    <h3 className="pr-7">Email:</h3>
-                    <p>{selectedCustomer?.collectionInfo?.email}</p>
+                </div>
+                <div className="mt-4">
+                  <p className="font-semibold text-md">Intermediate Stops 1:</p>
+                  <div className="py-[4px] px-7 bg-gray-400 text-black font-semibold rounded-md mt-1 text-[14px]">
+                    {editMode === 3 ? (
+                      <div>
+                        <input
+                          type="text"
+                          value={editableIntermediateStops?.stopOneName}
+                          onChange={(e) =>
+                            handleInputChangeIntermediateStop(e, "stopOneName")
+                          }
+                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                          placeholder="Stop Name"
+                        />
+
+                        <input
+                          type="email"
+                          value={editableIntermediateStops?.stopOneEmail}
+                          onChange={(e) =>
+                            handleInputChangeIntermediateStop(e, "stopOneEmail")
+                          }
+                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                          placeholder="Stop Email"
+                        />
+
+                        <input
+                          type="text"
+                          value={
+                            editableIntermediateStops?.stopOneContactNumber
+                          }
+                          onChange={(e) =>
+                            handleInputChangeIntermediateStop(
+                              e,
+                              "stopOneContactNumber"
+                            )
+                          }
+                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                          placeholder="Stop Contact Number"
+                        />
+
+                        <input
+                          type="text"
+                          value={editableIntermediateStops?.stopOneAddress}
+                          onChange={(e) =>
+                            handleInputChangeIntermediateStop(
+                              e,
+                              "stopOneAddress"
+                            )
+                          }
+                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                          placeholder="Stop Address"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex justify-between">
+                        <div>
+                          <p className="py-1 pt-2">
+                            Name:
+                            {
+                              selectedCustomer?.contactDetail?.[0]?.deliveryInfo
+                                ?.intermediateStops?.intermediateStopOne
+                                ?.stopOneName
+                            }
+                          </p>
+                          <p className="py-1">
+                            Email:
+                            {
+                              selectedCustomer?.contactDetail?.[0]?.deliveryInfo
+                                ?.intermediateStops?.intermediateStopOne
+                                ?.stopOneEmail
+                            }
+                          </p>
+                          <p className="py-1">
+                            Contact No.:
+                            {
+                              selectedCustomer?.contactDetail?.[0]?.deliveryInfo
+                                ?.intermediateStops?.intermediateStopOne
+                                ?.stopOneContactNumber
+                            }
+                          </p>
+                          <p className="py-1">
+                            Address:
+                            {
+                              selectedCustomer?.contactDetail?.[0]?.deliveryInfo
+                                ?.intermediateStops?.intermediateStopOne
+                                ?.stopOneAddress
+                            }
+                          </p>
+                        </div>
+                        <FaEdit
+                          onClick={() => handleEditClick(3)}
+                          className="text-[20px] mt-3"
+                        />
+                      </div>
+                    )}
                   </div>
-                  <div className="flex gap-2 py-[2px]">
-                    <h3 className="pr-4">Mobile:</h3>
-                    <p>{selectedCustomer?.collectionInfo?.contactNumber}</p>
+                </div>
+
+                <div className="mt-4">
+                  <p className="font-semibold text-md">Intermediate Stops 2:</p>
+                  <div className="py-[4px] px-7 bg-gray-400 text-black font-semibold rounded-md mt-1 text-[14px]">
+                    {editMode === 4 ? (
+                      <div>
+                        <input
+                          type="text"
+                          value={editableIntermediateStops2.stopTwoName}
+                          onChange={(e) =>
+                            handleInputChangeIntermediateStop2(e, "stopTwoName")
+                          }
+                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                          placeholder="Stop Name"
+                        />
+
+                        <input
+                          type="email"
+                          value={editableIntermediateStops2.stopTwoEmail}
+                          onChange={(e) =>
+                            handleInputChangeIntermediateStop2(
+                              e,
+                              "stopTwoEmail"
+                            )
+                          }
+                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                          placeholder="Stop Email"
+                        />
+
+                        <input
+                          type="text"
+                          value={
+                            editableIntermediateStops2?.stopTwoContactNumber
+                          }
+                          onChange={(e) =>
+                            handleInputChangeIntermediateStop2(
+                              e,
+                              "stopTwoContactNumber"
+                            )
+                          }
+                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                          placeholder="Stop Contact Number"
+                        />
+
+                        <input
+                          type="text"
+                          value={editableIntermediateStops2?.stopTwoAddress}
+                          onChange={(e) =>
+                            handleInputChangeIntermediateStop2(
+                              e,
+                              "stopTwoAddress"
+                            )
+                          }
+                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                          placeholder="Stop Address"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex justify-between">
+                        <div>
+                          <p className="py-1 pt-2">
+                            Name:
+                            {
+                              selectedCustomer?.contactDetail?.[0]?.deliveryInfo
+                                ?.intermediateStops?.intermediateStopTwo
+                                ?.stopTwoName
+                            }
+                          </p>
+                          <p className="py-1">
+                            Email:
+                            {
+                              selectedCustomer?.contactDetail?.[0]?.deliveryInfo
+                                ?.intermediateStops?.intermediateStopTwo
+                                ?.stopTwoEmail
+                            }
+                          </p>
+                          <p className="py-1">
+                            Contact No.:
+                            {
+                              selectedCustomer?.contactDetail?.[0]?.deliveryInfo
+                                ?.intermediateStops?.intermediateStopTwo
+                                ?.stopTwoContactNumber
+                            }
+                          </p>
+                          <p className="py-1">
+                            Address:
+                            {
+                              selectedCustomer?.contactDetail?.[0]?.deliveryInfo
+                                ?.intermediateStops?.intermediateStopTwo
+                                ?.stopTwoAddress
+                            }
+                          </p>
+                        </div>
+                        <FaEdit
+                          onClick={() => handleEditClick(4)}
+                          className="text-[20px] mt-3"
+                        />
+                      </div>
+                    )}
                   </div>
-                  <div className="flex gap-2 py-[2px]">
-                    <h3 className="pr-3">Address:</h3>
-                    <p>{selectedCustomer?.collectionInfo?.collectionAddress}</p>
+                </div>
+                <div className="mt-4">
+                  <p className="font-semibold text-md">Delivery Location:</p>
+                  <div className="py-[4px] px-7 bg-gray-400 text-black font-semibold rounded-md mt-1 text-[14px]">
+                    {editMode === 2 ? (
+                      <>
+                        <input
+                          type="text"
+                          value={editableDeliveryInfo.deliveryName || ""}
+                          onChange={(e) =>
+                            handleInputChangeDelivery(e, "deliveryName")
+                          }
+                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                          placeholder="Delivery Name"
+                        />
+                        <input
+                          type="email"
+                          value={editableDeliveryInfo.deliveryEmail || ""}
+                          onChange={(e) =>
+                            handleInputChangeDelivery(e, "deliveryEmail")
+                          }
+                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                          placeholder="Email"
+                        />
+                        <input
+                          type="text"
+                          value={
+                            editableDeliveryInfo.deliveryContactNumber || ""
+                          }
+                          onChange={(e) =>
+                            handleInputChangeDelivery(
+                              e,
+                              "deliveryContactNumber"
+                            )
+                          }
+                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                          placeholder="Phone"
+                        />
+                        <input
+                          type="text"
+                          value={editableDeliveryInfo.deliveryAddress || ""}
+                          onChange={(e) =>
+                            handleInputChangeDelivery(e, "deliveryAddress")
+                          }
+                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                          placeholder="Address"
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex justify-between">
+                          <div>
+                            <p className="py-1 pt-2">
+                              Name:{" "}
+                              {
+                                selectedCustomer?.contactDetail?.[0]
+                                  ?.deliveryInfo?.deliveryName
+                              }
+                            </p>
+                            <p className="py-1">
+                              Email:{" "}
+                              {
+                                selectedCustomer?.contactDetail?.[0]
+                                  ?.deliveryInfo?.deliveryEmail
+                              }
+                            </p>
+                            <p className="py-1">
+                              Contact:{" "}
+                              {
+                                selectedCustomer?.contactDetail?.[0]
+                                  ?.deliveryInfo?.deliveryContactNumber
+                              }
+                            </p>
+                            <p className="py-1">
+                              Address:{" "}
+                              {
+                                selectedCustomer?.contactDetail?.[0]
+                                  ?.deliveryInfo?.deliveryAddress
+                              }
+                            </p>
+                          </div>
+
+                          <FaEdit
+                            onClick={() => handleEditClick(2)}
+                            className="text-[20px] mt-3"
+                          />
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
-              <p className="font-semibold text-md pt-3">Drop Location:</p>
 
-              {!selectedCustomer?.deliveryInfo?.intermediateStops ||
-              Object.keys(selectedCustomer.deliveryInfo.intermediateStops)
-                .length === 0 ? (
-                <p>No intermediate stops available.</p>
-              ) : (
-                Object.values(
-                  selectedCustomer.deliveryInfo.intermediateStops
-                ).map((stop, index) => {
-                  const isStopOne =
-                    stop.stopOneName ||
-                    stop.stopOneEmail ||
-                    stop.stopOneContactNumber ||
-                    stop.stopOneAddress;
-                  const isStopTwo =
-                    stop.stopTwoName ||
-                    stop.stopTwoEmail ||
-                    stop.stopTwoContactNumber ||
-                    stop.stopTwoAddress;
-
-                  const disableStopInputs = !isStopOne && !isStopTwo;
-
-                  return (
-                    <div key={index}>
-                      {isStopOne &&
-                        (editMode === index ? (
-                          <div className="bg-gray-300 py-3 px-3 rounded-md mt-1">
-                            <input
-                              type="text"
-                              className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                              value={stop.stopOneName || ""}
-                              onChange={(e) =>
-                                handleInputChange(e, index, "stopOneName")
-                              }
-                              placeholder="Stop One Name"
-                              disabled={disableStopInputs}
-                            />
-                            <input
-                              type="email"
-                              className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                              value={stop.stopOneEmail || ""}
-                              onChange={(e) =>
-                                handleInputChange(e, index, "stopOneEmail")
-                              }
-                              placeholder="Stop One Email"
-                              disabled={disableStopInputs}
-                            />
-                            <input
-                              type="text"
-                              className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                              value={stop.stopOneContactNumber || ""}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  e,
-                                  index,
-                                  "stopOneContactNumber"
-                                )
-                              }
-                              placeholder="Stop One Contact Number"
-                              disabled={disableStopInputs}
-                            />
-                            <input
-                              type="text"
-                              className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                              value={stop.stopOneAddress || ""}
-                              onChange={(e) =>
-                                handleInputChange(e, index, "stopOneAddress")
-                              }
-                              placeholder="Stop One Address"
-                              disabled={disableStopInputs}
-                            />
-                          </div>
-                        ) : (
-                          <div className="mt-1 rounded-md text-black font-semibold py-2 px-7 bg-gray-200 text-[14px]">
-                            <div className="flex items-center justify-between ">
-                              <p className="text-md font-medium text-gray-800">
-                                Intermediate Stop: {index + 1}
-                              </p>
-                              <FaEdit
-                                size={20}
-                                color="black"
-                                className="cursor-pointer"
-                                onClick={() => handleEditClick(index)}
-                              />
-                            </div>
-                            <div className="flex gap-2 flex-wrap py-[2px]">
-                              <p className="pr-6">Name:</p>
-                              <p>{stop.stopOneName || ""}</p>
-                            </div>
-                            <div className="flex gap-2 flex-wrap py-[2px]">
-                              <p className="pr-7">Email:</p>
-                              <p>{stop.stopOneEmail || ""}</p>
-                            </div>
-                            <div className="flex gap-2 flex-wrap py-[2px]">
-                              <p className="pr-4">Mobile:</p>
-                              <p>{stop.stopOneContactNumber || ""}</p>
-                            </div>
-                            <div className="flex gap-2 flex-wrap py-[2px]">
-                              <p className="pr-3">Address:</p>
-                              <p>{stop.stopOneAddress || ""}</p>
-                            </div>
-                          </div>
-                        ))}
-
-                      {isStopTwo &&
-                        (editMode === index ? (
-                          <div className="bg-gray-300 py-3 px-3 rounded-md mt-1">
-                            <input
-                              type="text"
-                              className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                              value={stop.stopTwoName || ""}
-                              onChange={(e) =>
-                                handleInputChange(e, index, "stopTwoName")
-                              }
-                              placeholder="Stop Two Name"
-                              disabled={disableStopInputs}
-                            />
-                            <input
-                              type="email"
-                              className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                              value={stop.stopTwoEmail || ""}
-                              onChange={(e) =>
-                                handleInputChange(e, index, "stopTwoEmail")
-                              }
-                              placeholder="Stop Two Email"
-                              disabled={disableStopInputs}
-                            />
-                            <input
-                              type="text"
-                              className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                              value={stop.stopTwoContactNumber || ""}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  e,
-                                  index,
-                                  "stopTwoContactNumber"
-                                )
-                              }
-                              placeholder="Stop Two Contact Number"
-                              disabled={disableStopInputs}
-                            />
-                            <input
-                              type="text"
-                              className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                              value={stop.stopTwoAddress || ""}
-                              onChange={(e) =>
-                                handleInputChange(e, index, "stopTwoAddress")
-                              }
-                              placeholder="Stop Two Address"
-                              disabled={disableStopInputs}
-                            />
-                          </div>
-                        ) : (
-                          <div className="mt-1 rounded-md text-black font-semibold py-2 px-7 bg-gray-200 text-[14px]">
-                            <div className="flex items-center justify-between">
-                              <p className="text-md font-medium text-gray-800">
-                                Intermediate Stop: {index + 1}
-                              </p>
-                              <FaEdit
-                                size={20}
-                                color="black"
-                                className="cursor-pointer"
-                                onClick={() => handleEditClick(index)}
-                              />
-                            </div>
-                            <div className="flex gap-2 flex-wrap py-[2px]">
-                              <p className="pr-6">Name:</p>
-                              <p>{stop.stopTwoName || ""}</p>
-                            </div>
-                            <div className="flex gap-2 flex-wrap py-[2px]">
-                              <p className="pr-7">Email:</p>
-                              <p>{stop.stopTwoEmail || ""}</p>
-                            </div>
-                            <div className="flex gap-2 flex-wrap py-[2px]">
-                              <p className="pr-4">Mobile:</p>
-                              <p>{stop.stopTwoContactNumber || ""}</p>
-                            </div>
-                            <div className="flex gap-2 flex-wrap py-[2px]">
-                              <p className="pr-3">Address:</p>
-                              <p>{stop.stopTwoAddress || ""}</p>
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-                  );
-                })
-              )}
-
-              {/* try start*/}
-              <div className="mt-1 rounded-md">
-                {/* <div className="flex items-center justify-between">
-                      <p className="text-lg font-medium text-gray-900 py-2">
-                        Final Stop
-                      </p>
-                      <FaEdit
-                        size={20}
-                        color="#BFA75D"
-                        className="cursor-pointer"
-                        onClick={() => handleEditClick(2)}
-                      />
-                    </div> */}
-                {editMode === 2 ? (
-                  <div className="bg-gray-300 py-3 px-3 rounded-md mt-1">
-                    <input
-                      type="text"
-                      className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                      value={
-                        finalStep[0]?.deliveryName ||
-                        selectedCustomer?.deliveryInfo?.deliveryName ||
-                        ""
-                      }
-                      onChange={(e) =>
-                        handleInputChangeFinal(e, 0, "deliveryName")
-                      }
-                      placeholder="Name"
-                    />
-                    <input
-                      type="email"
-                      className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                      value={
-                        finalStep[0]?.deliveryEmail ||
-                        selectedCustomer?.deliveryInfo?.deliveryEmail ||
-                        ""
-                      }
-                      onChange={(e) =>
-                        handleInputChangeFinal(e, 0, "deliveryEmail")
-                      }
-                      placeholder="Email"
-                    />
-                    <input
-                      type="text"
-                      className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                      value={
-                        finalStep[0]?.deliveryContactNumber ||
-                        selectedCustomer?.deliveryInfo?.deliveryContactNumber ||
-                        ""
-                      }
-                      onChange={(e) =>
-                        handleInputChangeFinal(e, 0, "deliveryContactNumber")
-                      }
-                      placeholder="Phone"
-                    />
-                    <input
-                      type="text"
-                      className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                      value={
-                        finalStep[0]?.deliveryAddress ||
-                        selectedCustomer?.deliveryInfo?.deliveryAddress ||
-                        ""
-                      }
-                      onChange={(e) =>
-                        handleInputChangeFinal(e, 0, "deliveryAddress")
-                      }
-                      placeholder="Address"
-                    />
-                  </div>
-                ) : (
-                  <div className="mt-1 rounded-md text-black font-semibold py-2 px-7 bg-gray-400 text-[14px]">
-                    <div className="flex items-center justify-between">
-                      <p className="text-md font-medium text-gray-900 py-1">
-                        Final Stop
-                      </p>
-                      <FaEdit
-                        size={20}
-                        color="black"
-                        className="cursor-pointer"
-                        onClick={() => handleEditClick(2)}
-                      />
-                    </div>
-                    <div className="flex gap-2 flex-wrap py-[2px]">
-                      <p className="pr-6">Name:</p>
-                      <p>{selectedCustomer?.deliveryInfo?.deliveryName}</p>
-                    </div>
-                    <div className="flex gap-2 flex-wrap py-[2px]">
-                      <p className="pr-7">Email:</p>
-                      <p>{selectedCustomer?.deliveryInfo?.deliveryEmail}</p>
-                    </div>
-                    <div className="flex gap-2 flex-wrap py-[2px]">
-                      <p className="pr-4">Mobile:</p>
-                      <p>
-                        {selectedCustomer?.deliveryInfo?.deliveryContactNumber}
-                      </p>
-                    </div>
-                    <div className="flex gap-2 flex-wrap py-[2px]">
-                      <p className="pr-3">Address:</p>
-                      <p>{selectedCustomer?.deliveryInfo?.deliveryAddress}</p>
-                    </div>
-                    {/* <p className="text-sm py-1">Name: {selectedCustomer?.deliveryInfo?.deliveryName}</p>
-                        <p className="text-sm py-1">Phone: {selectedCustomer?.deliveryInfo?.deliveryContactNumber}</p>
-                        <p className="text-sm py-1">Email: {selectedCustomer?.deliveryInfo?.deliveryEmail}</p>
-                        <p className="text-sm py-1">Address: {selectedCustomer?.deliveryInfo?.deliveryAddress}</p> */}
-                  </div>
-                )}
-              </div>
-              {editMode !== null && (
-                <button
-                  className="mt-4 bg-[#BFA75D] font-medium text-white py-2 px-4 rounded mr-2"
-                  onClick={handleSave}
-                >
-                  Save
-                </button>
-              )}
-              <button
-                className="mt-4 bg-black font-medium text-white py-2 px-4 rounded"
-                onClick={closeModal}
-              >
-                Close
-              </button>
-            </div>
-            <div>
               <div>
                 <p className="pt-10 font-semibold text-md">Order Detail</p>
-                <div className="p-4 mt-2 bg-gray-300 rounded-md text-[14px] font-semibold py-2">
+                <div
+                  className="p-4 mt-2 bg-gray-300 rounded-md text-[14px] font-semibold "
+                  style={{ paddingBottom: "11rem", paddingTop: "2rem" }}
+                >
                   <div className="flex gap-2 px-3 py-1">
                     <h4 className="pr-[5.3rem]">Oredre Id:</h4>
-                    <p>{userDetail?.shipmentId}</p>
+                    <p>{selectedCustomer?.shipmentId}</p>
                   </div>
                   <div className="flex gap-2 px-3 py-1">
                     <h4 className="pr-5">Oredre date & Time:</h4>
-                    <p>{userDetail?.orderDate}</p>
+                    <p>{selectedCustomer?.orderDate}</p>
                   </div>
                 </div>
                 <div>
                   <h2 className="text-md font-semibold py-1 mt-1">
                     Customer Details
                   </h2>
-                  {customerData?.customerDetail?.length > 0 ? (
-                    customerData?.customerDetail?.map((user, index) => (
+                  {selectedCustomer?.customerDetail?.length > 0 ? (
+                    selectedCustomer?.customerDetail?.map((user, index) => (
                       <div
-                        className="p-4 mt-2 bg-gray-300 rounded-md text-[14px] font-semibold py-2"
+                        className="p-4 mt-2 bg-gray-300 rounded-md text-[14px] font-semibold "
+                        style={{ paddingBottom: "10rem", paddingTop: "2rem" }}
                         key={index}
                       >
                         <div className="flex gap-2 px-3 py-1">
@@ -873,187 +897,25 @@ const ShipmentTable = () => {
                       </div>
                     ))
                   ) : (
-                    <div className="px-7">Not Available</div>
+                    <div className="px-7">This is not customer</div>
                   )}
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
 
-      {modalIsOpen2 && datas && (
-        <div
-          className="fixed inset-0 bg-gray-500 bg-opacity-50 flex mt-3 justify-center"
-          onClick={closeModal}
-        >
-          <div
-            className="bg-white md:p-8 p-4 rounded-lg shadow-lg md:max-w-[70%] w-[70%] sm:ml-0 ml-10 overflow-y-auto md:grid grid-cols-2 gap-3"
-            onClick={(e) => e.stopPropagation()}
-          >
             <div>
-              <h2 className="text-xl font-semibold mb-4">Shipment Detail</h2>
-              {/* {
-                selectedCustomer?.collectionInfo?.collectionAddress
-               } */}
-              <div>
-                <p className="font-semibold text-md">Pickup Location:</p>
-                <div className="py-[4px] px-7 bg-gray-400 text-black font-semibold rounded-md mt-1 text-[14px]">
-                  <div className="flex gap-2 py-[2px]">
-                    <h3 className="pr-6">Name:</h3>
-                    <p>Not Available</p>
-                  </div>
-                  <div className="flex gap-2 py-[2px]">
-                    <h3 className="pr-7">Email:</h3>
-                    <p>{datas?.email}</p>
-                  </div>
-                  <div className="flex gap-2 py-[2px]">
-                    <h3 className="pr-4">Mobile:</h3>
-                    <p>Not Available</p>
-                  </div>
-                  <div className="flex gap-2 py-[2px]">
-                    <h3 className="pr-3">Address:</h3>
-                    <p>{datas?.collectionAddress}</p>
-                  </div>
-                </div>
-              </div>
-              <p className="font-semibold text-md pt-3">Drop Location:</p>
-
-              <div className="mt-1 rounded-md">
-                {editMode === 2 ? (
-                  <div className="bg-gray-300 py-3 px-3 rounded-md mt-1">
-                    <input
-                      type="text"
-                      className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                      value={data?.contactDetail?.[0].deliveryInfo.deliveryName}
-                      onChange={(e) =>
-                        handleInputChangeFinal2(e, 0, "deliveryName")
-                      }
-                      placeholder="Name"
-                    />
-                    {/* <input
-                      type="email"
-                      className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                      value={""}
-                      onChange={(e) =>
-                        handleInputChangeFinal2(e, 0, "deliveryEmail")
-                      }
-                      placeholder="Email"
-                    />
-                    <input
-                      type="text"
-                      className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                      value={""}
-                      onChange={(e) =>
-                        handleInputChangeFinal2(e, 0, "deliveryContactNumber")
-                      }
-                      placeholder="Phone"
-                    /> */}
-                    <input
-                      type="text"
-                      className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                      value={data?.deliveryAddress}
-                      onChange={(e) =>
-                        handleInputChangeFinal2(e, 0, "deliveryAddress")
-                      }
-                      placeholder="Address"
-                    />
-                  </div>
-                ) : (
-                  <div className="mt-1 rounded-md text-black font-semibold py-2 px-7 bg-gray-400 text-[14px]">
-                    <div className="flex items-center justify-between">
-                      <p className="text-md font-medium text-gray-900 py-1">
-                        Final Stop
-                      </p>
-                      <FaEdit
-                        size={20}
-                        color="black"
-                        className="cursor-pointer"
-                        onClick={() => handleEditClick(2)}
-                      />
-                    </div>
-                    <div className="flex gap-2 flex-wrap py-[2px]">
-                      <p className="pr-6">Name:</p>
-                      <p>{datas?.deliveryName}</p>
-                    </div>
-                    <div className="flex gap-2 flex-wrap py-[2px]">
-                      <p className="pr-7">Email:</p>
-                      <p>{datas?.deliveryEmail}</p>
-                    </div>
-                    <div className="flex gap-2 flex-wrap py-[2px]">
-                      <p className="pr-4">Mobile:</p>
-                      <p>{datas?.deliveryContactNumber}</p>
-                    </div>
-                    <div className="flex gap-2 flex-wrap py-[2px]">
-                      <p className="pr-3">Address:</p>
-                      <p>{datas?.deliveryAddress}</p>
-                    </div>
-                    {/* <p className="text-sm py-1">Name: {selectedCustomer?.deliveryInfo?.deliveryName}</p>
-                        <p className="text-sm py-1">Phone: {selectedCustomer?.deliveryInfo?.deliveryContactNumber}</p>
-                        <p className="text-sm py-1">Email: {selectedCustomer?.deliveryInfo?.deliveryEmail}</p>
-                        <p className="text-sm py-1">Address: {selectedCustomer?.deliveryInfo?.deliveryAddress}</p> */}
-                  </div>
-                )}
-              </div>
-              {editMode !== null && (
-                <button
-                  className="mt-4 bg-[#BFA75D] font-medium text-white py-2 px-4 rounded mr-2"
-                  onClick={() => handleSave2(datas._id)}
-                >
-                  Save
-                </button>
-              )}
+              <button
+                className="mt-4 bg-[#BFA75D] font-medium text-white py-2 px-4 rounded mr-2"
+                onClick={handleSave}
+              >
+                Save
+              </button>
               <button
                 className="mt-4 bg-black font-medium text-white py-2 px-4 rounded"
-                onClick={closeModal}
+                onClick={() => setIsModalOpen(false)}
               >
                 Close
               </button>
-            </div>
-            <div>
-              <div>
-                <p className="pt-10 font-semibold text-md">Order Detail</p>
-                <div className="p-4 mt-2 bg-gray-300 rounded-md text-[14px] font-semibold py-2">
-                  <div className="flex gap-2 px-3 py-1">
-                    <h4 className="pr-[5.3rem]">Oredre Id:</h4>
-                    <p>{userDetail?.shipmentId}</p>
-                  </div>
-                  <div className="flex gap-2 px-3 py-1">
-                    <h4 className="pr-5">Oredre date & Time:</h4>
-                    <p>{userDetail?.orderDate}</p>
-                  </div>
-                </div>
-                <div>
-                  <h2 className="text-md font-semibold py-1 mt-1">
-                    Customer Details
-                  </h2>
-                  {customerData?.customerDetail?.length > 0 ? (
-                    customerData?.customerDetail?.map((user, index) => (
-                      <div
-                        className="p-4 mt-2 bg-gray-300 rounded-md text-[14px] font-semibold py-2"
-                        key={index}
-                      >
-                        <div className="flex gap-2 px-3 py-1">
-                          <h4 className="pr-[3.3rem]">name:</h4>
-                          <p>
-                            {user.firstName} {user.lastName}
-                          </p>
-                        </div>
-                        <div className="flex overflow-clip gap-2 px-3 py-1">
-                          <h4 className="pr-[3.3rem]">Email:</h4>
-                          <p>{user.email}</p>
-                        </div>
-                        <div className="flex gap-2 px-3 py-1">
-                          <h4 className="pr-[2.7rem]">Mobile:</h4>
-                          <p>{user.phoneNumber}</p>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="px-7">Not Available</div>
-                  )}
-                </div>
-              </div>
             </div>
           </div>
         </div>

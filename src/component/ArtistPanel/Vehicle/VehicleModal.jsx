@@ -396,8 +396,8 @@ const VehicleModal = () => {
                       <img
                         // src={item.Vehicle}
                         src={`${BASE_URL}/images/vehicalImg/${item.vehicalImg}`}
-                        alt="vehicle"
-                        className="w-10 h-10 object-contain"
+                        alt="vehical"
+                        className="w-20 h-10 object-contain"
                       />
                     </td>
                     <td className="w-36 p-2 text-[#12223D] font-normal">
