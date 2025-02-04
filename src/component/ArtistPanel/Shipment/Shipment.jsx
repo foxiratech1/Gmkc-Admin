@@ -410,7 +410,7 @@ const ShipmentTable = () => {
                       <td className="p-2">
                         {user.status === "accept" ? (
                           <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                            {user.collectionAddress}
+                            {user.deliveryAddress}
                           </p>
                         ) : (
                           user?.contactDetail?.map((detail) =>
@@ -910,7 +910,7 @@ const ShipmentTable = () => {
                       </div>
                     ))
                   ) : (
-                    <div className="px-7">This is not customer</div>
+                    <div className="px-7">Customer is not available</div>
                   )}
                 </div>
               </div>
