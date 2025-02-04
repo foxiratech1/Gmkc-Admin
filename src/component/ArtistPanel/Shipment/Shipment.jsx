@@ -156,9 +156,7 @@ const ShipmentTable = () => {
         }
       );
 
-      // Check if the response contains the necessary data
       if (response?.data?.data) {
-        // Set the data to selectedCustomer and open the modal
         setSelectedCustomer(response.data.data);
         preFillData(response.data.data);
         if (stat == "accept") {
@@ -243,6 +241,11 @@ const ShipmentTable = () => {
 
   const handleSave = async () => {
     try {
+      console.log(
+        "editableIntermediateStopseditableIntermediateStops",
+        editableIntermediateStops
+      );
+
       const updatedData = {
         contactDetail: {
           collectionInfo: editableCollectionInfo,
@@ -256,6 +259,7 @@ const ShipmentTable = () => {
           status: statuss,
         },
       };
+      console.log("updatedDataupdatedData", updatedData);
 
       const response = await axios.put(
         `${shipmentendpoints.UPDATE_SHIPMENT_STOP}/${selectedCustomer._id}`,
@@ -495,7 +499,11 @@ const ShipmentTable = () => {
                         />
                         <input
                           type="email"
-                          value={editableCollectionInfo.email}
+                          value={
+                            editableCollectionInfo.email ||
+                            selectedCustomer?.contactDetail?.[0]?.collectionInfo
+                              ?.email
+                          }
                           onChange={(e) =>
                             handleInputChangeCollection(e, "email")
                           }
@@ -892,7 +900,12 @@ const ShipmentTable = () => {
                         </div>
                         <div className="flex gap-2 px-3 py-1">
                           <h4 className="pr-[2.7rem]">Mobile:</h4>
-                          <p>{user.phoneNumber}</p>
+
+                          {user.phoneNumber == undefined ? (
+                            <p>{user.phoneNumber}</p>
+                          ) : (
+                            "not available"
+                          )}
                         </div>
                       </div>
                     ))
