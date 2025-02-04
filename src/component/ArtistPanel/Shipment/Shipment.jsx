@@ -400,9 +400,11 @@ const ShipmentTable = () => {
                         <Tooltip text={user.pickUpDateAndTime} position="top">
                           <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-nowrap">
                             {`${
-                              user.pickUpDateAndTime
-                                ? user.pickUpDateAndTime
-                                : null
+                              user.pickUpDateAndTime ? (
+                                user.pickUpDateAndTime
+                              ) : (
+                                <p className="text-sm">Not available</p>
+                              )
                             }`}
                           </p>
                         </Tooltip>
