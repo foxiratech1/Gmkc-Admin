@@ -249,7 +249,7 @@ const Request = () => {
                           </p>
                         </Tooltip>
                       </td>
-                      <td className="px-1 py-2 flex gap-2">
+                      <td className="px-1 py-2 flex gap-2 mt-3">
                         <button
                           className=" bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition duration-200"
                           onClick={() => handleAcceptQuote(request._id)}
