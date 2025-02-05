@@ -195,7 +195,9 @@ const Table = ({ shipmentData, currentPage, setCurrentPage, data }) => {
                     <Tooltip text={`${user.pickUpDateAndTime}`} position="top">
                       <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                         {`${
-                          user.pickUpDateAndTime ? user.pickUpDateAndTime : null
+                          user.pickUpDateAndTime
+                            ? user.pickUpDateAndTime
+                            : "Not Available"
                         }`}
                       </p>
                     </Tooltip>

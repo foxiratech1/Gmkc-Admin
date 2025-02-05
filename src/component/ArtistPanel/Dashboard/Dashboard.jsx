@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { GetAllShipmentData } from "./https/GetShipmentData";
 import LoadingPage from "../../Loader";
+import axios from "axios";
+import { reportDatas } from "../../../services/apis";
 
 const stats = [
   {
@@ -21,12 +23,16 @@ const Dashboard = () => {
   const { token } = useSelector((state) => state.user);
   const [currentPage, setCurrentPage] = useState(1);
   const [shipmentData, setShipmentData] = useState([]);
+  const [reportData, setReportData] = useState([]);
   const ITEMS_PER_PAGE = 10;
+
+  // Fetch shipment data
   const { data, isLoading, isError, error } = GetAllShipmentData({
     token,
     page: currentPage,
     limit: ITEMS_PER_PAGE,
   });
+
   useEffect(() => {
     if (data) {
       setShipmentData(data?.data);
@@ -34,14 +40,31 @@ const Dashboard = () => {
     }
   }, [data]);
 
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(reportDatas.ADMIN_ReportData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("fdfdf", response);
+      setReportData(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   if (isLoading) {
     return <LoadingPage />;
   }
 
   if (isError) {
-    return <p>{error?.response?.data?.message}</p>;
+    return <p>{error?.response?.data?.message || "Error fetching data"}</p>;
   }
-
   return (
     <>
       <div className="xl:w-[70%] w-[90%] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 sm:gap-6 rounded-3xl">
@@ -54,7 +77,7 @@ const Dashboard = () => {
               Shipment
             </p>
             <h2 className="text-lg sm:text-2xl font-semibold text-[#12223D]">
-              {data.totalShipments}
+              {reportData.totalShipment}
             </h2>
           </div>
         </div>
@@ -67,7 +90,7 @@ const Dashboard = () => {
               Vehicles
             </p>
             <h2 className="text-lg sm:text-2xl font-semibold text-[#12223D]">
-              {data.totalVehicals}
+              {reportData.totalVehical}
             </h2>
           </div>
         </div>

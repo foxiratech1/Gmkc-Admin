@@ -59,3 +59,7 @@ export const userendpoints = {
 export const promotionEmailSendApi = {
   ADMIN_EMAIL_SEND: BASE_URL + "/api/admin/admin-email-send",
 };
+
+export const reportDatas = {
+  ADMIN_ReportData: BASE_URL + "/api/admin/all-shipment-reports",
+};

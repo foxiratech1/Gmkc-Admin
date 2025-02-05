@@ -270,7 +270,7 @@ const ShipmentTable = () => {
           },
         }
       );
-
+      setEditMode(null);
       if (response.status == 200) {
         setEditMode(null);
         setIsModalOpen(false);
@@ -280,6 +280,8 @@ const ShipmentTable = () => {
       console.error("Error updating shipment data:", error);
     }
   };
+  console.log("9090890selectedCustomer", selectedCustomer);
+
   return (
     <>
       <div className="w-full">
@@ -391,7 +393,7 @@ const ShipmentTable = () => {
                                 </p>
                               </div>
                             ) : (
-                              <p className="text-sm">Not Available</p>
+                              "Not Available"
                             )
                           )
                         )}
@@ -402,7 +404,7 @@ const ShipmentTable = () => {
                             {`${
                               user.pickUpDateAndTime
                                 ? user.pickUpDateAndTime
-                                : " "
+                                : "Not Available"
                             }`}
                           </p>
                         </Tooltip>
@@ -410,7 +412,7 @@ const ShipmentTable = () => {
                       <td className="p-2">
                         {user.status === "accept" ? (
                           <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                            {user.deliveryAddress}
+                            {user?.deliveryAddress}
                           </p>
                         ) : (
                           user?.contactDetail?.map((detail) =>
@@ -823,31 +825,31 @@ const ShipmentTable = () => {
                           <div>
                             <p className="py-1 pt-2">
                               Name:{" "}
-                              {
-                                selectedCustomer?.contactDetail?.[0]
-                                  ?.deliveryInfo?.deliveryName
-                              }
+                              {selectedCustomer.status == "accept"
+                                ? "Not Available"
+                                : selectedCustomer?.contactDetail?.[0]
+                                    ?.deliveryInfo?.deliveryName}
                             </p>
                             <p className="py-1">
                               Email:{" "}
-                              {
-                                selectedCustomer?.contactDetail?.[0]
-                                  ?.deliveryInfo?.deliveryEmail
-                              }
+                              {selectedCustomer.status == "accept"
+                                ? "Not Available"
+                                : selectedCustomer?.deliveryInfo?.[0]
+                                    ?.deliveryInfo?.deliveryEmail}
                             </p>
                             <p className="py-1">
                               Contact:{" "}
-                              {
-                                selectedCustomer?.contactDetail?.[0]
-                                  ?.deliveryInfo?.deliveryContactNumber
-                              }
+                              {selectedCustomer.status == "accept"
+                                ? "Not Available"
+                                : selectedCustomer?.deliveryInfo?.[0]
+                                    ?.deliveryInfo?.deliveryContactNumber}
                             </p>
                             <p className="py-1">
                               Address:{" "}
-                              {
-                                selectedCustomer?.contactDetail?.[0]
-                                  ?.deliveryInfo?.deliveryAddress
-                              }
+                              {selectedCustomer.status == "accept"
+                                ? selectedCustomer.deliveryAddress
+                                : selectedCustomer?.deliveryInfo?.[0]
+                                    ?.deliveryInfo?.deliveryAddress}
                             </p>
                           </div>
 
