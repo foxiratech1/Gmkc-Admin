@@ -145,7 +145,6 @@ const ShipmentTable = () => {
   }
   const handleClick = async (user, stat) => {
     try {
-      console.log("948585490", stat);
       setIsModalOpen(true);
       const response = await axios.get(
         `${shipmentendpoints.SHIPMENT_DELIVERY_DETAIL}/${user}`,
@@ -168,7 +167,7 @@ const ShipmentTable = () => {
         console.error("No data found in response");
       }
     } catch (error) {
-      console.error("Error fetching shipment delivery details:", error);
+      throw error;
     }
   };
 
@@ -197,6 +196,42 @@ const ShipmentTable = () => {
       [field]: e.target.value,
     });
   };
+  // const preFillData = (customerData) => {
+  //   setEditableCollectionInfo({
+  //     ...customerData?.contactDetail?.[0]?.collectionInfo,
+  //   });
+  //   setEditableDeliveryInfo({
+  //     ...customerData?.contactDetail?.[0]?.deliveryInfo,
+  //   });
+  //   setEditableIntermediateStops({
+  //     stopOneName:
+  //       customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+  //         .intermediateStopOne.stopOneName,
+  //     stopOneEmail:
+  //       customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+  //         .intermediateStopOne.stopOneEmail,
+  //     stopOneContactNumber:
+  //       customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+  //         .intermediateStopOne.stopOneContactNumber,
+  //     stopOneAddress:
+  //       customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+  //         ?.intermediateStopOne.stopOneAddress,
+  //   });
+  //   setEditableIntermediateStops2({
+  //     stopTwoName:
+  //       customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+  //         .intermediateStopTwo.stopTwoName,
+  //     stopTwoEmail:
+  //       customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+  //         .intermediateStopTwo.stopTwoEmail,
+  //     stopTwoContactNumber:
+  //       customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+  //         .intermediateStopTwo.stopTwoContactNumber,
+  //     stopTwoAddress:
+  //       customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+  //         ?.intermediateStopTwo.stopTwoAddress,
+  //   });
+  // };
 
   const preFillData = (customerData) => {
     setEditableCollectionInfo({
@@ -205,34 +240,38 @@ const ShipmentTable = () => {
     setEditableDeliveryInfo({
       ...customerData?.contactDetail?.[0]?.deliveryInfo,
     });
-    setEditableIntermediateStops({
-      stopOneName:
-        customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-          .intermediateStopOne.stopOneName,
-      stopOneEmail:
-        customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-          .intermediateStopOne.stopOneEmail,
-      stopOneContactNumber:
-        customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-          .intermediateStopOne.stopOneContactNumber,
-      stopOneAddress:
-        customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-          ?.intermediateStopOne.stopOneAddress,
-    });
-    setEditableIntermediateStops2({
-      stopTwoName:
-        customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-          .intermediateStopTwo.stopTwoName,
-      stopTwoEmail:
-        customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-          .intermediateStopTwo.stopTwoEmail,
-      stopTwoContactNumber:
-        customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-          .intermediateStopTwo.stopTwoContactNumber,
-      stopTwoAddress:
-        customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-          ?.intermediateStopTwo.stopTwoAddress,
-    });
+
+    if (customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops) {
+      setEditableIntermediateStops({
+        stopOneName:
+          customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+            ?.intermediateStopOne?.stopOneName || "",
+        stopOneEmail:
+          customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+            ?.intermediateStopOne?.stopOneEmail || "",
+        stopOneContactNumber:
+          customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+            ?.intermediateStopOne?.stopOneContactNumber || "",
+        stopOneAddress:
+          customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+            ?.intermediateStopOne?.stopOneAddress || "",
+      });
+
+      setEditableIntermediateStops2({
+        stopTwoName:
+          customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+            ?.intermediateStopTwo?.stopTwoName || "",
+        stopTwoEmail:
+          customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+            ?.intermediateStopTwo?.stopTwoEmail || "",
+        stopTwoContactNumber:
+          customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+            ?.intermediateStopTwo?.stopTwoContactNumber || "",
+        stopTwoAddress:
+          customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
+            ?.intermediateStopTwo?.stopTwoAddress || "",
+      });
+    }
   };
 
   const handleEditClick = (mode) => {
@@ -241,11 +280,6 @@ const ShipmentTable = () => {
 
   const handleSave = async () => {
     try {
-      console.log(
-        "editableIntermediateStopseditableIntermediateStops",
-        editableIntermediateStops
-      );
-
       const updatedData = {
         contactDetail: {
           collectionInfo: editableCollectionInfo,
@@ -259,7 +293,6 @@ const ShipmentTable = () => {
           status: statuss,
         },
       };
-      console.log("updatedDataupdatedData", updatedData);
 
       const response = await axios.put(
         `${shipmentendpoints.UPDATE_SHIPMENT_STOP}/${selectedCustomer._id}`,
@@ -274,13 +307,13 @@ const ShipmentTable = () => {
       if (response.status == 200) {
         setEditMode(null);
         setIsModalOpen(false);
+        window.location.reload();
         closeModal();
       }
     } catch (error) {
-      console.error("Error updating shipment data:", error);
+      throw error;
     }
   };
-  console.log("9090890selectedCustomer", selectedCustomer);
 
   return (
     <>
@@ -318,7 +351,9 @@ const ShipmentTable = () => {
                             detail.collectionInfo ? (
                               <div key={detail.collectionInfo.name}>
                                 <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                                  {detail.collectionInfo.name}
+                                  {detail.collectionInfo.name
+                                    ? detail.collectionInfo.name
+                                    : "Not Available"}
                                 </p>
                               </div>
                             ) : null
@@ -779,7 +814,7 @@ const ShipmentTable = () => {
                       <>
                         <input
                           type="text"
-                          value={editableDeliveryInfo.deliveryName || ""}
+                          value={editableDeliveryInfo.deliveryName}
                           onChange={(e) =>
                             handleInputChangeDelivery(e, "deliveryName")
                           }
@@ -788,7 +823,7 @@ const ShipmentTable = () => {
                         />
                         <input
                           type="email"
-                          value={editableDeliveryInfo.deliveryEmail || ""}
+                          value={editableDeliveryInfo.deliveryEmail}
                           onChange={(e) =>
                             handleInputChangeDelivery(e, "deliveryEmail")
                           }
@@ -797,9 +832,7 @@ const ShipmentTable = () => {
                         />
                         <input
                           type="text"
-                          value={
-                            editableDeliveryInfo.deliveryContactNumber || ""
-                          }
+                          value={editableDeliveryInfo.deliveryContactNumber}
                           onChange={(e) =>
                             handleInputChangeDelivery(
                               e,
@@ -834,21 +867,21 @@ const ShipmentTable = () => {
                               Email:{" "}
                               {selectedCustomer.status == "accept"
                                 ? "Not Available"
-                                : selectedCustomer?.deliveryInfo?.[0]
+                                : selectedCustomer?.contactDetail?.[0]
                                     ?.deliveryInfo?.deliveryEmail}
                             </p>
                             <p className="py-1">
                               Contact:{" "}
                               {selectedCustomer.status == "accept"
                                 ? "Not Available"
-                                : selectedCustomer?.deliveryInfo?.[0]
+                                : selectedCustomer?.contactDetail?.[0]
                                     ?.deliveryInfo?.deliveryContactNumber}
                             </p>
                             <p className="py-1">
                               Address:{" "}
                               {selectedCustomer.status == "accept"
                                 ? selectedCustomer.deliveryAddress
-                                : selectedCustomer?.deliveryInfo?.[0]
+                                : selectedCustomer?.contactDetail?.[0]
                                     ?.deliveryInfo?.deliveryAddress}
                             </p>
                           </div>

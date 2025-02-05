@@ -181,7 +181,9 @@ const User = () => {
                     </td>
                     <td className="p-2">
                       <p className="w-64 overflow-hidden text-sm text-ellipsis whitespace-nowrap  my-1">
-                        {user.phoneNumber ? user.phoneNumber : "Not Available"}
+                        {user.phoneNumber == undefined
+                          ? user.phoneNumber
+                          : "Not Available"}
                       </p>
                     </td>
                     <td className="space-x-5 flex items-center ">

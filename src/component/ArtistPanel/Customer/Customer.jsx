@@ -7,6 +7,7 @@ import { FaEdit } from "react-icons/fa";
 import axios from "axios";
 import { customerendpoints } from "../../../services/apis";
 import { AiFillDelete } from "react-icons/ai";
+import Tooltip from "../../utils/Tooltip";
 
 const table_head = [
   {
@@ -90,7 +91,7 @@ const Customer = () => {
         }
       );
       if (response.status === 200) {
-        console.log("Customer updated successfully:", response.data);
+        window.location.reload();
         closeModal();
       }
     } catch (error) {
@@ -100,6 +101,7 @@ const Customer = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log("valuevalue", value);
 
     setSelectedCustomer((prevState) => {
       const updatedContactDetail = [...prevState.contactDetail];
@@ -177,29 +179,51 @@ const Customer = () => {
                       </p>
                     </td>
                     <td className="px-2 py-3 text-[#12223D] font-normal">
-                      {user?.contactDetail?.map((info) =>
-                        info.collectionInfo ? (
-                          <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                            {info.collectionInfo.name}
-                          </p>
-                        ) : null
+                      {user.status === "accept" ? (
+                        <p className="text-sm">Not Available</p>
+                      ) : (
+                        user?.contactDetail?.map((info) =>
+                          info.collectionInfo ? (
+                            <p className="w-24 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2 text-start">
+                              {info.collectionInfo.name
+                                ? info.collectionInfo.name
+                                : "Not Available"}
+                            </p>
+                          ) : null
+                        )
                       )}
                     </td>
                     <td className="p-2">
-                      <p className="w-64 overflow-hidden text-sm text-ellipsis whitespace-nowrap">
-                        {user.email}
-                      </p>
-                    </td>
-                    <td className="p-2">
-                      {user?.contactDetail?.map((info) =>
-                        info.collectionInfo ? (
-                          <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-nowrap">
-                            {info?.collectionInfo?.contactNumber}
-                          </p>
-                        ) : null
+                      {user.status === "accept" ? (
+                        <p className="text-sm">{user.email}</p>
+                      ) : (
+                        user?.contactDetail?.map((info) =>
+                          info.collectionInfo ? (
+                            <p className="w-44  text-sm text-start">
+                              {info.collectionInfo.email
+                                ? info.collectionInfo.email
+                                : "Not Available"}
+                            </p>
+                          ) : null
+                        )
                       )}
                     </td>
-                    <td className="space-x-5 flex items-center">
+                    <td className="p-2">
+                      {user.status === "accept" ? (
+                        <p className="text-sm">Not Available</p>
+                      ) : (
+                        user?.contactDetail?.map((info) =>
+                          info.collectionInfo ? (
+                            <p className="w-54  text-sm text-ellipsis whitespace-wrap line-clamp-2 text-start">
+                              {info.collectionInfo.contactNumber
+                                ? info.collectionInfo.contactNumber
+                                : "Not Available"}
+                            </p>
+                          ) : null
+                        )
+                      )}
+                    </td>
+                    <td className="space-x-5 flex items-center mt-3">
                       <FaEdit
                         size={20}
                         color="#BFA75D"
@@ -243,8 +267,7 @@ const Customer = () => {
                   type="text"
                   name="name"
                   value={
-                    selectedCustomer?.contactDetail?.[0]?.collectionInfo
-                      ?.name || ""
+                    selectedCustomer?.contactDetail?.[0]?.collectionInfo?.name
                   }
                   onChange={handleChange}
                   className="w-full border rounded p-2 mt-1"
@@ -256,8 +279,10 @@ const Customer = () => {
                 </label>
                 <input
                   type="email"
-                  name="email" // This matches the property you're trying to update in collectionInfo
-                  value={selectedCustomer?.email || ""}
+                  name="email"
+                  value={
+                    selectedCustomer?.contactDetail?.[0]?.collectionInfo?.email
+                  }
                   onChange={handleChange}
                   className="w-full border rounded p-2 mt-1"
                 />
@@ -268,7 +293,7 @@ const Customer = () => {
                 </label>
                 <input
                   type="text"
-                  name="contactNumber" // This matches the property you're trying to update in collectionInfo
+                  name="contactNumber"
                   value={
                     selectedCustomer?.contactDetail?.[0]?.collectionInfo
                       ?.contactNumber || ""
