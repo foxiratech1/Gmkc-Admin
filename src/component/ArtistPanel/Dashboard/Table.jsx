@@ -80,7 +80,7 @@ const Table = ({ shipmentData, currentPage, setCurrentPage, data }) => {
                   </td>
                   <td className="p-2">
                     {user.status === "accept" ? (
-                      <Tooltip text={detail.collectionInfo.name} position="top">
+                      <Tooltip position="top">
                         <p className="text-sm">Not Available</p>
                       </Tooltip>
                     ) : (
