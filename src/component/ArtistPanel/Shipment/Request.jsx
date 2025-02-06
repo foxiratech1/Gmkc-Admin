@@ -195,11 +195,28 @@ const Request = () => {
                         </Tooltip>
                       </td>
                       <td className="px-4 py-4 text-[#12223D] font-normal">
-                        <Tooltip text={request.email} position="top">
+                        {!request.quoteStatus === "half" ? (
                           <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                             {request.email}
                           </p>
-                        </Tooltip>
+                        ) : (
+                          request?.contactDetail?.map((detail) =>
+                            detail.collectionInfo ? (
+                              <div key={detail.collectionInfo.email}>
+                                <Tooltip
+                                  text={detail.collectionInfo.email}
+                                  position="top"
+                                >
+                                  <p className="w-56 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                                    {detail.collectionInfo.email
+                                      ? detail.collectionInfo.email
+                                      : "Not Available"}
+                                  </p>
+                                </Tooltip>
+                              </div>
+                            ) : null
+                          )
+                        )}
                       </td>
                       <td className="px-4 py-4 text-[#12223D] font-normal">
                         <Tooltip text={request.vehicleType} position="top">
@@ -226,14 +243,30 @@ const Request = () => {
                         </Tooltip>
                       </td>
                       <td className="px-4 py-4 text-center">
-                        <Tooltip
-                          text={request.collectionAddress}
-                          position="top"
-                        >
-                          <p className="w-44 text-sm overflow-hidden text-ellipsis whitespace-wrap line-clamp-2">
+                        {!request.quoteStatus === "half" ? (
+                          <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                             {request.collectionAddress}
                           </p>
-                        </Tooltip>
+                        ) : (
+                          request?.contactDetail?.map((detail) =>
+                            detail.collectionInfo ? (
+                              <div
+                                key={detail.collectionInfo.collectionAddress}
+                              >
+                                <Tooltip
+                                  text={detail.collectionAddress}
+                                  position="top"
+                                >
+                                  <p className="w-56 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                                    {detail.collectionInfo.collectionAddress
+                                      ? detail.collectionInfo.collectionAddress
+                                      : "Not Available"}
+                                  </p>
+                                </Tooltip>
+                              </div>
+                            ) : null
+                          )
+                        )}
                       </td>
                       <td className="px-4 py-4 text-center">
                         <Tooltip text={request.deliveryAddress} position="top">

@@ -1,6 +1,6 @@
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 // const BASE_URL = "http://localhost:5000";
-
+//
 export const authendpoints = {
   SIGNIN_API: BASE_URL + "/api/admin/login",
   FORGET_PASSWORD_OTP: BASE_URL + "/api/admin/forgot-password-otp",

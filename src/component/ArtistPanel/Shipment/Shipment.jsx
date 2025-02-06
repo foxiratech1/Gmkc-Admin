@@ -224,7 +224,7 @@ const ShipmentTable = () => {
         setSelectedCustomer(response.data.data);
 
         preFillData(response.data.data);
-        if (stat == "half") {
+        if (stat == "") {
           setStatus(response.data.data.quoteStatus);
         }
         localStorage.setItem("formId", response.data.data._id);
@@ -330,7 +330,7 @@ const ShipmentTable = () => {
 
   console.log(
     "editableIntermediateStopseditableIntermediateStops",
-    editableDeliveryInfo
+    selectedCustomer?.contactDetail?.[0]?.collectionInfo?.name
   );
 
   return (
@@ -362,7 +362,7 @@ const ShipmentTable = () => {
                         </p>
                       </td>
                       <td className="px-2 py-3 text-[#12223D] font-normal">
-                        {user.quoteStatus === "half" ? (
+                        {user.quoteStatus === "" ? (
                           <p className="text-sm">Not Available</p>
                         ) : (
                           user?.contactDetail?.map((detail) =>
@@ -379,7 +379,7 @@ const ShipmentTable = () => {
                         )}
                       </td>
                       <td className="p-2">
-                        {user.quoteStatus === "half" ? (
+                        {user.quoteStatus === "" ? (
                           <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                             {user.email}
                           </p>
@@ -396,7 +396,7 @@ const ShipmentTable = () => {
                         )}
                       </td>
                       <td className="px-2 py-3 text-[#12223D] font-normal">
-                        {user.quoteStatus === "half" ? (
+                        {user.quoteStatus === "" ? (
                           <p className="text-sm">Not Available</p>
                         ) : (
                           user?.contactDetail?.map((detail) =>
@@ -411,7 +411,7 @@ const ShipmentTable = () => {
                         )}
                       </td>
                       <td className="px-2 py-3 text-[#12223D] font-normal">
-                        {user.quoteStatus === "half" ? (
+                        {user.quoteStatus === "" ? (
                           <p className="text-sm">{user.orderDate}</p>
                         ) : (
                           <>
@@ -431,7 +431,7 @@ const ShipmentTable = () => {
                         </Tooltip>
                       </td>
                       <td className="p-2">
-                        {user.quoteStatus === "half" ? (
+                        {user.quoteStatus === "" ? (
                           <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                             {user.collectionAddress}
                           </p>
@@ -463,7 +463,7 @@ const ShipmentTable = () => {
                         </Tooltip>
                       </td>
                       <td className="p-2">
-                        {user.quoteStatus === "half" ? (
+                        {user.quoteStatus === "" ? (
                           <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                             {user?.deliveryAddress}
                           </p>
@@ -486,7 +486,7 @@ const ShipmentTable = () => {
                           <MdOutlineRemoveRedEye
                             className="text-yellow-300 text-[20px] hover:cursor-pointer"
                             onClick={() =>
-                              handleClick(user._id, user.quoteStatus === "half")
+                              handleClick(user._id, user.quoteStatus === "")
                             }
                           />
                           <button
@@ -589,28 +589,28 @@ const ShipmentTable = () => {
                           <div>
                             <p className="py-1 pt-2">
                               Name:{" "}
-                              {selectedCustomer.quoteStatus == "half"
+                              {selectedCustomer.quoteStatus == ""
                                 ? "Not Available"
                                 : selectedCustomer?.contactDetail?.[0]
                                     ?.collectionInfo?.name}
                             </p>
                             <p className="py-1">
                               Email :{" "}
-                              {selectedCustomer.quoteStatus == "half"
+                              {selectedCustomer.quoteStatus == ""
                                 ? selectedCustomer.email
                                 : selectedCustomer?.contactDetail?.[0]
                                     ?.collectionInfo?.email}
                             </p>
                             <p className="py-1">
                               Contact:{" "}
-                              {selectedCustomer.quoteStatus == "half"
+                              {selectedCustomer.quoteStatus == ""
                                 ? "Not Available"
                                 : selectedCustomer?.contactDetail?.[0]
                                     ?.collectionInfo?.contactNumber}
                             </p>
                             <p className="py-1">
                               Address:{" "}
-                              {selectedCustomer.quoteStatus == "half"
+                              {selectedCustomer.quoteStatus == ""
                                 ? selectedCustomer.collectionAddress
                                 : selectedCustomer?.contactDetail?.[0]
                                     ?.collectionInfo?.collectionAddress}
@@ -786,28 +786,28 @@ const ShipmentTable = () => {
                           <div>
                             <p className="py-1 pt-2">
                               Name:{" "}
-                              {selectedCustomer.quoteStatus == "half"
+                              {selectedCustomer.quoteStatus == ""
                                 ? "Not Available"
                                 : selectedCustomer?.contactDetail?.[0]
                                     ?.deliveryInfo?.deliveryName}
                             </p>
                             <p className="py-1">
                               Email:{" "}
-                              {selectedCustomer.quoteStatus == "half"
+                              {selectedCustomer.quoteStatus == ""
                                 ? "Not Available"
                                 : selectedCustomer?.contactDetail?.[0]
                                     ?.deliveryInfo?.deliveryEmail}
                             </p>
                             <p className="py-1">
                               Contact:{" "}
-                              {selectedCustomer.quoteStatus == "half"
+                              {selectedCustomer.quoteStatus == ""
                                 ? "Not Available"
                                 : selectedCustomer?.contactDetail?.[0]
                                     ?.deliveryInfo?.deliveryContactNumber}
                             </p>
                             <p className="py-1">
                               Address:{" "}
-                              {selectedCustomer.quoteStatus == "half"
+                              {selectedCustomer.quoteStatus == ""
                                 ? selectedCustomer.deliveryAddress
                                 : selectedCustomer?.contactDetail?.[0]
                                     ?.deliveryInfo?.deliveryAddress}
