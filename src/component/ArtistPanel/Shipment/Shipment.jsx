@@ -329,7 +329,7 @@ const ShipmentTable = () => {
 
   console.log(
     "editableIntermediateStopseditableIntermediateStops",
-    selectedCustomer
+    editableDeliveryInfo
   );
 
   return (
@@ -588,31 +588,31 @@ const ShipmentTable = () => {
                           <div>
                             <p className="py-1 pt-2">
                               Name:{" "}
-                              {selectedCustomer.status == "accept"
-                                ? "Not Available"
-                                : selectedCustomer?.contactDetail?.[0]
-                                    ?.collectionInfo?.name}
+                              {
+                                selectedCustomer?.contactDetail?.[0]
+                                  ?.collectionInfo?.name
+                              }
                             </p>
                             <p className="py-1">
                               Email :{" "}
-                              {selectedCustomer.status == "accept"
-                                ? selectedCustomer.email
-                                : selectedCustomer?.contactDetail?.[0]
-                                    ?.collectionInfo?.email}
+                              {
+                                selectedCustomer?.contactDetail?.[0]
+                                  ?.collectionInfo?.email
+                              }
                             </p>
                             <p className="py-1">
                               Contact:{" "}
-                              {selectedCustomer.status == "accept"
-                                ? "Not Available"
-                                : selectedCustomer?.contactDetail?.[0]
-                                    ?.collectionInfo?.contactNumber}
+                              {
+                                selectedCustomer?.contactDetail?.[0]
+                                  ?.collectionInfo?.contactNumber
+                              }
                             </p>
                             <p className="py-1">
                               Address:{" "}
-                              {selectedCustomer.status == "accept"
-                                ? selectedCustomer.collectionAddress
-                                : selectedCustomer?.contactDetail?.[0]
-                                    ?.collectionInfo?.collectionAddress}
+                              {
+                                selectedCustomer?.contactDetail?.[0]
+                                  ?.collectionInfo?.collectionAddress
+                              }
                             </p>
                           </div>
 
@@ -627,13 +627,13 @@ const ShipmentTable = () => {
                 </div>
                 <div className="mt-4">
                   <p className="font-semibold text-md">Intermediate Stops:</p>
-                  <div className="py-[4px] px-7 bg-gray-400 text-black font-semibold rounded-md mt-1 text-[14px]">
+                  <div className="py-[4px] px-7 bg-gray-400 text-black font-semibold rounded-md mt-4 text-[14px]">
                     {editMode === 3 ? (
                       <>
                         {intermediateStops.map((stop, index) => (
                           <div
                             key={index}
-                            className="mb-2 border p-2 rounded bg-gray-300"
+                            className="mb-2 py-3 border p-2 rounded bg-gray-300 mt-4"
                           >
                             <input
                               type="text"
@@ -689,17 +689,18 @@ const ShipmentTable = () => {
                             />
                           </div>
                         ))}
-                        <button
-                          onClick={handleAddStop}
-                          className="mt-2 p-2 bg-blue-500 text-white rounded"
-                        >
-                          Add Stop
-                        </button>
+                        <div className="w-full flex justify-end my-2">
+                          <button
+                            onClick={handleAddStop}
+                            className="mt-4 bg-black font-medium text-white py-2 px-4 rounded"
+                          >
+                            Add Stop
+                          </button>
+                        </div>
                       </>
                     ) : (
                       <div className="flex py-4">
                         <div className="w-full">
-                          {" "}
                           {selectedCustomer?.contactDetail?.[0]?.deliveryInfo?.intermediateStops?.map(
                             (item, index) => (
                               <div
@@ -737,7 +738,7 @@ const ShipmentTable = () => {
                       <>
                         <input
                           type="text"
-                          value={editableDeliveryInfo.deliveryName}
+                          value={editableDeliveryInfo.deliveryName || " "}
                           onChange={(e) =>
                             handleInputChangeDelivery(e, "deliveryName")
                           }
@@ -746,7 +747,7 @@ const ShipmentTable = () => {
                         />
                         <input
                           type="email"
-                          value={editableDeliveryInfo.deliveryEmail}
+                          value={editableDeliveryInfo.deliveryEmail || " "}
                           onChange={(e) =>
                             handleInputChangeDelivery(e, "deliveryEmail")
                           }
@@ -755,7 +756,9 @@ const ShipmentTable = () => {
                         />
                         <input
                           type="text"
-                          value={editableDeliveryInfo.deliveryContactNumber}
+                          value={
+                            editableDeliveryInfo.deliveryContactNumber || " "
+                          }
                           onChange={(e) =>
                             handleInputChangeDelivery(
                               e,
@@ -781,31 +784,31 @@ const ShipmentTable = () => {
                           <div>
                             <p className="py-1 pt-2">
                               Name:{" "}
-                              {selectedCustomer.status == "accept"
-                                ? "Not Available"
-                                : selectedCustomer?.contactDetail?.[0]
-                                    ?.deliveryInfo?.deliveryName}
+                              {
+                                selectedCustomer?.contactDetail?.[0]
+                                  ?.deliveryInfo?.deliveryName
+                              }
                             </p>
                             <p className="py-1">
                               Email:{" "}
-                              {selectedCustomer.status == "accept"
-                                ? "Not Available"
-                                : selectedCustomer?.contactDetail?.[0]
-                                    ?.deliveryInfo?.deliveryEmail}
+                              {
+                                selectedCustomer?.contactDetail?.[0]
+                                  ?.deliveryInfo?.deliveryEmail
+                              }
                             </p>
                             <p className="py-1">
                               Contact:{" "}
-                              {selectedCustomer.status == "accept"
-                                ? "Not Available"
-                                : selectedCustomer?.contactDetail?.[0]
-                                    ?.deliveryInfo?.deliveryContactNumber}
+                              {
+                                selectedCustomer?.contactDetail?.[0]
+                                  ?.deliveryInfo?.deliveryContactNumber
+                              }
                             </p>
                             <p className="py-1">
                               Address:{" "}
-                              {selectedCustomer.status == "accept"
-                                ? selectedCustomer.deliveryAddress
-                                : selectedCustomer?.contactDetail?.[0]
-                                    ?.deliveryInfo?.deliveryAddress}
+                              {
+                                selectedCustomer?.contactDetail?.[0]
+                                  ?.deliveryInfo?.deliveryAddress
+                              }
                             </p>
                           </div>
 
