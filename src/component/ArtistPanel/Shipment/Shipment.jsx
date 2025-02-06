@@ -318,8 +318,9 @@ const ShipmentTable = () => {
       );
 
       setEditMode(null);
-      if (response.quoteStatus === 200) {
+      if (response.status === 200) {
         setIsModalOpen(false);
+        window.location.reload();
         closeModal();
       }
     } catch (error) {
