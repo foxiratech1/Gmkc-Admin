@@ -224,8 +224,8 @@ const ShipmentTable = () => {
         setSelectedCustomer(response.data.data);
 
         preFillData(response.data.data);
-        if (stat == "accept") {
-          setStatus(response.data.data.status);
+        if (stat == "half") {
+          setStatus(response.data.data.quoteStatus);
         }
         localStorage.setItem("formId", response.data.data._id);
         setIsModalOpen(true);
@@ -303,7 +303,7 @@ const ShipmentTable = () => {
             ...editableDeliveryInfo,
             intermediateStops, // directly include the state here
           },
-          status: statuss,
+          quoteStatus: statuss,
         },
       };
 
@@ -318,7 +318,7 @@ const ShipmentTable = () => {
       );
 
       setEditMode(null);
-      if (response.status === 200) {
+      if (response.quoteStatus === 200) {
         setIsModalOpen(false);
         closeModal();
       }
@@ -361,7 +361,7 @@ const ShipmentTable = () => {
                         </p>
                       </td>
                       <td className="px-2 py-3 text-[#12223D] font-normal">
-                        {user.status === "accept" ? (
+                        {user.quoteStatus === "half" ? (
                           <p className="text-sm">Not Available</p>
                         ) : (
                           user?.contactDetail?.map((detail) =>
@@ -378,7 +378,7 @@ const ShipmentTable = () => {
                         )}
                       </td>
                       <td className="p-2">
-                        {user.status === "accept" ? (
+                        {user.quoteStatus === "half" ? (
                           <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                             {user.email}
                           </p>
@@ -395,7 +395,7 @@ const ShipmentTable = () => {
                         )}
                       </td>
                       <td className="px-2 py-3 text-[#12223D] font-normal">
-                        {user.status === "accept" ? (
+                        {user.quoteStatus === "half" ? (
                           <p className="text-sm">Not Available</p>
                         ) : (
                           user?.contactDetail?.map((detail) =>
@@ -410,7 +410,7 @@ const ShipmentTable = () => {
                         )}
                       </td>
                       <td className="px-2 py-3 text-[#12223D] font-normal">
-                        {user.status === "accept" ? (
+                        {user.quoteStatus === "half" ? (
                           <p className="text-sm">{user.orderDate}</p>
                         ) : (
                           <>
@@ -430,7 +430,7 @@ const ShipmentTable = () => {
                         </Tooltip>
                       </td>
                       <td className="p-2">
-                        {user.status === "accept" ? (
+                        {user.quoteStatus === "half" ? (
                           <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                             {user.collectionAddress}
                           </p>
@@ -462,7 +462,7 @@ const ShipmentTable = () => {
                         </Tooltip>
                       </td>
                       <td className="p-2">
-                        {user.status === "accept" ? (
+                        {user.quoteStatus === "half" ? (
                           <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                             {user?.deliveryAddress}
                           </p>
@@ -485,7 +485,7 @@ const ShipmentTable = () => {
                           <MdOutlineRemoveRedEye
                             className="text-yellow-300 text-[20px] hover:cursor-pointer"
                             onClick={() =>
-                              handleClick(user._id, user.status === "accept")
+                              handleClick(user._id, user.quoteStatus === "half")
                             }
                           />
                           <button
@@ -564,7 +564,7 @@ const ShipmentTable = () => {
                           placeholder="Email"
                         />
                         <input
-                          type="text"
+                          type="number"
                           value={editableCollectionInfo.contactNumber}
                           onChange={(e) =>
                             handleInputChangeCollection(e, "contactNumber")
@@ -588,31 +588,31 @@ const ShipmentTable = () => {
                           <div>
                             <p className="py-1 pt-2">
                               Name:{" "}
-                              {
-                                selectedCustomer?.contactDetail?.[0]
-                                  ?.collectionInfo?.name
-                              }
+                              {selectedCustomer.quoteStatus == "half"
+                                ? "Not Available"
+                                : selectedCustomer?.contactDetail?.[0]
+                                    ?.collectionInfo?.name}
                             </p>
                             <p className="py-1">
                               Email :{" "}
-                              {
-                                selectedCustomer?.contactDetail?.[0]
-                                  ?.collectionInfo?.email
-                              }
+                              {selectedCustomer.quoteStatus == "half"
+                                ? selectedCustomer.email
+                                : selectedCustomer?.contactDetail?.[0]
+                                    ?.collectionInfo?.email}
                             </p>
                             <p className="py-1">
                               Contact:{" "}
-                              {
-                                selectedCustomer?.contactDetail?.[0]
-                                  ?.collectionInfo?.contactNumber
-                              }
+                              {selectedCustomer.quoteStatus == "half"
+                                ? "Not Available"
+                                : selectedCustomer?.contactDetail?.[0]
+                                    ?.collectionInfo?.contactNumber}
                             </p>
                             <p className="py-1">
                               Address:{" "}
-                              {
-                                selectedCustomer?.contactDetail?.[0]
-                                  ?.collectionInfo?.collectionAddress
-                              }
+                              {selectedCustomer.quoteStatus == "half"
+                                ? selectedCustomer.collectionAddress
+                                : selectedCustomer?.contactDetail?.[0]
+                                    ?.collectionInfo?.collectionAddress}
                             </p>
                           </div>
 
@@ -662,7 +662,7 @@ const ShipmentTable = () => {
                               placeholder="Stop Email"
                             />
                             <input
-                              type="text"
+                              type="number"
                               value={stop.stopContactNumber}
                               onChange={(e) =>
                                 handleInputChange(
@@ -738,7 +738,7 @@ const ShipmentTable = () => {
                       <>
                         <input
                           type="text"
-                          value={editableDeliveryInfo.deliveryName || " "}
+                          value={editableDeliveryInfo.deliveryName || ""}
                           onChange={(e) =>
                             handleInputChangeDelivery(e, "deliveryName")
                           }
@@ -755,7 +755,7 @@ const ShipmentTable = () => {
                           placeholder="Email"
                         />
                         <input
-                          type="text"
+                          type="number"
                           value={
                             editableDeliveryInfo.deliveryContactNumber || " "
                           }
@@ -766,8 +766,9 @@ const ShipmentTable = () => {
                             )
                           }
                           className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                          placeholder="Phone"
+                          placeholder="Contact Number"
                         />
+
                         <input
                           type="text"
                           value={editableDeliveryInfo.deliveryAddress || ""}
@@ -784,31 +785,31 @@ const ShipmentTable = () => {
                           <div>
                             <p className="py-1 pt-2">
                               Name:{" "}
-                              {
-                                selectedCustomer?.contactDetail?.[0]
-                                  ?.deliveryInfo?.deliveryName
-                              }
+                              {selectedCustomer.quoteStatus == "half"
+                                ? "Not Available"
+                                : selectedCustomer?.contactDetail?.[0]
+                                    ?.deliveryInfo?.deliveryName}
                             </p>
                             <p className="py-1">
                               Email:{" "}
-                              {
-                                selectedCustomer?.contactDetail?.[0]
-                                  ?.deliveryInfo?.deliveryEmail
-                              }
+                              {selectedCustomer.quoteStatus == "half"
+                                ? "Not Available"
+                                : selectedCustomer?.contactDetail?.[0]
+                                    ?.deliveryInfo?.deliveryEmail}
                             </p>
                             <p className="py-1">
                               Contact:{" "}
-                              {
-                                selectedCustomer?.contactDetail?.[0]
-                                  ?.deliveryInfo?.deliveryContactNumber
-                              }
+                              {selectedCustomer.quoteStatus == "half"
+                                ? "Not Available"
+                                : selectedCustomer?.contactDetail?.[0]
+                                    ?.deliveryInfo?.deliveryContactNumber}
                             </p>
                             <p className="py-1">
                               Address:{" "}
-                              {
-                                selectedCustomer?.contactDetail?.[0]
-                                  ?.deliveryInfo?.deliveryAddress
-                              }
+                              {selectedCustomer.quoteStatus == "half"
+                                ? selectedCustomer.deliveryAddress
+                                : selectedCustomer?.contactDetail?.[0]
+                                    ?.deliveryInfo?.deliveryAddress}
                             </p>
                           </div>
 
