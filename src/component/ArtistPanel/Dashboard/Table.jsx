@@ -46,7 +46,6 @@ const Table = ({ shipmentData, currentPage, setCurrentPage, data }) => {
 
   const confirmDelete = () => {
     const updatedData = data.filter((_, index) => index !== deleteIndex);
-    console.log("updatedData", updatedData);
     setData(updatedData);
     setDeleteModalOpen(false);
   };

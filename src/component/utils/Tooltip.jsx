@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Tooltip = ({ text, children, position = "top" }) => {
+const Tooltip = ({ text, children, position = "top", isUser }) => {
   const [visible, setVisible] = useState(false);
 
   const handleMouseEnter = () => {
@@ -12,7 +12,7 @@ const Tooltip = ({ text, children, position = "top" }) => {
   };
 
   const positionClasses = {
-    top: "bottom-full left-1/2 transform -translate-x-1/2 mb-2",
+    top: "bottom-full  mb-2",
     bottom: "top-full left-1/2 transform -translate-x-1/2 mt-2",
     left: "right-full top-1/2 transform -translate-y-1/2 mr-2",
     right: "left-full top-1/2 transform -translate-y-1/2 ml-2",
@@ -20,7 +20,9 @@ const Tooltip = ({ text, children, position = "top" }) => {
 
   return (
     <div
-      className="relative flex items-center justify-center"
+      className={`relative flex items-center ${
+        isUser ? "justify-start" : "justify-center"
+      }`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

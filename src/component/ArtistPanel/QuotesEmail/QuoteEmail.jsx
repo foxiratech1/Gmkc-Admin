@@ -44,7 +44,6 @@ const QuoteEmail = () => {
   if (isError) {
     return <p>{error?.response?.data?.message}</p>;
   }
-  console.log("data?.data", data?.data);
 
   return (
     <>
@@ -80,49 +79,74 @@ const QuoteEmail = () => {
                           </Tooltip>
                         </td>
                         <td className="px-2 py-3 text-[#12223D] font-normal text-center">
-                          <Tooltip text={"collectionInfoname"} position="top">
+                          <Tooltip
+                            text={contactDetail.collectionInfo?.name}
+                            position="top"
+                          >
                             <p className="w-20 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2 text-center">
                               {contactDetail.collectionInfo?.name}
                             </p>
                           </Tooltip>
                         </td>
                         <td className="px-2 py-3 text-[#12223D] font-normal text-center">
-                          <Tooltip text={"collectionInfoname"} position="top">
+                          <Tooltip
+                            text={contactDetail.collectionInfo?.email}
+                            position="top"
+                          >
                             <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2 text-center ">
                               {contactDetail.collectionInfo?.email}
                             </p>
                           </Tooltip>
                         </td>
                         <td className="px-2 py-3 text-[#12223D] font-normal text-center">
-                          <Tooltip text={"collectionInfoname"} position="top">
+                          <Tooltip
+                            text={contactDetail.collectionInfo?.contactNumber}
+                            position="top"
+                          >
                             <p className="w-20 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2 text-center">
                               {contactDetail.collectionInfo?.contactNumber}
                             </p>
                           </Tooltip>
                         </td>
                         <td className="px-2 py-3 text-[#12223D] font-normal text-center">
-                          <Tooltip text={"collectionInfoname"} position="top">
+                          <Tooltip
+                            text={
+                              contactDetail.collectionInfo?.collectionAddress
+                            }
+                            position="top"
+                          >
                             <p className="w-20 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2 text-center">
                               {contactDetail.collectionInfo?.collectionAddress}
                             </p>
                           </Tooltip>
                         </td>
                         <td className="px-2 py-3 text-[#12223D] font-normal text-center">
-                          <Tooltip text={"collectionInfoname"} position="top">
+                          <Tooltip
+                            text={contactDetail.deliveryInfo?.deliveryName}
+                            position="top"
+                          >
                             <p className="w-20 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2 text-center">
                               {contactDetail.deliveryInfo?.deliveryName}
                             </p>
                           </Tooltip>
                         </td>
                         <td className="px-2 py-3 text-[#12223D] font-normal text-center">
-                          <Tooltip text={"collectionInfoname"} position="top">
+                          <Tooltip
+                            text={contactDetail.deliveryInfo?.deliveryEmail}
+                            position="top"
+                          >
                             <p className="w-20 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2 text-center">
                               {contactDetail.deliveryInfo?.deliveryEmail}
                             </p>
                           </Tooltip>
                         </td>
                         <td className="px-2 py-3 text-[#12223D] font-normal text-center">
-                          <Tooltip text={"collectionInfoname"} position="top">
+                          <Tooltip
+                            text={
+                              contactDetail.deliveryInfo?.deliveryContactNumber
+                            }
+                            position="top"
+                          >
                             <p className="w-20 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                               {
                                 contactDetail.deliveryInfo
@@ -132,7 +156,10 @@ const QuoteEmail = () => {
                           </Tooltip>
                         </td>
                         <td className="px-2 py-3 text-[#12223D] font-normal text-center">
-                          <Tooltip text={"collectionInfoname"} position="top">
+                          <Tooltip
+                            text={contactDetail.deliveryInfo?.deliveryAddress}
+                            position="top"
+                          >
                             <p className="w-20 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                               {contactDetail.deliveryInfo?.deliveryAddress}
                             </p>

@@ -6,8 +6,6 @@ import { setEmail } from "../../../store/userSlice/userSlice";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-
-
 async function forgetOtp(data) {
   return axiosInstance.post(authendpoints.FORGET_PASSWORD_OTP, data);
 }
@@ -19,11 +17,10 @@ const ForgetPasswordOtp = () => {
     mutationFn: forgetOtp,
 
     onSuccess: async (res) => {
-       console.log(res)
-       dispatch(setEmail(res.data.email))
-        navigate('/otp', {
+      dispatch(setEmail(res.data.email));
+      navigate("/otp", {
         replace: true,
-        });
+      });
       toast.success(res.data.message);
     },
     onError: (res) => {

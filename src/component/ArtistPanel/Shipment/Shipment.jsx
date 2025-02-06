@@ -51,6 +51,7 @@ const table_head = [
     head: "Action",
   },
 ];
+
 const ShipmentTable = () => {
   const { token } = useSelector((state) => state.user);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -69,7 +70,7 @@ const ShipmentTable = () => {
   const { data: popupdata } = GetSingleShipmentData({ token, userId });
   const { mutateAsync, isPending } = EditShipmentStop(userId);
   const { mutateAsync: deleteShipment } = DeleteShipment();
-  const [isModalOpen, setIsModalOpen] = useState(false); // To control modal visibility
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedShipment, setSelectedShipment] = useState(null);
   const [statuss, setStatus] = useState("");
   const [editMode, setEditMode] = useState(null);
@@ -87,18 +88,82 @@ const ShipmentTable = () => {
     deliveryAddress: "",
   });
 
-  const [editableIntermediateStops, setEditableIntermediateStops] = useState({
-    stopOneName: "",
-    stopOneEmail: "",
-    stopOneContactNumber: "",
-    stopOneAddress: "",
-  });
+  // const [editableIntermediateStops, setEditableIntermediateStops] = useState({
+  //   stopOneName: "",
+  //   stopOneEmail: "",
+  //   stopOneContactNumber: "",
+  //   stopOneAddress: "",
+  // });
   const [editableIntermediateStops2, setEditableIntermediateStops2] = useState({
     stopTwoName: "",
     stopTwoEmail: "",
     stopTwoContactNumber: "",
     stopTwoAddress: "",
   });
+  // const [editableIntermediateStops, setEditableIntermediateStops] = useState([
+  //   {
+  //     stopOneName: "",
+  //     stopOneEmail: "",
+  //     stopOneContactNumber: "",
+  //     stopOneAddress: "",
+  //   },
+  // ]);
+  const [editableIntermediateStops, setEditableIntermediateStops] = useState([
+    {
+      stopName1: "",
+      stopEmail1: "",
+      stopContactNumber1: "",
+      stopAddress1: "",
+    },
+  ]);
+  const [intermediateStops, setIntermediateStops] = useState([
+    { stopName: "", stopEmail: "", stopContactNumber: "", stopAddress: "" },
+  ]);
+
+  const handleInputChange = (index, field, value) => {
+    const updatedStops = [...intermediateStops];
+    updatedStops[index][field] = value;
+    setIntermediateStops(updatedStops);
+  };
+
+  const handleAddStop = () => {
+    setIntermediateStops([
+      ...intermediateStops,
+      { stopName: "", stopEmail: "", stopContactNumber: "", stopAddress: "" },
+    ]);
+  };
+  const handleRemoveStop = (index) => {
+    const updatedStops = editableIntermediateStops.filter(
+      (_, i) => i !== index
+    );
+    setEditableIntermediateStops(updatedStops);
+  };
+  console.log("intermediateStopsintermediateStops", intermediateStops);
+
+  const handleAddStops = () => {
+    const nextStopIndex = editableIntermediateStops.length + 1;
+    setEditableIntermediateStops([
+      ...editableIntermediateStops,
+      {
+        [`stopName${nextStopIndex}`]: "",
+        [`stopEmail${nextStopIndex}`]: "",
+        [`stopContactNumber${nextStopIndex}`]: "",
+        [`stopAddress${nextStopIndex}`]: "",
+      },
+    ]);
+  };
+
+  const handleInputChangeIntermediateStop = (e, index, field) => {
+    const updatedStops = [...editableIntermediateStops];
+    updatedStops[index][field] = e.target.value;
+    setEditableIntermediateStops(updatedStops);
+  };
+
+  // const handleInputChangeIntermediateStop = (e, index, field) => {
+  //   const updatedStops = [...editableIntermediateStops];
+  //   updatedStops[index][field] = e.target.value;
+  //   setEditableIntermediateStops(updatedStops);
+  // };
 
   useEffect(() => {
     if (data) {
@@ -157,6 +222,7 @@ const ShipmentTable = () => {
 
       if (response?.data?.data) {
         setSelectedCustomer(response.data.data);
+
         preFillData(response.data.data);
         if (stat == "accept") {
           setStatus(response.data.data.status);
@@ -170,7 +236,10 @@ const ShipmentTable = () => {
       throw error;
     }
   };
-
+  console.log(
+    "selectedCustomerselectedCustomerselectedCustomer",
+    selectedCustomer
+  );
   const handleInputChangeCollection = (e, field) => {
     setEditableCollectionInfo({
       ...editableCollectionInfo,
@@ -184,93 +253,40 @@ const ShipmentTable = () => {
       [field]: e.target.value,
     });
   };
-  const handleInputChangeIntermediateStop = (e, field) => {
-    setEditableIntermediateStops({
-      ...editableIntermediateStops,
-      [field]: e.target.value,
-    });
-  };
+  // const handleInputChangeIntermediateStop = (e, field) => {
+  //   setEditableIntermediateStops({
+  //     ...editableIntermediateStops,
+  //     [field]: e.target.value,
+  //   });
+  // };
   const handleInputChangeIntermediateStop2 = (e, field) => {
     setEditableIntermediateStops2({
       ...editableIntermediateStops2,
       [field]: e.target.value,
     });
   };
-  // const preFillData = (customerData) => {
-  //   setEditableCollectionInfo({
-  //     ...customerData?.contactDetail?.[0]?.collectionInfo,
-  //   });
-  //   setEditableDeliveryInfo({
-  //     ...customerData?.contactDetail?.[0]?.deliveryInfo,
-  //   });
-  //   setEditableIntermediateStops({
-  //     stopOneName:
-  //       customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-  //         .intermediateStopOne.stopOneName,
-  //     stopOneEmail:
-  //       customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-  //         .intermediateStopOne.stopOneEmail,
-  //     stopOneContactNumber:
-  //       customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-  //         .intermediateStopOne.stopOneContactNumber,
-  //     stopOneAddress:
-  //       customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-  //         ?.intermediateStopOne.stopOneAddress,
-  //   });
-  //   setEditableIntermediateStops2({
-  //     stopTwoName:
-  //       customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-  //         .intermediateStopTwo.stopTwoName,
-  //     stopTwoEmail:
-  //       customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-  //         .intermediateStopTwo.stopTwoEmail,
-  //     stopTwoContactNumber:
-  //       customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-  //         .intermediateStopTwo.stopTwoContactNumber,
-  //     stopTwoAddress:
-  //       customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-  //         ?.intermediateStopTwo.stopTwoAddress,
-  //   });
-  // };
-
   const preFillData = (customerData) => {
+    // Prefill collection info
     setEditableCollectionInfo({
       ...customerData?.contactDetail?.[0]?.collectionInfo,
     });
+
+    // Prefill delivery info
     setEditableDeliveryInfo({
       ...customerData?.contactDetail?.[0]?.deliveryInfo,
     });
 
+    // Prefill intermediate stops
     if (customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops) {
-      setEditableIntermediateStops({
-        stopOneName:
-          customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-            ?.intermediateStopOne?.stopOneName || "",
-        stopOneEmail:
-          customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-            ?.intermediateStopOne?.stopOneEmail || "",
-        stopOneContactNumber:
-          customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-            ?.intermediateStopOne?.stopOneContactNumber || "",
-        stopOneAddress:
-          customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-            ?.intermediateStopOne?.stopOneAddress || "",
-      });
-
-      setEditableIntermediateStops2({
-        stopTwoName:
-          customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-            ?.intermediateStopTwo?.stopTwoName || "",
-        stopTwoEmail:
-          customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-            ?.intermediateStopTwo?.stopTwoEmail || "",
-        stopTwoContactNumber:
-          customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-            ?.intermediateStopTwo?.stopTwoContactNumber || "",
-        stopTwoAddress:
-          customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops
-            ?.intermediateStopTwo?.stopTwoAddress || "",
-      });
+      const stopsData =
+        customerData.contactDetail[0].deliveryInfo.intermediateStops;
+      const formattedStops = stopsData.map((stop) => ({
+        stopName: stop.stopName || "",
+        stopEmail: stop.stopEmail || "",
+        stopContactNumber: stop.stopContactNumber || "",
+        stopAddress: stop.stopAddress || "",
+      }));
+      setIntermediateStops(formattedStops);
     }
   };
 
@@ -285,10 +301,7 @@ const ShipmentTable = () => {
           collectionInfo: editableCollectionInfo,
           deliveryInfo: {
             ...editableDeliveryInfo,
-            intermediateStops: {
-              intermediateStopOne: editableIntermediateStops,
-              intermediateStopTwo: editableIntermediateStops2,
-            },
+            intermediateStops, // directly include the state here
           },
           status: statuss,
         },
@@ -303,17 +316,21 @@ const ShipmentTable = () => {
           },
         }
       );
+
       setEditMode(null);
-      if (response.status == 200) {
-        setEditMode(null);
+      if (response.status === 200) {
         setIsModalOpen(false);
-        window.location.reload();
         closeModal();
       }
     } catch (error) {
-      throw error;
+      console.error("Error saving data:", error);
     }
   };
+
+  console.log(
+    "editableIntermediateStopseditableIntermediateStops",
+    selectedCustomer
+  );
 
   return (
     <>
@@ -519,7 +536,6 @@ const ShipmentTable = () => {
                 <h2 className="text-xl font-semibold mb-4">
                   Shipment Delivery Detail
                 </h2>
-
                 <div>
                   <p className="font-semibold text-md">Pickup Location:</p>
                   <div className="py-[4px] px-7 bg-gray-400 text-black font-semibold rounded-md mt-1 text-[14px]">
@@ -610,93 +626,100 @@ const ShipmentTable = () => {
                   </div>
                 </div>
                 <div className="mt-4">
-                  <p className="font-semibold text-md">Intermediate Stops 1:</p>
+                  <p className="font-semibold text-md">Intermediate Stops:</p>
                   <div className="py-[4px] px-7 bg-gray-400 text-black font-semibold rounded-md mt-1 text-[14px]">
                     {editMode === 3 ? (
-                      <div>
-                        <input
-                          type="text"
-                          value={editableIntermediateStops?.stopOneName}
-                          onChange={(e) =>
-                            handleInputChangeIntermediateStop(e, "stopOneName")
-                          }
-                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                          placeholder="Stop Name"
-                        />
-
-                        <input
-                          type="email"
-                          value={editableIntermediateStops?.stopOneEmail}
-                          onChange={(e) =>
-                            handleInputChangeIntermediateStop(e, "stopOneEmail")
-                          }
-                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                          placeholder="Stop Email"
-                        />
-
-                        <input
-                          type="text"
-                          value={
-                            editableIntermediateStops?.stopOneContactNumber
-                          }
-                          onChange={(e) =>
-                            handleInputChangeIntermediateStop(
-                              e,
-                              "stopOneContactNumber"
-                            )
-                          }
-                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                          placeholder="Stop Contact Number"
-                        />
-
-                        <input
-                          type="text"
-                          value={editableIntermediateStops?.stopOneAddress}
-                          onChange={(e) =>
-                            handleInputChangeIntermediateStop(
-                              e,
-                              "stopOneAddress"
-                            )
-                          }
-                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                          placeholder="Stop Address"
-                        />
-                      </div>
+                      <>
+                        {intermediateStops.map((stop, index) => (
+                          <div
+                            key={index}
+                            className="mb-2 border p-2 rounded bg-gray-300"
+                          >
+                            <input
+                              type="text"
+                              value={stop.stopName}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  index,
+                                  "stopName",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                              placeholder="Stop Name"
+                            />
+                            <input
+                              type="email"
+                              value={stop.stopEmail}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  index,
+                                  "stopEmail",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                              placeholder="Stop Email"
+                            />
+                            <input
+                              type="text"
+                              value={stop.stopContactNumber}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  index,
+                                  "stopContactNumber",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                              placeholder="Stop Contact Number"
+                            />
+                            <input
+                              type="text"
+                              value={stop.stopAddress}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  index,
+                                  "stopAddress",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                              placeholder="Stop Address"
+                            />
+                          </div>
+                        ))}
+                        <button
+                          onClick={handleAddStop}
+                          className="mt-2 p-2 bg-blue-500 text-white rounded"
+                        >
+                          Add Stop
+                        </button>
+                      </>
                     ) : (
-                      <div className="flex justify-between">
-                        <div>
-                          <p className="py-1 pt-2">
-                            Name:
-                            {
-                              selectedCustomer?.contactDetail?.[0]?.deliveryInfo
-                                ?.intermediateStops?.intermediateStopOne
-                                ?.stopOneName
-                            }
-                          </p>
-                          <p className="py-1">
-                            Email:
-                            {
-                              selectedCustomer?.contactDetail?.[0]?.deliveryInfo
-                                ?.intermediateStops?.intermediateStopOne
-                                ?.stopOneEmail
-                            }
-                          </p>
-                          <p className="py-1">
-                            Contact No.:
-                            {
-                              selectedCustomer?.contactDetail?.[0]?.deliveryInfo
-                                ?.intermediateStops?.intermediateStopOne
-                                ?.stopOneContactNumber
-                            }
-                          </p>
-                          <p className="py-1">
-                            Address:
-                            {
-                              selectedCustomer?.contactDetail?.[0]?.deliveryInfo
-                                ?.intermediateStops?.intermediateStopOne
-                                ?.stopOneAddress
-                            }
-                          </p>
+                      <div className="flex py-4">
+                        <div className="w-full">
+                          {" "}
+                          {selectedCustomer?.contactDetail?.[0]?.deliveryInfo?.intermediateStops?.map(
+                            (item, index) => (
+                              <div
+                                key={index}
+                                className="mb-2 border p-2 rounded bg-gray-300 ml-[1rem]
+"
+                              >
+                                <p className="py-1 pt-2">
+                                  Name: {item.stopName}
+                                </p>
+                                <p className="py-1">Email: {item.stopEmail}</p>
+                                <p className="py-1">
+                                  Contact: {item.stopContactNumber}
+                                </p>
+                                <p className="py-1">
+                                  Address: {item.stopAddress}
+                                </p>
+                              </div>
+                            )
+                          )}
                         </div>
                         <FaEdit
                           onClick={() => handleEditClick(3)}
@@ -707,106 +730,6 @@ const ShipmentTable = () => {
                   </div>
                 </div>
 
-                <div className="mt-4">
-                  <p className="font-semibold text-md">Intermediate Stops 2:</p>
-                  <div className="py-[4px] px-7 bg-gray-400 text-black font-semibold rounded-md mt-1 text-[14px]">
-                    {editMode === 4 ? (
-                      <div>
-                        <input
-                          type="text"
-                          value={editableIntermediateStops2.stopTwoName}
-                          onChange={(e) =>
-                            handleInputChangeIntermediateStop2(e, "stopTwoName")
-                          }
-                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                          placeholder="Stop Name"
-                        />
-
-                        <input
-                          type="email"
-                          value={editableIntermediateStops2.stopTwoEmail}
-                          onChange={(e) =>
-                            handleInputChangeIntermediateStop2(
-                              e,
-                              "stopTwoEmail"
-                            )
-                          }
-                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                          placeholder="Stop Email"
-                        />
-
-                        <input
-                          type="text"
-                          value={
-                            editableIntermediateStops2?.stopTwoContactNumber
-                          }
-                          onChange={(e) =>
-                            handleInputChangeIntermediateStop2(
-                              e,
-                              "stopTwoContactNumber"
-                            )
-                          }
-                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                          placeholder="Stop Contact Number"
-                        />
-
-                        <input
-                          type="text"
-                          value={editableIntermediateStops2?.stopTwoAddress}
-                          onChange={(e) =>
-                            handleInputChangeIntermediateStop2(
-                              e,
-                              "stopTwoAddress"
-                            )
-                          }
-                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                          placeholder="Stop Address"
-                        />
-                      </div>
-                    ) : (
-                      <div className="flex justify-between">
-                        <div>
-                          <p className="py-1 pt-2">
-                            Name:
-                            {
-                              selectedCustomer?.contactDetail?.[0]?.deliveryInfo
-                                ?.intermediateStops?.intermediateStopTwo
-                                ?.stopTwoName
-                            }
-                          </p>
-                          <p className="py-1">
-                            Email:
-                            {
-                              selectedCustomer?.contactDetail?.[0]?.deliveryInfo
-                                ?.intermediateStops?.intermediateStopTwo
-                                ?.stopTwoEmail
-                            }
-                          </p>
-                          <p className="py-1">
-                            Contact No.:
-                            {
-                              selectedCustomer?.contactDetail?.[0]?.deliveryInfo
-                                ?.intermediateStops?.intermediateStopTwo
-                                ?.stopTwoContactNumber
-                            }
-                          </p>
-                          <p className="py-1">
-                            Address:
-                            {
-                              selectedCustomer?.contactDetail?.[0]?.deliveryInfo
-                                ?.intermediateStops?.intermediateStopTwo
-                                ?.stopTwoAddress
-                            }
-                          </p>
-                        </div>
-                        <FaEdit
-                          onClick={() => handleEditClick(4)}
-                          className="text-[20px] mt-3"
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
                 <div className="mt-4">
                   <p className="font-semibold text-md">Delivery Location:</p>
                   <div className="py-[4px] px-7 bg-gray-400 text-black font-semibold rounded-md mt-1 text-[14px]">

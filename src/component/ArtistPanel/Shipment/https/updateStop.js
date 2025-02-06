@@ -4,9 +4,6 @@ import axiosInstance from "../../../../services/axios";
 import { shipmentendpoints } from "../../../../services/apis";
 
 async function Updatestop({ updatedData, updatedStopsId, token }) {
-  console.log(updatedData, updatedStopsId, token, "hhhhh");
-  // const token = updatedData.token
-  // const id = updatedData.id
   return axiosInstance.put(
     shipmentendpoints.UPDATE_SHIPMENT_STOP + `/${updatedStopsId}`,
     updatedData,

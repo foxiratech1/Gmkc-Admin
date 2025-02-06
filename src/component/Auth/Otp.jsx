@@ -9,27 +9,24 @@ import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 
 const Otp = () => {
-  const {email} = useSelector((state) => state.user)
-  const {mutateAsync,isPending} = otpVerifyMutation()
-  const navigate = useNavigate()
+  const { email } = useSelector((state) => state.user);
+  const { mutateAsync, isPending } = otpVerifyMutation();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = async(data) => {
-     try{
-      console.log(data)
-      data.email = email
-      mutateAsync(data)
-     }catch(error){
-      console.error(error)
-      toast.error(error?.response?.data?.message)
-     }
+  const onSubmit = async (data) => {
+    try {
+      data.email = email;
+      mutateAsync(data);
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.response?.data?.message);
+    }
   };
-
-  
 
   return (
     <div className="flex h-screen">
@@ -52,7 +49,12 @@ const Otp = () => {
           {/* Form */}
           <div className="flex  items-center">
             <img className="w-4" src={arrow} alt="" />
-            <p className="text-xs hover:cursor-pointer" onClick={() => navigate('/login')}>Back to login</p>
+            <p
+              className="text-xs hover:cursor-pointer"
+              onClick={() => navigate("/login")}
+            >
+              Back to login
+            </p>
           </div>
           <h2 className="text-2xl font-bold mb-4 mt-4">Set a Password </h2>
           <p className="text-sm mb-8 text-gray-600">
@@ -85,7 +87,10 @@ const Otp = () => {
             </div>
             <div className="flex gap-2">
               <p>Didn't receive code?</p>
-              <p className="text-red-500 border-b border-red-400 font-semibold hover:cursor-pointer" onClick={() => navigate('/forget-password')}>
+              <p
+                className="text-red-500 border-b border-red-400 font-semibold hover:cursor-pointer"
+                onClick={() => navigate("/forget-password")}
+              >
                 Resend
               </p>
             </div>
@@ -94,10 +99,8 @@ const Otp = () => {
             <button
               type="submit"
               className="w-full bg-black text-white p-3 rounded-md font-semibold mt-6"
-              
             >
-            {isPending ? '...Loading' : 'Verify'}
-              
+              {isPending ? "...Loading" : "Verify"}
             </button>
           </form>
         </div>

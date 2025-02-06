@@ -4,7 +4,6 @@ import CommonModal from "./CommonModal";
 
 const OpenModalButton = ({ user }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  console.log(user, "userrrrrrr");
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
 

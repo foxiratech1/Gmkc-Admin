@@ -101,7 +101,6 @@ const Customer = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log("valuevalue", value);
 
     setSelectedCustomer((prevState) => {
       const updatedContactDetail = [...prevState.contactDetail];

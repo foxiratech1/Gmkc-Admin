@@ -7,6 +7,7 @@ import { FaEdit } from "react-icons/fa";
 import { AiFillDelete } from "react-icons/ai";
 import axios from "axios";
 import { userendpoints } from "../../../services/apis";
+import Tooltip from "../../utils/Tooltip";
 
 const table_head = [
   {
@@ -41,7 +42,6 @@ const User = () => {
   useEffect(() => {
     setCustomerData(data?.data);
     setCurrentPage(data?.paginationData?.page);
-    console.log("Customer data set in useEffect:", data?.data);
   }, [data]);
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -52,19 +52,16 @@ const User = () => {
     setSelectedCustomer(user);
     setModalOpen(true);
     setUserId(user?._id);
-    setIsCreate(val); // Set isCreate to "create"
-    console.log("Modal Opened for User:", user?._id);
+    setIsCreate(val);
   };
 
   const closeModal = () => {
     setModalOpen(false);
     setSelectedCustomer(null);
-    console.log("Modal Closed");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted with:", isCreate);
 
     try {
       let url =
@@ -79,10 +76,11 @@ const User = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (response.status === 200) {
+      if (response.status === 200 || 201) {
         setCustomerData(data?.data);
+        window.location.reload();
+        closeModal();
       }
-      closeModal();
     } catch (error) {
       console.error("Error during API call:", error);
     }
@@ -111,7 +109,6 @@ const User = () => {
   };
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(`Field Changed: ${name} = ${value}`);
 
     setSelectedCustomer((prevState) => {
       const updatedState = { ...prevState, [name]: value };
@@ -120,12 +117,10 @@ const User = () => {
   };
 
   if (isLoading) {
-    console.log("Loading Data...");
     return <LoadingPage />;
   }
 
   if (isError) {
-    console.log("Error:", error?.response?.data?.message);
     return <div>{error?.response?.data?.message}</div>;
   }
 
@@ -160,33 +155,57 @@ const User = () => {
               <tbody>
                 {customerData?.map((user, index) => (
                   <tr key={index} className="border-t border-gray-300 ">
-                    <td className="px-2 py-3 text-[#12223D] font-normal ">
-                      <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2 my-1">
-                        {user.fullName}
-                      </p>
+                    <td className="px-2 py-3 text-[#12223D] font-normal text-start flex ">
+                      <Tooltip
+                        text={user?.fullName}
+                        position="top"
+                        isUser={true}
+                      >
+                        <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2 my-1">
+                          {user.fullName}
+                        </p>
+                      </Tooltip>
                     </td>
-                    <td className="px-2 py-3 text-[#12223D] font-normal">
-                      <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2  my-1">
-                        {user.email}
-                      </p>
+                    <td className="px-2 py-3 text-[#12223D] font-normal text-start ">
+                      <Tooltip text={user?.email} position="top" isUser={true}>
+                        <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2  my-1">
+                          {user.email}
+                        </p>
+                      </Tooltip>
                     </td>
                     <td className="p-2">
-                      <p className="w-64 overflow-hidden text-sm text-ellipsis whitespace-nowrap  my-1">
-                        {new Date(user.createdAt).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </p>
+                      <Tooltip
+                        text={user?.createdAt}
+                        position="top"
+                        isUser={true}
+                      >
+                        <p className="w-64 overflow-hidden text-sm text-ellipsis whitespace-nowrap  my-1">
+                          {new Date(user.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            }
+                          )}
+                        </p>
+                      </Tooltip>
                     </td>
+
                     <td className="p-2">
-                      <p className="w-64 overflow-hidden text-sm text-ellipsis whitespace-nowrap  my-1">
-                        {user.phoneNumber == "undefined"
-                          ? "Not Available"
-                          : user.phoneNumber}
-                      </p>
+                      <Tooltip
+                        text={user?.phoneNumber}
+                        position="top"
+                        isUser={true}
+                      >
+                        <p className="w-64 overflow-hidden text-sm text-ellipsis whitespace-nowrap  my-1">
+                          {user?.phoneNumber == "undefined"
+                            ? "Not Available"
+                            : user?.phoneNumber}
+                        </p>{" "}
+                      </Tooltip>
                     </td>
-                    <td className="space-x-5 flex items-center ">
+                    <td className="space-x-5 mt-3 flex items-center ">
                       <FaEdit
                         size={20}
                         color="#BFA75D"
@@ -256,7 +275,11 @@ const User = () => {
                 <input
                   type="text"
                   name="phoneNumber"
-                  value={selectedCustomer?.phoneNumber || ""}
+                  value={
+                    selectedCustomer?.phoneNumber == "undefined"
+                      ? ""
+                      : selectedCustomer?.phoneNumber
+                  }
                   onChange={handleChange}
                   className="w-full border rounded p-2 mt-1"
                 />

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 // import signin from "../assets/signin.png";
 import signImg from "../../assets/signin.png";
@@ -11,12 +10,11 @@ import visible_icon from "../../assets/visible_icon.png";
 import SigInInMutation from "./https/LoginMutation";
 import toast from "react-hot-toast";
 
-
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword1, setShowPassword1] = useState(false);
-  const navigate = useNavigate()
-   const {mutateAsync, isPending} = SigInInMutation()
+  const navigate = useNavigate();
+  const { mutateAsync, isPending } = SigInInMutation();
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -30,16 +28,16 @@ const SignIn = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  
+
   const setCookie = (name, value, days) => {
     const date = new Date();
     date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
     document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
   };
   const getCookie = (name) => {
-    const cookies = document.cookie.split('; ');
+    const cookies = document.cookie.split("; ");
     for (let i = 0; i < cookies.length; i++) {
-      const [cookieName, cookieValue] = cookies[i].split('=');
+      const [cookieName, cookieValue] = cookies[i].split("=");
       if (cookieName === name) return cookieValue;
     }
     return null;
@@ -51,26 +49,23 @@ const SignIn = () => {
 
   // Load saved email from cookies if available
   useEffect(() => {
-    const savedEmail = getCookie('rememberedEmail');
+    const savedEmail = getCookie("rememberedEmail");
     if (savedEmail) {
-      setValue('email', savedEmail);
+      setValue("email", savedEmail);
     }
   }, []);
 
-
-
-  const onSubmit = async(data) => {
-     try{
+  const onSubmit = async (data) => {
+    try {
       if (data.remember) {
-        setCookie('rememberedEmail', data.email, 30);
+        setCookie("rememberedEmail", data.email, 30);
       } else {
-        deleteCookie('rememberedEmail');
+        deleteCookie("rememberedEmail");
       }
       await mutateAsync(data);
-     }catch(error){
-      console.log(error)
-        toast.error("some error accure")  
-     }
+    } catch (error) {
+      toast.error("some error accure");
+    }
   };
   return (
     <div className="flex flex-col md:flex-row h-screen">
@@ -167,7 +162,12 @@ const SignIn = () => {
               <div className=" flex gap-2 items-center">
                 <label className="ml-2 text-gray-700 font-bold flex gap-2 items-center flex-row-reverse">
                   Remember me
-                <input type="checkbox" {...register("remember")} name="remember" className="w-4 h-4" />
+                  <input
+                    type="checkbox"
+                    {...register("remember")}
+                    name="remember"
+                    className="w-4 h-4"
+                  />
                 </label>
               </div>
 
@@ -183,10 +183,8 @@ const SignIn = () => {
             <button
               type="submit"
               className="w-full bg-black text-white p-3 rounded-md font-bold"
-              
             >
-            {isPending ? '...Loading' : 'Sign In'}
-              
+              {isPending ? "...Loading" : "Sign In"}
             </button>
 
             {/* Already a member */}

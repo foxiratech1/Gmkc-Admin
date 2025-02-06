@@ -110,7 +110,6 @@ const VehicleModal = () => {
       }
     } else {
       try {
-        console.log(formData, "formData");
         await mutateAsync(formData);
       } catch (error) {
         console.error(error);

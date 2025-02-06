@@ -48,7 +48,6 @@ const Dashboard = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("fdfdf", response);
       setReportData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
