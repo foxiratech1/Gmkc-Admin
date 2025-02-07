@@ -127,19 +127,6 @@ const ShipmentTable = () => {
     setEditableIntermediateStops(updatedStops);
   };
 
-  const handleAddStops = () => {
-    const nextStopIndex = editableIntermediateStops.length + 1;
-    setEditableIntermediateStops([
-      ...editableIntermediateStops,
-      {
-        [`stopName${nextStopIndex}`]: "",
-        [`stopEmail${nextStopIndex}`]: "",
-        [`stopContactNumber${nextStopIndex}`]: "",
-        [`stopAddress${nextStopIndex}`]: "",
-      },
-    ]);
-  };
-
   useEffect(() => {
     if (data) {
       setCurrentPage(data.paginationData.page);
@@ -193,16 +180,22 @@ const ShipmentTable = () => {
           const contactDetail = {};
 
           contactDetail.collectionInfo = {
-            name: "Not Available",
+            name: "",
             email: res.email,
-            contactNumber: "Not Available",
+            contactNumber: "",
             collectionAddress: res.collectionAddress,
           };
           contactDetail.deliveryInfo = {
-            deliveryName: "Not Available",
-            deliveryEmail: "Not Available",
-            deliveryContactNumber: "Not Available",
+            deliveryName: "",
+            deliveryEmail: "",
+            deliveryContactNumber: "",
             deliveryAddress: res.deliveryAddress,
+          };
+          contactDetail.intermediateStops = {
+            stopName: res.stopName,
+            stopEmail: res.stopEmail,
+            stopContactNumber: res.stopContactNumber,
+            stopAddress: res.stopAddress,
           };
 
           obj.contactDetail.push(contactDetail);
@@ -211,19 +204,28 @@ const ShipmentTable = () => {
           const contactDetail = {};
 
           contactDetail.collectionInfo = {
-            name: res.name,
-            email: res.email,
-            contactNumber: res.contactNumber,
-            collectionAddress: res.collectionAddress,
+            name: res.contactDetail?.[0]?.collectionInfo.name,
+            email: res.contactDetail?.[0]?.collectionInfo.email,
+            contactNumber: res.contactDetail?.[0]?.collectionInfo.contactNumber,
+            collectionAddress:
+              res.contactDetail?.[0]?.collectionInfo.collectionAddress,
           };
           contactDetail.deliveryInfo = {
-            deliveryName: res.deliveryName,
-            deliveryEmail: res.deliveryEmail,
-            deliveryContactNumber: res.deliveryContactNumber,
-            deliveryAddress: res.deliveryAddress,
+            deliveryName: res.contactDetail?.[0]?.deliveryInfo.deliveryName,
+            deliveryEmail: res.contactDetail?.[0]?.deliveryInfo.deliveryEmail,
+            deliveryContactNumber:
+              res.contactDetail?.[0]?.deliveryInfo.deliveryContactNumber,
+            deliveryAddress:
+              res.contactDetail?.[0]?.deliveryInfo.deliveryAddress,
           };
-
+          contactDetail.intermediateStops = {
+            stopName: res.stopName,
+            stopEmail: res.stopEmail,
+            stopContactNumber: res.stopContactNumber,
+            stopAddress: res.stopAddress,
+          };
           obj.contactDetail.push(contactDetail);
+          console.log("contactDetailcontactDetail", contactDetail);
         }
 
         setSelectedCustomer(response.data.data);
@@ -279,6 +281,9 @@ const ShipmentTable = () => {
 
   const handleEditClick = (mode) => {
     setEditMode(mode);
+    if (mode === 3) {
+      preFillData(selectedCustomer);
+    }
   };
 
   const handleSave = async () => {
