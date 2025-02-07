@@ -269,11 +269,28 @@ const Request = () => {
                         )}
                       </td>
                       <td className="px-4 py-4 text-center">
-                        <Tooltip text={request.deliveryAddress} position="top">
-                          <p className="w-44 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                        {request.quoteStatus === "half" ? (
+                          <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                             {request.deliveryAddress}
                           </p>
-                        </Tooltip>
+                        ) : (
+                          request?.contactDetail?.map((detail) =>
+                            detail.deliveryInfo ? (
+                              <div key={detail.deliveryInfo.deliveryAddress}>
+                                <Tooltip
+                                  text={detail.deliveryAddress}
+                                  position="top"
+                                >
+                                  <p className="w-56 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                                    {detail.deliveryInfo.deliveryAddress
+                                      ? detail.deliveryInfo.deliveryAddress
+                                      : "Not Available"}
+                                  </p>
+                                </Tooltip>
+                              </div>
+                            ) : null
+                          )
+                        )}
                       </td>
                       <td className="px-4 py-4 text-center">
                         <Tooltip text={request.notes} position="top">
