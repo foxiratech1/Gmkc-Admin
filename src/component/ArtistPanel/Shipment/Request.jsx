@@ -195,7 +195,7 @@ const Request = () => {
                         </Tooltip>
                       </td>
                       <td className="px-4 py-4 text-[#12223D] font-normal">
-                        {!request.quoteStatus === "half" ? (
+                        {request.quoteStatus === "half" ? (
                           <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                             {request.email}
                           </p>
@@ -243,7 +243,7 @@ const Request = () => {
                         </Tooltip>
                       </td>
                       <td className="px-4 py-4 text-center">
-                        {!request.quoteStatus === "half" ? (
+                        {request.quoteStatus === "half" ? (
                           <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                             {request.collectionAddress}
                           </p>
