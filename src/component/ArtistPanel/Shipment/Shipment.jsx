@@ -54,7 +54,7 @@ const table_head = [
 
 const ShipmentTable = () => {
   const { token } = useSelector((state) => state.user);
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedCustomer, setSelectedCustomer] = useState([]);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [userDetail, setUserDetail] = useState(null);
   const [userId, setUserId] = useState(null);
@@ -73,10 +73,11 @@ const ShipmentTable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedShipment, setSelectedShipment] = useState(null);
   const [statuss, setStatus] = useState("");
+  const [shipmentIds, setShipmentIds] = useState("");
   const [editMode, setEditMode] = useState(null);
   const [editableCollectionInfo, setEditableCollectionInfo] = useState({
     name: "",
-    email: "",
+    email: " ",
     contactNumber: "",
     collectionAddress: "",
   });
@@ -88,26 +89,13 @@ const ShipmentTable = () => {
     deliveryAddress: "",
   });
 
-  // const [editableIntermediateStops, setEditableIntermediateStops] = useState({
-  //   stopOneName: "",
-  //   stopOneEmail: "",
-  //   stopOneContactNumber: "",
-  //   stopOneAddress: "",
-  // });
   const [editableIntermediateStops2, setEditableIntermediateStops2] = useState({
     stopTwoName: "",
     stopTwoEmail: "",
     stopTwoContactNumber: "",
     stopTwoAddress: "",
   });
-  // const [editableIntermediateStops, setEditableIntermediateStops] = useState([
-  //   {
-  //     stopOneName: "",
-  //     stopOneEmail: "",
-  //     stopOneContactNumber: "",
-  //     stopOneAddress: "",
-  //   },
-  // ]);
+
   const [editableIntermediateStops, setEditableIntermediateStops] = useState([
     {
       stopName1: "",
@@ -138,7 +126,6 @@ const ShipmentTable = () => {
     );
     setEditableIntermediateStops(updatedStops);
   };
-  console.log("intermediateStopsintermediateStops", intermediateStops);
 
   const handleAddStops = () => {
     const nextStopIndex = editableIntermediateStops.length + 1;
@@ -152,18 +139,6 @@ const ShipmentTable = () => {
       },
     ]);
   };
-
-  const handleInputChangeIntermediateStop = (e, index, field) => {
-    const updatedStops = [...editableIntermediateStops];
-    updatedStops[index][field] = e.target.value;
-    setEditableIntermediateStops(updatedStops);
-  };
-
-  // const handleInputChangeIntermediateStop = (e, index, field) => {
-  //   const updatedStops = [...editableIntermediateStops];
-  //   updatedStops[index][field] = e.target.value;
-  //   setEditableIntermediateStops(updatedStops);
-  // };
 
   useEffect(() => {
     if (data) {
@@ -192,16 +167,6 @@ const ShipmentTable = () => {
     setDeleteIndex(null);
   };
 
-  const handleOpenModal = (shipment) => {
-    setSelectedShipment(shipment);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedShipment(null);
-  };
-
   if (isLoading) {
     return <LoadingPage />;
   }
@@ -219,27 +184,63 @@ const ShipmentTable = () => {
           },
         }
       );
-
       if (response?.data?.data) {
+        const obj = {};
+        const res = response.data.data;
+        setShipmentIds(res._id);
+        if (res.quoteStatus === "half") {
+          obj.contactDetail = [];
+          const contactDetail = {};
+
+          contactDetail.collectionInfo = {
+            name: "Not Available",
+            email: res.email,
+            contactNumber: "Not Available",
+            collectionAddress: res.collectionAddress,
+          };
+          contactDetail.deliveryInfo = {
+            deliveryName: "Not Available",
+            deliveryEmail: "Not Available",
+            deliveryContactNumber: "Not Available",
+            deliveryAddress: res.deliveryAddress,
+          };
+
+          obj.contactDetail.push(contactDetail);
+        } else {
+          obj.contactDetail = [];
+          const contactDetail = {};
+
+          contactDetail.collectionInfo = {
+            name: res.name,
+            email: res.email,
+            contactNumber: res.contactNumber,
+            collectionAddress: res.collectionAddress,
+          };
+          contactDetail.deliveryInfo = {
+            deliveryName: res.deliveryName,
+            deliveryEmail: res.deliveryEmail,
+            deliveryContactNumber: res.deliveryContactNumber,
+            deliveryAddress: res.deliveryAddress,
+          };
+
+          obj.contactDetail.push(contactDetail);
+        }
+
         setSelectedCustomer(response.data.data);
 
-        preFillData(response.data.data);
-        if (stat == "") {
+        preFillData(obj);
+        if (stat == "half") {
           setStatus(response.data.data.quoteStatus);
         }
         localStorage.setItem("formId", response.data.data._id);
         setIsModalOpen(true);
       } else {
-        console.error("No data found in response");
       }
     } catch (error) {
       throw error;
     }
   };
-  console.log(
-    "selectedCustomerselectedCustomerselectedCustomer",
-    selectedCustomer
-  );
+
   const handleInputChangeCollection = (e, field) => {
     setEditableCollectionInfo({
       ...editableCollectionInfo,
@@ -254,24 +255,15 @@ const ShipmentTable = () => {
     });
   };
 
-  const handleInputChangeIntermediateStop2 = (e, field) => {
-    setEditableIntermediateStops2({
-      ...editableIntermediateStops2,
-      [field]: e.target.value,
-    });
-  };
   const preFillData = (customerData) => {
-    // Prefill collection info
     setEditableCollectionInfo({
       ...customerData?.contactDetail?.[0]?.collectionInfo,
     });
 
-    // Prefill delivery info
     setEditableDeliveryInfo({
       ...customerData?.contactDetail?.[0]?.deliveryInfo,
     });
 
-    // Prefill intermediate stops
     if (customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops) {
       const stopsData =
         customerData.contactDetail[0].deliveryInfo.intermediateStops;
@@ -296,14 +288,14 @@ const ShipmentTable = () => {
           collectionInfo: editableCollectionInfo,
           deliveryInfo: {
             ...editableDeliveryInfo,
-            intermediateStops, // directly include the state here
+            intermediateStops,
           },
           quoteStatus: statuss,
         },
       };
 
       const response = await axios.put(
-        `${shipmentendpoints.UPDATE_SHIPMENT_STOP}/${selectedCustomer._id}`,
+        `${shipmentendpoints.UPDATE_SHIPMENT_STOP}/${shipmentIds}`,
         updatedData,
         {
           headers: {
@@ -319,14 +311,9 @@ const ShipmentTable = () => {
         closeModal();
       }
     } catch (error) {
-      console.error("Error saving data:", error);
+      throw error;
     }
   };
-
-  console.log(
-    "editableIntermediateStopseditableIntermediateStops",
-    selectedCustomer?.contactDetail?.[0]?.collectionInfo?.name
-  );
 
   return (
     <>
@@ -539,7 +526,11 @@ const ShipmentTable = () => {
                       <>
                         <input
                           type="text"
-                          value={editableCollectionInfo.name}
+                          value={
+                            editableCollectionInfo.name ||
+                            selectedCustomer?.contactDetail?.[0]?.collectionInfo
+                              ?.name
+                          }
                           onChange={(e) =>
                             handleInputChangeCollection(e, "name")
                           }
@@ -550,8 +541,8 @@ const ShipmentTable = () => {
                           type="email"
                           value={
                             editableCollectionInfo.email ||
-                            selectedCustomer?.contactDetail?.[0]?.collectionInfo
-                              ?.email
+                            selectedCustomer.contactDetail?.[0].collectionInfo
+                              .email
                           }
                           onChange={(e) =>
                             handleInputChangeCollection(e, "email")
@@ -561,7 +552,11 @@ const ShipmentTable = () => {
                         />
                         <input
                           type="number"
-                          value={editableCollectionInfo.contactNumber}
+                          value={
+                            editableCollectionInfo.contactNumber ||
+                            selectedCustomer?.contactDetail?.[0]?.collectionInfo
+                              ?.contactNumber
+                          }
                           onChange={(e) =>
                             handleInputChangeCollection(e, "contactNumber")
                           }
@@ -586,8 +581,8 @@ const ShipmentTable = () => {
                               Name:{" "}
                               {selectedCustomer.quoteStatus == "half"
                                 ? "Not Available"
-                                : selectedCustomer?.contactDetail?.[0]
-                                    ?.collectionInfo?.name}
+                                : selectedCustomer.contactDetail?.[0]
+                                    .collectionInfo.name}
                             </p>
                             <p className="py-1">
                               Email :{" "}
@@ -720,7 +715,7 @@ const ShipmentTable = () => {
                         </div>
                         <FaEdit
                           onClick={() => handleEditClick(3)}
-                          className="text-[20px] mt-3"
+                          className="text-[20px] ml-3 mt-3"
                         />
                       </div>
                     )}

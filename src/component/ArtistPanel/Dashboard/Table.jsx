@@ -79,9 +79,11 @@ const Table = ({ shipmentData, currentPage, setCurrentPage, data }) => {
                     </p>
                   </td>
                   <td className="p-2">
-                    {user.status === "accept" ? (
+                    {user.quoteStatus === "half" ? (
                       <Tooltip position="top">
-                        <p className="text-sm">Not Available</p>
+                        <p className="text-sm w-36 overflow-hidden text-ellipsis whitespace-wrap line-clamp-2">
+                          Not Available
+                        </p>
                       </Tooltip>
                     ) : (
                       user?.contactDetail?.map((detail) =>
@@ -103,12 +105,12 @@ const Table = ({ shipmentData, currentPage, setCurrentPage, data }) => {
                     )}
                   </td>
                   <td className="p-2">
-                    {user.status === "accept" ? (
-                      <p className="text-sm">
-                        <Tooltip text={user.email} position="top">
-                          <p className="text-sm">{user.email}</p>
-                        </Tooltip>
-                      </p>
+                    {user.quoteStatus === "half" ? (
+                      <Tooltip text={user.email} position="top">
+                        <p className="text-sm w-36 overflow-hidden  text-ellipsis whitespace-wrap line-clamp-2">
+                          {user.email}
+                        </p>
+                      </Tooltip>
                     ) : (
                       user?.contactDetail?.map((detail) =>
                         detail.collectionInfo ? (
@@ -129,9 +131,9 @@ const Table = ({ shipmentData, currentPage, setCurrentPage, data }) => {
                     )}
                   </td>
                   <td className="p-2">
-                    {user.status === "accept" ? (
-                      <p className="text-sm">
-                        <p className="text-sm">Not Available</p>
+                    {user.quoteStatus === "half" ? (
+                      <p className="text-sm w-36 overflow-hidden  text-ellipsis whitespace-wrap line-clamp-2">
+                        Not Available
                       </p>
                     ) : (
                       user?.contactDetail?.map((detail) =>
@@ -167,9 +169,8 @@ const Table = ({ shipmentData, currentPage, setCurrentPage, data }) => {
                     </Tooltip>
                   </td>
                   <td className="p-2">
-                    {user.status === "accept" ? (
+                    {user.quoteStatus === "half" ? (
                       <Tooltip text={user.collectionAddress} position="top">
-                        {" "}
                         <p className="text-sm">
                           <p className="text-sm">
                             {user.collectionAddress
@@ -208,7 +209,7 @@ const Table = ({ shipmentData, currentPage, setCurrentPage, data }) => {
                     </Tooltip>
                   </td>
                   <td className="p-2">
-                    {user.status === "accept" ? (
+                    {user.quoteStatus === "half" ? (
                       <p className="text-sm">
                         <p className="text-sm">{user.deliveryAddress}</p>
                       </p>
