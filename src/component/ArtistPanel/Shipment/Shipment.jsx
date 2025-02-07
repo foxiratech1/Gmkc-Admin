@@ -253,12 +253,7 @@ const ShipmentTable = () => {
       [field]: e.target.value,
     });
   };
-  // const handleInputChangeIntermediateStop = (e, field) => {
-  //   setEditableIntermediateStops({
-  //     ...editableIntermediateStops,
-  //     [field]: e.target.value,
-  //   });
-  // };
+
   const handleInputChangeIntermediateStop2 = (e, field) => {
     setEditableIntermediateStops2({
       ...editableIntermediateStops2,

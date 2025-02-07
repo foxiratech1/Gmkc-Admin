@@ -1,13 +1,12 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
-import axiosInstance from '../../../../services/axios';
-import {  requestendpoints } from '../../../../services/apis';
+import { useMutation, useQuery } from "@tanstack/react-query";
+import axiosInstance from "../../../../services/axios";
+import { requestendpoints } from "../../../../services/apis";
 
-
-async function fatchRequestList({token,limit = 8, page = 1 }) {
- const params = {
+async function fatchRequestList({ token, limit = 8, page = 1 }) {
+  const params = {
     page,
-    limit
- }
+    limit,
+  };
   const { data } = await axiosInstance.get(requestendpoints.REQUEST_LIST, {
     params,
     headers: {
@@ -17,9 +16,9 @@ async function fatchRequestList({token,limit = 8, page = 1 }) {
   return data;
 }
 
-export function GetRequestData({token,limit = 8, page = 1}) {
+export function GetRequestData({ token, limit = 8, page = 1 }) {
   return useQuery({
-    queryKey: [requestendpoints.REQUEST_LIST,{ limit, page }],
-    queryFn: () => fatchRequestList({token,page,limit}),
+    queryKey: [requestendpoints.REQUEST_LIST, { limit, page }],
+    queryFn: () => fatchRequestList({ token, page, limit }),
   });
 }
