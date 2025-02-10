@@ -279,10 +279,10 @@ const ShipmentTable = () => {
   };
 
   const handleEditClick = (mode) => {
+    console.log("selectedCustomerselectedCustomer", selectedCustomer);
+
     setEditMode(mode);
-    // if (mode === 3) {
-    //   preFillData(selectedCustomer);
-    // }
+    preFillData(selectedCustomer);
   };
 
   const handleSave = async () => {
@@ -310,8 +310,8 @@ const ShipmentTable = () => {
 
       setEditMode(null);
       if (response.status === 200) {
-        setIsModalOpen(false);
-        window.location.reload();
+        // setIsModalOpen(false);
+        // window.location.reload();
         closeModal();
       }
     } catch (error) {
@@ -352,11 +352,11 @@ const ShipmentTable = () => {
                           <p className="text-sm">Not Available</p>
                         ) : (
                           user?.contactDetail?.map((detail) =>
-                            detail.collectionInfo ? (
-                              <div key={detail.collectionInfo.name}>
+                            detail?.collectionInfo ? (
+                              <div key={detail?.collectionInfo.name}>
                                 <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                                  {detail.collectionInfo.name
-                                    ? detail.collectionInfo.name
+                                  {detail?.collectionInfo.name
+                                    ? detail?.collectionInfo.name
                                     : "Not Available"}
                                 </p>
                               </div>
@@ -545,7 +545,7 @@ const ShipmentTable = () => {
                           type="email"
                           value={
                             editableCollectionInfo.email ||
-                            selectedCustomer.contactDetail?.[0].collectionInfo
+                            selectedCustomer.contactDetail?.[0]?.collectionInfo
                               .email
                           }
                           onChange={(e) =>
