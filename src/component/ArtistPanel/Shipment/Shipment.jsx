@@ -225,7 +225,6 @@ const ShipmentTable = () => {
             stopAddress: res.stopAddress,
           };
           obj.contactDetail.push(contactDetail);
-          console.log("contactDetailcontactDetail", contactDetail);
         }
 
         setSelectedCustomer(response.data.data);
@@ -281,9 +280,9 @@ const ShipmentTable = () => {
 
   const handleEditClick = (mode) => {
     setEditMode(mode);
-    if (mode === 3) {
-      preFillData(selectedCustomer);
-    }
+    // if (mode === 3) {
+    //   preFillData(selectedCustomer);
+    // }
   };
 
   const handleSave = async () => {
