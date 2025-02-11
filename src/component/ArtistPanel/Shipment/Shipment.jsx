@@ -160,9 +160,91 @@ const ShipmentTable = () => {
   if (isError) {
     return <p>{error?.response?.data?.message}</p>;
   }
+  // const handleClick = async (user, stat) => {
+  //   try {
+  //     setIsModalOpen(true);
+  //     const response = await axios.get(
+  //       `${shipmentendpoints.SHIPMENT_DELIVERY_DETAIL}/${user}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     if (response?.data?.data) {
+  //       const obj = {};
+  //       obj.contactDetail = [];
+  //       const contactDetail = {};
+
+  //       const res = response.data.data;
+  //       setShipmentIds(res._id);
+  //       if (res.quoteStatus === "half") {
+  //         contactDetail.collectionInfo = {
+  //           name: "",
+  //           email: res.email,
+  //           contactNumber: "",
+  //           collectionAddress: res.collectionAddress,
+  //         };
+  //         contactDetail.deliveryInfo = {
+  //           deliveryName: "",
+  //           deliveryEmail: "",
+  //           deliveryContactNumber: "",
+  //           deliveryAddress: res.deliveryAddress,
+  //         };
+  //       } else {
+  //         contactDetail.collectionInfo = {
+  //           name: res.contactDetail?.[0]?.collectionInfo.name,
+  //           email: res.contactDetail?.[0]?.collectionInfo.email,
+  //           contactNumber: res.contactDetail?.[0]?.collectionInfo.contactNumber,
+  //           collectionAddress:
+  //             res.contactDetail?.[0]?.collectionInfo.collectionAddress,
+  //         };
+  //         contactDetail.deliveryInfo = {
+  //           deliveryName: res.contactDetail?.[0]?.deliveryInfo.deliveryName,
+  //           deliveryEmail: res.contactDetail?.[0]?.deliveryInfo.deliveryEmail,
+  //           deliveryContactNumber:
+  //             res.contactDetail?.[0]?.deliveryInfo.deliveryContactNumber,
+  //           deliveryAddress:
+  //             res.contactDetail?.[0]?.deliveryInfo.deliveryAddress,
+  //         };
+  //         console.log(
+  //           "pofisofidfd",
+  //           res.contactDetail?.[0]?.deliveryInfo.intermediateStops?.[0].stopName
+  //         );
+  //         res.contactDetail?.[0]?.deliveryInfo.intermediateStops.map((items) =>
+  //           console.log("977777777777", items)
+  //         );
+  //         res.contactDetail?.[0]?.deliveryInfo.intermediateStops.map(
+  //           (items = {
+  //             stopName: items.stopOne,
+  //             stopEmail: items.stopEmail || "",
+  //             stopContactNumber: items.stopContactNumber || "",
+  //             stopAddress: items.stopAddress || "",
+  //           })
+  //         );
+  //       }
+  //       obj.contactDetail.push(contactDetail);
+
+  //       setSelectedCustomer({ ...res, ...obj });
+  //       console.log("objobj3333", obj);
+
+  //       preFillData(obj);
+  //       if (stat == "half") {
+  //         setStatus(response.data.data.quoteStatus);
+  //       }
+  //       localStorage.setItem("formId", response.data.data._id);
+  //       setIsModalOpen(true);
+  //     } else {
+  //     }
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // };
+
   const handleClick = async (user, stat) => {
     try {
       setIsModalOpen(true);
+
       const response = await axios.get(
         `${shipmentendpoints.SHIPMENT_DELIVERY_DETAIL}/${user}`,
         {
@@ -171,76 +253,90 @@ const ShipmentTable = () => {
           },
         }
       );
-      if (response?.data?.data) {
-        const obj = {};
-        const res = response.data.data;
-        setShipmentIds(res._id);
-        if (res.quoteStatus === "half") {
-          obj.contactDetail = [];
-          const contactDetail = {};
 
-          contactDetail.collectionInfo = {
-            name: "",
-            email: res.email,
-            contactNumber: "",
-            collectionAddress: res.collectionAddress,
-          };
-          contactDetail.deliveryInfo = {
-            deliveryName: "",
-            deliveryEmail: "",
-            deliveryContactNumber: "",
-            deliveryAddress: res.deliveryAddress,
-          };
-          contactDetail.intermediateStops = {
-            stopName: res.stopName,
-            stopEmail: res.stopEmail,
-            stopContactNumber: res.stopContactNumber,
-            stopAddress: res.stopAddress,
-          };
+      if (!response?.data?.data) return;
 
-          obj.contactDetail.push(contactDetail);
-        } else {
-          obj.contactDetail = [];
-          const contactDetail = {};
+      const res = response.data.data;
+      setShipmentIds(res._id);
 
-          contactDetail.collectionInfo = {
-            name: res.contactDetail?.[0]?.collectionInfo.name,
-            email: res.contactDetail?.[0]?.collectionInfo.email,
-            contactNumber: res.contactDetail?.[0]?.collectionInfo.contactNumber,
-            collectionAddress:
-              res.contactDetail?.[0]?.collectionInfo.collectionAddress,
-          };
-          contactDetail.deliveryInfo = {
-            deliveryName: res.contactDetail?.[0]?.deliveryInfo.deliveryName,
-            deliveryEmail: res.contactDetail?.[0]?.deliveryInfo.deliveryEmail,
-            deliveryContactNumber:
-              res.contactDetail?.[0]?.deliveryInfo.deliveryContactNumber,
-            deliveryAddress:
-              res.contactDetail?.[0]?.deliveryInfo.deliveryAddress,
-          };
-          contactDetail.intermediateStops = {
-            stopName: res.stopName,
-            stopEmail: res.stopEmail,
-            stopContactNumber: res.stopContactNumber,
-            stopAddress: res.stopAddress,
-          };
-          obj.contactDetail.push(contactDetail);
-        }
+      const obj = { contactDetail: [] };
+      const contactDetail = {};
 
-        setSelectedCustomer(response.data.data);
-
-        preFillData(obj);
-        if (stat == "half") {
-          setStatus(response.data.data.quoteStatus);
-        }
-        localStorage.setItem("formId", response.data.data._id);
-        setIsModalOpen(true);
+      if (res.quoteStatus === "half") {
+        contactDetail.collectionInfo = {
+          name: "",
+          email: res.email || "",
+          contactNumber: "",
+          collectionAddress: res.collectionAddress || "",
+        };
+        contactDetail.deliveryInfo = {
+          deliveryName: "",
+          deliveryEmail: "",
+          deliveryContactNumber: "",
+          deliveryAddress: res.deliveryAddress || "",
+        };
       } else {
+        const firstContactDetail = res.contactDetail?.[0] || {};
+
+        contactDetail.collectionInfo = {
+          name: firstContactDetail.collectionInfo?.name || "",
+          email: firstContactDetail.collectionInfo?.email || "",
+          contactNumber: firstContactDetail.collectionInfo?.contactNumber || "",
+          collectionAddress:
+            firstContactDetail.collectionInfo?.collectionAddress || "",
+        };
+
+        contactDetail.deliveryInfo = {
+          deliveryName: firstContactDetail.deliveryInfo?.deliveryName || "",
+          deliveryEmail: firstContactDetail.deliveryInfo?.deliveryEmail || "",
+          deliveryContactNumber:
+            firstContactDetail.deliveryInfo?.deliveryContactNumber || "",
+          deliveryAddress:
+            firstContactDetail.deliveryInfo?.deliveryAddress || "",
+        };
+
+        console.log(
+          "Intermediate Stop (First):",
+          firstContactDetail.deliveryInfo?.intermediateStops?.[0]?.stopName
+        );
+
+        // Properly mapping intermediate stops
+        contactDetail.deliveryInfo.intermediateStops =
+          firstContactDetail.deliveryInfo?.intermediateStops?.map((item) => ({
+            stopName: item.stopName || "",
+            stopEmail: item.stopEmail || "",
+            stopContactNumber: item.stopContactNumber || "",
+            stopAddress: item.stopAddress || "",
+          })) || [];
+
+        console.log(
+          "All Intermediate Stops:",
+          contactDetail.deliveryInfo.intermediateStops
+        );
       }
+
+      obj.contactDetail.push(contactDetail);
+
+      setSelectedCustomer({ ...res, ...obj });
+      console.log("Final Object:", obj);
+
+      preFillData(obj);
+
+      if (stat === "half") {
+        setStatus(res.quoteStatus);
+      }
+
+      localStorage.setItem("formId", res._id);
+      setIsModalOpen(true);
     } catch (error) {
-      throw error;
+      console.error("Error in handleClick:", error);
     }
   };
+
+  console.log(
+    "09999999999999999999999999999-",
+    selectedCustomer?.contactDetail?.[0]?.inter
+  );
 
   const handleInputChangeCollection = (e, field) => {
     setEditableCollectionInfo({
@@ -264,6 +360,7 @@ const ShipmentTable = () => {
     setEditableDeliveryInfo({
       ...customerData?.contactDetail?.[0]?.deliveryInfo,
     });
+    console.log("asdsds", customerData);
 
     if (customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops) {
       const stopsData =
@@ -281,8 +378,8 @@ const ShipmentTable = () => {
   const handleEditClick = (mode) => {
     console.log("selectedCustomerselectedCustomer", selectedCustomer);
 
+    // preFillData(selectedCustomer);
     setEditMode(mode);
-    preFillData(selectedCustomer);
   };
 
   const handleSave = async () => {
@@ -310,8 +407,8 @@ const ShipmentTable = () => {
 
       setEditMode(null);
       if (response.status === 200) {
-        // setIsModalOpen(false);
-        // window.location.reload();
+        setIsModalOpen(false);
+        window.location.reload();
         closeModal();
       }
     } catch (error) {
