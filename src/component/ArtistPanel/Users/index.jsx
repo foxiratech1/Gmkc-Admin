@@ -82,7 +82,7 @@ const User = () => {
         closeModal();
       }
     } catch (error) {
-      console.error("Error during API call:", error);
+      throw error;
     }
   };
 
@@ -104,7 +104,7 @@ const User = () => {
         );
       }
     } catch (error) {
-      console.error("Error deleting customer:", error);
+      throw error;
     }
   };
   const handleChange = (e) => {

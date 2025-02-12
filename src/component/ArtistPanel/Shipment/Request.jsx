@@ -69,7 +69,6 @@ const Request = () => {
       setShowConfirmModal(false);
       toast.success("Price sent successfully!");
     } catch (error) {
-      console.error("Error sending price:", error);
       setShowConfirmModal(false);
     }
   };
@@ -89,7 +88,6 @@ const Request = () => {
       toast.success("Quote rejected successfully!");
       window.location.reload();
     } catch (error) {
-      console.error("Error rejecting quote:", error);
       setShowConfirmModal(false);
     }
   };
@@ -111,7 +109,7 @@ const Request = () => {
         navigate("/shipment");
       }
     } catch (error) {
-      console.error("Error accepting quote:", error);
+      throw error;
     }
   };
 
@@ -128,7 +126,6 @@ const Request = () => {
   if (isLoading) {
     return <LoadingPage />;
   }
-
   if (isError) {
     return <p>{error?.response?.data?.message}</p>;
   }

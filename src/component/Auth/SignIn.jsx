@@ -69,7 +69,6 @@ const SignIn = () => {
   };
   return (
     <div className="flex flex-col md:flex-row h-screen">
-      {/* Left Side: Image Section */}
       <div className="md:w-1/2 relative">
         <img
           src={signImg}
@@ -82,7 +81,6 @@ const SignIn = () => {
         </div>
       </div>
 
-      {/* Right Side: Form Section */}
       <div className="md:w-1/2 bg-[#f2f2f2] flex items-center justify-center  relative">
         <div className="max-w-md w-full px-8 mt-10 md:mt-0">
           {/* Form */}
@@ -120,7 +118,6 @@ const SignIn = () => {
               )}
             </div>
 
-            {/* Password */}
             <div className="flex flex-col md:flex-row gap-4 mb-6">
               <div className="md:w-full">
                 <label className="block text-gray-700 mb-1 font-semibold">
@@ -158,45 +155,20 @@ const SignIn = () => {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-0 justify-between w-full mb-4  ">
-              <div className=" flex gap-2 items-center">
-                <label className="ml-2 text-gray-700 font-bold flex gap-2 items-center flex-row-reverse">
-                  Remember me
-                  <input
-                    type="checkbox"
-                    {...register("remember")}
-                    name="remember"
-                    className="w-4 h-4"
-                  />
-                </label>
-              </div>
-
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-0 justify-end w-full mb-4  ">
               <Link
                 to="/forget-password"
-                className="text-sm text-red-500 md:border-b border-red-500 text-center md:text-right "
+                className="text-sm text-red-500 md:border-b border-red-500 text-right md:text-right "
               >
                 Forget Password
               </Link>
             </div>
-
-            {/* Sign In Button */}
             <button
               type="submit"
               className="w-full bg-black text-white p-3 rounded-md font-bold"
             >
               {isPending ? "...Loading" : "Sign In"}
             </button>
-
-            {/* Already a member */}
-            {/* <div className="text-center mt-4 text-gray-600">
-              Don’t have an account?
-              <a
-                href="/sign-up"
-                className="text-yellow-600 hover:underline font-semibold"
-              >
-                Sign Up
-              </a>
-            </div> */}
           </form>
         </div>
       </div>

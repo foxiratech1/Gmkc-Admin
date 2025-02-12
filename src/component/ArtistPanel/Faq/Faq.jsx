@@ -55,7 +55,7 @@ const FaqForm = () => {
         faqSaveData.token = token;
         await postfaqmutation(faqSaveData);
       } catch (error) {
-        console.error(error);
+        throw error;
       }
       setNewQuestion("");
       setNewAnswer("");
@@ -68,7 +68,7 @@ const FaqForm = () => {
         faqUpdateSaveData.id = editId;
         await update(faqUpdateSaveData);
       } catch (error) {
-        console.error(error);
+        throw error;
       }
       setNewQuestion("");
       setNewAnswer("");

@@ -74,17 +74,15 @@ const Table = ({ shipmentData, currentPage, setCurrentPage, data }) => {
               {shipmentData?.map((user, index) => (
                 <tr key={index} className="bg-white border-b border-[#C2C2C2]">
                   <td className="p-2">
-                    <p className="w-20 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                    <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                       {user.shipmentId}
                     </p>
                   </td>
                   <td className="p-2">
                     {user.quoteStatus === "half" ? (
-                      <Tooltip position="top">
-                        <p className="text-sm w-36 overflow-hidden text-ellipsis whitespace-wrap line-clamp-2">
-                          Not Available
-                        </p>
-                      </Tooltip>
+                      <p className="text-sm w-48 overflow-hidden text-ellipsis whitespace-wrap line-clamp-2">
+                        Not Available
+                      </p>
                     ) : (
                       user?.contactDetail?.map((detail) =>
                         detail.collectionInfo ? (
@@ -93,7 +91,7 @@ const Table = ({ shipmentData, currentPage, setCurrentPage, data }) => {
                               text={detail.collectionInfo.name}
                               position="top"
                             >
-                              <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                              <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                                 {detail.collectionInfo.name
                                   ? detail.collectionInfo.name
                                   : "Not Available"}
@@ -107,7 +105,7 @@ const Table = ({ shipmentData, currentPage, setCurrentPage, data }) => {
                   <td className="p-2">
                     {user.quoteStatus === "half" ? (
                       <Tooltip text={user.email} position="top">
-                        <p className="text-sm w-36 overflow-hidden  text-ellipsis whitespace-wrap line-clamp-2">
+                        <p className="text-sm w-48 overflow-hidden  text-ellipsis whitespace-wrap line-clamp-2">
                           {user.email}
                         </p>
                       </Tooltip>
@@ -119,7 +117,7 @@ const Table = ({ shipmentData, currentPage, setCurrentPage, data }) => {
                               text={detail.collectionInfo.email}
                               position="top"
                             >
-                              <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                              <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                                 {detail.collectionInfo.email
                                   ? detail.collectionInfo.email
                                   : "Not Available"}
@@ -132,7 +130,7 @@ const Table = ({ shipmentData, currentPage, setCurrentPage, data }) => {
                   </td>
                   <td className="p-2">
                     {user.quoteStatus === "half" ? (
-                      <p className="text-sm w-36 overflow-hidden  text-ellipsis whitespace-wrap line-clamp-2">
+                      <p className="text-sm w-48 overflow-hidden  text-ellipsis whitespace-wrap line-clamp-2">
                         Not Available
                       </p>
                     ) : (
@@ -143,7 +141,7 @@ const Table = ({ shipmentData, currentPage, setCurrentPage, data }) => {
                               text={detail.collectionInfo.contactNumber}
                               position="top"
                             >
-                              <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                              <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                                 {detail.collectionInfo.contactNumber
                                   ? detail.collectionInfo.contactNumber
                                   : "Not Available"}
@@ -156,14 +154,14 @@ const Table = ({ shipmentData, currentPage, setCurrentPage, data }) => {
                   </td>
                   <td className="p-2">
                     <Tooltip text={`${user.orderDate}`} position="top">
-                      <p className="w-40 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                      <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                         {`${user.orderDate}`}
                       </p>
                     </Tooltip>
                   </td>
                   <td className="p-2">
                     <Tooltip text={user.vehicleType} position="top">
-                      <p className="w-20 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                      <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
                         {user.vehicleType}
                       </p>
                     </Tooltip>
@@ -171,12 +169,10 @@ const Table = ({ shipmentData, currentPage, setCurrentPage, data }) => {
                   <td className="p-2">
                     {user.quoteStatus === "half" ? (
                       <Tooltip text={user.collectionAddress} position="top">
-                        <p className="text-sm">
-                          <p className="text-sm">
-                            {user.collectionAddress
-                              ? user.collectionAddress
-                              : "Not Available"}
-                          </p>
+                        <p className="w-48 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                          {user.collectionAddress
+                            ? user.collectionAddress
+                            : "Not Available"}
                         </p>
                       </Tooltip>
                     ) : (

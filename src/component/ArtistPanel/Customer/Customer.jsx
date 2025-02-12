@@ -95,7 +95,7 @@ const Customer = () => {
         closeModal();
       }
     } catch (error) {
-      console.error("Error updating customer:", error.response?.data || error);
+      throw error;
     }
   };
 
@@ -138,7 +138,7 @@ const Customer = () => {
         );
       }
     } catch (error) {
-      console.error("Error deleting customer:", error);
+      throw error;
     }
   };
 

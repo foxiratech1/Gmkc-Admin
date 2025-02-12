@@ -23,7 +23,6 @@ const Otp = () => {
       data.email = email;
       mutateAsync(data);
     } catch (error) {
-      console.error(error);
       toast.error(error?.response?.data?.message);
     }
   };

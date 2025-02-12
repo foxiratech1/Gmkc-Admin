@@ -160,86 +160,6 @@ const ShipmentTable = () => {
   if (isError) {
     return <p>{error?.response?.data?.message}</p>;
   }
-  // const handleClick = async (user, stat) => {
-  //   try {
-  //     setIsModalOpen(true);
-  //     const response = await axios.get(
-  //       `${shipmentendpoints.SHIPMENT_DELIVERY_DETAIL}/${user}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-  //     if (response?.data?.data) {
-  //       const obj = {};
-  //       obj.contactDetail = [];
-  //       const contactDetail = {};
-
-  //       const res = response.data.data;
-  //       setShipmentIds(res._id);
-  //       if (res.quoteStatus === "half") {
-  //         contactDetail.collectionInfo = {
-  //           name: "",
-  //           email: res.email,
-  //           contactNumber: "",
-  //           collectionAddress: res.collectionAddress,
-  //         };
-  //         contactDetail.deliveryInfo = {
-  //           deliveryName: "",
-  //           deliveryEmail: "",
-  //           deliveryContactNumber: "",
-  //           deliveryAddress: res.deliveryAddress,
-  //         };
-  //       } else {
-  //         contactDetail.collectionInfo = {
-  //           name: res.contactDetail?.[0]?.collectionInfo.name,
-  //           email: res.contactDetail?.[0]?.collectionInfo.email,
-  //           contactNumber: res.contactDetail?.[0]?.collectionInfo.contactNumber,
-  //           collectionAddress:
-  //             res.contactDetail?.[0]?.collectionInfo.collectionAddress,
-  //         };
-  //         contactDetail.deliveryInfo = {
-  //           deliveryName: res.contactDetail?.[0]?.deliveryInfo.deliveryName,
-  //           deliveryEmail: res.contactDetail?.[0]?.deliveryInfo.deliveryEmail,
-  //           deliveryContactNumber:
-  //             res.contactDetail?.[0]?.deliveryInfo.deliveryContactNumber,
-  //           deliveryAddress:
-  //             res.contactDetail?.[0]?.deliveryInfo.deliveryAddress,
-  //         };
-  //         console.log(
-  //           "pofisofidfd",
-  //           res.contactDetail?.[0]?.deliveryInfo.intermediateStops?.[0].stopName
-  //         );
-  //         res.contactDetail?.[0]?.deliveryInfo.intermediateStops.map((items) =>
-  //           console.log("977777777777", items)
-  //         );
-  //         res.contactDetail?.[0]?.deliveryInfo.intermediateStops.map(
-  //           (items = {
-  //             stopName: items.stopOne,
-  //             stopEmail: items.stopEmail || "",
-  //             stopContactNumber: items.stopContactNumber || "",
-  //             stopAddress: items.stopAddress || "",
-  //           })
-  //         );
-  //       }
-  //       obj.contactDetail.push(contactDetail);
-
-  //       setSelectedCustomer({ ...res, ...obj });
-  //       console.log("objobj3333", obj);
-
-  //       preFillData(obj);
-  //       if (stat == "half") {
-  //         setStatus(response.data.data.quoteStatus);
-  //       }
-  //       localStorage.setItem("formId", response.data.data._id);
-  //       setIsModalOpen(true);
-  //     } else {
-  //     }
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // };
 
   const handleClick = async (user, stat) => {
     try {
@@ -294,13 +214,6 @@ const ShipmentTable = () => {
           deliveryAddress:
             firstContactDetail.deliveryInfo?.deliveryAddress || "",
         };
-
-        console.log(
-          "Intermediate Stop (First):",
-          firstContactDetail.deliveryInfo?.intermediateStops?.[0]?.stopName
-        );
-
-        // Properly mapping intermediate stops
         contactDetail.deliveryInfo.intermediateStops =
           firstContactDetail.deliveryInfo?.intermediateStops?.map((item) => ({
             stopName: item.stopName || "",
@@ -308,17 +221,11 @@ const ShipmentTable = () => {
             stopContactNumber: item.stopContactNumber || "",
             stopAddress: item.stopAddress || "",
           })) || [];
-
-        console.log(
-          "All Intermediate Stops:",
-          contactDetail.deliveryInfo.intermediateStops
-        );
       }
 
       obj.contactDetail.push(contactDetail);
 
       setSelectedCustomer({ ...res, ...obj });
-      console.log("Final Object:", obj);
 
       preFillData(obj);
 
@@ -329,14 +236,9 @@ const ShipmentTable = () => {
       localStorage.setItem("formId", res._id);
       setIsModalOpen(true);
     } catch (error) {
-      console.error("Error in handleClick:", error);
+      throw error;
     }
   };
-
-  console.log(
-    "09999999999999999999999999999-",
-    selectedCustomer?.contactDetail?.[0]?.inter
-  );
 
   const handleInputChangeCollection = (e, field) => {
     setEditableCollectionInfo({
@@ -360,7 +262,6 @@ const ShipmentTable = () => {
     setEditableDeliveryInfo({
       ...customerData?.contactDetail?.[0]?.deliveryInfo,
     });
-    console.log("asdsds", customerData);
 
     if (customerData?.contactDetail?.[0]?.deliveryInfo?.intermediateStops) {
       const stopsData =
@@ -376,9 +277,6 @@ const ShipmentTable = () => {
   };
 
   const handleEditClick = (mode) => {
-    console.log("selectedCustomerselectedCustomer", selectedCustomer);
-
-    // preFillData(selectedCustomer);
     setEditMode(mode);
   };
 
@@ -440,9 +338,11 @@ const ShipmentTable = () => {
                   {data?.data?.map((user, index) => (
                     <tr key={index} className="border-t border-gray-300">
                       <td className="px-2 py-3 text-[#12223D] font-normal">
-                        <p className="w-20 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                          {user.shipmentId}
-                        </p>
+                        <Tooltip text={user.shipmentId} position="top">
+                          <p className="w-20 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                            {user.shipmentId}
+                          </p>
+                        </Tooltip>
                       </td>
                       <td className="px-2 py-3 text-[#12223D] font-normal">
                         {user.quoteStatus === "half" ? (
@@ -451,11 +351,16 @@ const ShipmentTable = () => {
                           user?.contactDetail?.map((detail) =>
                             detail?.collectionInfo ? (
                               <div key={detail?.collectionInfo.name}>
-                                <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                                  {detail?.collectionInfo.name
-                                    ? detail?.collectionInfo.name
-                                    : "Not Available"}
-                                </p>
+                                <Tooltip
+                                  text={detail?.collectionInfo.name}
+                                  position="top"
+                                >
+                                  <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                                    {detail?.collectionInfo.name
+                                      ? detail?.collectionInfo.name
+                                      : "Not Available"}
+                                  </p>
+                                </Tooltip>
                               </div>
                             ) : null
                           )
@@ -463,16 +368,23 @@ const ShipmentTable = () => {
                       </td>
                       <td className="p-2">
                         {user.quoteStatus === "half" ? (
-                          <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                            {user.email}
-                          </p>
+                          <Tooltip text={user.email} position="top">
+                            <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                              {user.email}
+                            </p>
+                          </Tooltip>
                         ) : (
                           user?.contactDetail?.map((detail) =>
                             detail.collectionInfo ? (
                               <div key={detail.collectionInfo.email}>
-                                <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                                  {detail.collectionInfo.email}
-                                </p>
+                                <Tooltip
+                                  text={detail.collectionInfo.email}
+                                  position="top"
+                                >
+                                  <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                                    {detail.collectionInfo.email}
+                                  </p>
+                                </Tooltip>
                               </div>
                             ) : null
                           )
@@ -485,9 +397,14 @@ const ShipmentTable = () => {
                           user?.contactDetail?.map((detail) =>
                             detail.collectionInfo ? (
                               <div key={detail.collectionInfo.contactNumber}>
-                                <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                                  {detail.collectionInfo.contactNumber}
-                                </p>
+                                <Tooltip
+                                  text={detail.collectionInfo.contactNumber}
+                                  position="top"
+                                >
+                                  <p className="w-36 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                                    {detail.collectionInfo.contactNumber}
+                                  </p>
+                                </Tooltip>
                               </div>
                             ) : null
                           )
@@ -495,7 +412,9 @@ const ShipmentTable = () => {
                       </td>
                       <td className="px-2 py-3 text-[#12223D] font-normal">
                         {user.quoteStatus === "half" ? (
-                          <p className="text-sm">{user.orderDate}</p>
+                          <Tooltip text={user.orderDate} position="top">
+                            <p className="text-sm">{user.orderDate}</p>
+                          </Tooltip>
                         ) : (
                           <>
                             <Tooltip text={user.orderDate} position="top">
@@ -515,18 +434,25 @@ const ShipmentTable = () => {
                       </td>
                       <td className="p-2">
                         {user.quoteStatus === "half" ? (
-                          <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                            {user.collectionAddress}
-                          </p>
+                          <Tooltip text={user.collectionAddress} position="top">
+                            <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                              {user.collectionAddress}
+                            </p>
+                          </Tooltip>
                         ) : (
                           user?.contactDetail?.map((detail) =>
                             detail.collectionInfo ? (
                               <div
                                 key={detail.collectionInfo.collectionAddress}
                               >
-                                <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                                  {detail.collectionInfo.collectionAddress}
-                                </p>
+                                <Tooltip
+                                  text={detail.collectionInfo.collectionAddress}
+                                  position="top"
+                                >
+                                  <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                                    {detail.collectionInfo.collectionAddress}
+                                  </p>
+                                </Tooltip>
                               </div>
                             ) : (
                               "Not Available"
@@ -547,16 +473,23 @@ const ShipmentTable = () => {
                       </td>
                       <td className="p-2">
                         {user.quoteStatus === "half" ? (
-                          <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                            {user?.deliveryAddress}
-                          </p>
+                          <Tooltip text={user?.deliveryAddress} position="top">
+                            <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                              {user?.deliveryAddress}
+                            </p>
+                          </Tooltip>
                         ) : (
                           user?.contactDetail?.map((detail) =>
                             detail.deliveryInfo ? (
                               <div key={detail.deliveryInfo.deliveryAddress}>
-                                <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
-                                  {detail.deliveryInfo.deliveryAddress}
-                                </p>
+                                <Tooltip
+                                  text={detail.deliveryInfo.deliveryAddress}
+                                  position="top"
+                                >
+                                  <p className="w-90 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
+                                    {detail.deliveryInfo.deliveryAddress}
+                                  </p>
+                                </Tooltip>
                               </div>
                             ) : (
                               <p className="text-sm">Not Available</p>
@@ -835,7 +768,7 @@ const ShipmentTable = () => {
                             handleInputChangeDelivery(e, "deliveryName")
                           }
                           className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
-                          placeholder="Delivery Name"
+                          placeholder="Name"
                         />
                         <input
                           type="email"
@@ -964,7 +897,9 @@ const ShipmentTable = () => {
                       </div>
                     ))
                   ) : (
-                    <div className="px-7">Customer is not available</div>
+                    <div className="px-7">
+                      Customer details is not available
+                    </div>
                   )}
                 </div>
               </div>

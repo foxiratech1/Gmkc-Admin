@@ -9,21 +9,20 @@ import ForgetPasswordOtp from "./https/ForgetPasswordOtp";
 import toast from "react-hot-toast";
 
 const ForgetPassword = () => {
-  const {mutateAsync,isPending} = ForgetPasswordOtp()
-  const navigate = useNavigate()
+  const { mutateAsync, isPending } = ForgetPasswordOtp();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = async(data) => {
-      try{
-       await  mutateAsync(data)
-      }catch(error){
-        console.error(error)
-        toast.error(error?.response?.data?.message)
-      }
+  const onSubmit = async (data) => {
+    try {
+      await mutateAsync(data);
+    } catch (error) {
+      toast.error(error?.response?.data?.message);
+    }
   };
 
   return (
@@ -43,7 +42,6 @@ const ForgetPassword = () => {
 
       {/* Right Side: Form Section */}
       <div className="md:w-1/2 bg-[#f2f2f2] flex items-center justify-center bg-[#0000000D] relative">
-       
         <div className="max-w-md w-full px-8">
           {/* Form */}
           <div className="flex  items-center">
@@ -94,8 +92,7 @@ const ForgetPassword = () => {
               type="submit"
               className="w-full bg-black text-white p-3 rounded-md font-bold mt-6"
             >
-            {isPending ? '...Loading' : 'Send OTP'}
-              
+              {isPending ? "...Loading" : "Send OTP"}
             </button>
 
             {/* Already a member */}

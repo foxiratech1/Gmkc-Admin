@@ -106,13 +106,12 @@ const VehicleModal = () => {
       try {
         await updateMutation(formData);
       } catch (error) {
-        console.error(error);
+        throw error;
       }
     } else {
       try {
         await mutateAsync(formData);
       } catch (error) {
-        console.error(error);
         toast.error(error?.response?.data?.message || "error accure");
       }
     }

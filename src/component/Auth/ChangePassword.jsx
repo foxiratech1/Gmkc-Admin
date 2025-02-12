@@ -11,12 +11,11 @@ import { useSelector } from "react-redux";
 import { resetPasswodMutation } from "./https/chenge-password";
 import toast from "react-hot-toast";
 
-
 const ChangePassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword1, setShowPassword1] = useState(false);
-  const {passwordChangeToken} = useSelector((state) => state.user)
-  const {mutateAsync,isPending} = resetPasswodMutation()
+  const { passwordChangeToken } = useSelector((state) => state.user);
+  const { mutateAsync, isPending } = resetPasswodMutation();
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -30,13 +29,12 @@ const ChangePassword = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = async(data) => {
-    data.token = passwordChangeToken
-    try{
-     await mutateAsync(data)
-    }catch(error){
-      console.error(error)
-      toast.error(error?.response?.data?.message)
+  const onSubmit = async (data) => {
+    data.token = passwordChangeToken;
+    try {
+      await mutateAsync(data);
+    } catch (error) {
+      toast.error(error?.response?.data?.message);
     }
   };
   return (
@@ -56,7 +54,6 @@ const ChangePassword = () => {
 
       {/* Right Side: Form Section */}
       <div className="md:w-1/2 bg-[#f2f2f2] flex items-center justify-center relative">
-     
         <div className="max-w-md w-full px-8">
           {/* Form */}
           <div className="flex  items-center">
@@ -108,7 +105,7 @@ const ChangePassword = () => {
             <div className="flex flex-col md:flex-row gap-4 mb-6">
               <div className="md:w-full">
                 <label className="block text-gray-700 mb-1 font-semibold">
-                Confirm Password
+                  Confirm Password
                 </label>
                 <div className="flex justify-between relative items-center">
                   <input
@@ -148,8 +145,7 @@ const ChangePassword = () => {
               type="submit"
               className="w-full bg-black text-white p-3 rounded-md font-semibold mt-6"
             >
-            {isPending ? '...Loading' : 'Change Password'}
-              
+              {isPending ? "...Loading" : "Change Password"}
             </button>
           </form>
         </div>
