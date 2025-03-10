@@ -81,7 +81,7 @@ export const sections = [
   {
     key: "change_password",
     icon: <RiLockPasswordLine size={28} />,
-    label: "change_password",
+    label: "Change Password",
     path: "change_password",
   },
 ];
