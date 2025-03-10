@@ -63,9 +63,7 @@ const SignIn = () => {
         deleteCookie("rememberedEmail");
       }
       await mutateAsync(data);
-    } catch (error) {
-      toast.error("some error accure");
-    }
+    } catch (error) {}
   };
   return (
     <div className="flex flex-col md:flex-row h-screen">
