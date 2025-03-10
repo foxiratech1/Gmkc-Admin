@@ -9,6 +9,8 @@ import { requestendpoints } from "../../../services/apis";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { IoEye } from "react-icons/io5";
+import { FiEdit2 } from "react-icons/fi";
 
 const tableHead = [
   { head: "Id" },
@@ -19,6 +21,7 @@ const tableHead = [
   { head: "From" },
   { head: "To" },
   { head: "Note" },
+  { head: "View" },
   { head: "Actions" },
 ];
 
@@ -40,6 +43,20 @@ const Request = () => {
     id: null,
     email: null,
   });
+  const [showModal1, setShowModal1] = useState(false);
+  const [currentRequest1, setCurrentRequest1] = useState(null);
+
+  const openModal1 = (id, data) => {
+    console.log("datadata", data);
+
+    setCurrentRequest1({ id, data });
+    setShowModal1(true);
+  };
+
+  const closeModal1 = () => {
+    setShowModal1(false);
+    setCurrentRequest1(null);
+  };
 
   const openModal = (id, email) => {
     setIsModalOpen(true);
@@ -289,6 +306,7 @@ const Request = () => {
                           )
                         )}
                       </td>
+
                       <td className="px-4 py-4 text-center">
                         <Tooltip text={request.notes} position="top">
                           <p className="w-44 overflow-hidden text-sm text-ellipsis whitespace-wrap line-clamp-2">
@@ -296,6 +314,15 @@ const Request = () => {
                           </p>
                         </Tooltip>
                       </td>
+                      <td>
+                        <button
+                          onClick={() => openModal1(request._id, request)}
+                          className="text-yellow-300 text-[20px] hover:cursor-pointer"
+                        >
+                          <IoEye size={20} />
+                        </button>
+                      </td>
+
                       <td className="px-1 py-2 flex gap-2 mt-3">
                         <button
                           className=" bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition duration-200"
@@ -348,6 +375,116 @@ const Request = () => {
         id={quoteIdToReject}
       />
 
+      {showModal1 && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg w-[95%] md:w-[80%] lg:w-[70%] xl:w-[60%] max-h-[90vh] overflow-y-auto p-6">
+            <h2 className="text-2xl font-bold mb-4">Quotes Stops Detail</h2>
+
+            {/* Pickup Location */}
+            <div className="mb-4 bg-gray-300 p-4 rounded-lg flex justify-between items-center">
+              <div>
+                <h3 className="font-bold">Pickup Location:</h3>
+                <p>
+                  Name:{" "}
+                  {
+                    currentRequest1?.data?.contactDetail[0]?.collectionInfo
+                      ?.name
+                  }
+                </p>
+                <p>
+                  Email:{" "}
+                  {
+                    currentRequest1?.data?.contactDetail[0]?.collectionInfo
+                      ?.email
+                  }
+                </p>
+                <p>
+                  Contact:{" "}
+                  {
+                    currentRequest1?.data?.contactDetail[0]?.collectionInfo
+                      ?.contactNumber
+                  }
+                </p>
+                <p>
+                  Address:{" "}
+                  {
+                    currentRequest1?.data?.contactDetail[0]?.collectionInfo
+                      ?.collectionAddress
+                  }
+                </p>
+              </div>
+            </div>
+
+            {/* Intermediate Stops */}
+            <div className="mb-4 bg-gray-200 p-4 rounded-lg">
+              <h3 className="font-bold mb-2">Intermediate Stops:</h3>
+              {currentRequest1?.data?.contactDetail[0]?.deliveryInfo
+                .intermediateStops?.length > 0 ? (
+                currentRequest1?.data?.contactDetail[0]?.deliveryInfo.intermediateStops.map(
+                  (stop, index) => (
+                    <div
+                      key={index}
+                      className="bg-gray-300 p-3 rounded-lg mb-2 flex justify-between items-center"
+                    >
+                      <div>
+                        <p>Name: {stop.stopName}</p>
+                        <p>Email: {stop.stopEmail}</p>
+                        <p>Contact: {stop.stopContactNumber}</p>
+                        <p>Address: {stop.stopAddress}</p>
+                      </div>
+                    </div>
+                  )
+                )
+              ) : (
+                <p>No intermediate stops</p>
+              )}
+            </div>
+            <div className="mb-4 bg-gray-300 p-4 rounded-lg flex justify-between items-center">
+              <div>
+                <h3 className="font-bold">Delivery Location:</h3>
+                <p>
+                  Name:{" "}
+                  {
+                    currentRequest1?.data?.contactDetail[0]?.deliveryInfo
+                      ?.deliveryName
+                  }
+                </p>
+                <p>
+                  Email:{" "}
+                  {
+                    currentRequest1?.data?.contactDetail[0]?.deliveryInfo
+                      ?.deliveryEmail
+                  }
+                </p>
+                <p>
+                  Contact:{" "}
+                  {
+                    currentRequest1?.data?.contactDetail[0]?.deliveryInfo
+                      ?.deliveryContactNumber
+                  }
+                </p>
+                <p>
+                  Address:{" "}
+                  {
+                    currentRequest1?.data?.contactDetail[0]?.deliveryInfo
+                      ?.deliveryAddress
+                  }
+                </p>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={closeModal1}
+                className="mt-4 bg-black font-medium text-white py-2 px-4 rounded"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white rounded-lg p-6 w-96">
