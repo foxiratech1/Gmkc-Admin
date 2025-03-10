@@ -15,6 +15,7 @@ import { setIsAuthorized, setToken } from "../../store/userSlice/userSlice";
 import { AiOutlineMail } from "react-icons/ai";
 import { HiOutlineMailOpen } from "react-icons/hi";
 import { FaUsers } from "react-icons/fa";
+import { RiLockPasswordLine } from "react-icons/ri";
 export const sections = [
   {
     key: "dashboard",
@@ -76,6 +77,12 @@ export const sections = [
     icon: <FaRegQuestionCircle size={28} />,
     label: "Faq",
     path: "faq",
+  },
+  {
+    key: "change_password",
+    icon: <RiLockPasswordLine size={28} />,
+    label: "change_password",
+    path: "change_password",
   },
 ];
 

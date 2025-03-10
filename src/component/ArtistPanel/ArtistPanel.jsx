@@ -11,6 +11,7 @@ import Request from "./Shipment/Request";
 import User from "./Users";
 import Promotion from "./Promotion/Promotion";
 import QuoteEmail from "./QuotesEmail/QuoteEmail";
+import ChangePasswordUI from "../Auth/ChangePasswords";
 
 const ArtistPanel = () => {
   return (
@@ -30,6 +31,7 @@ const ArtistPanel = () => {
           <Route path="customer" element={<Customer />} />
           <Route path="inquiry" element={<Inquiry />} />
           <Route path="users" element={<User />} />
+          <Route path="/change_password" element={<ChangePasswordUI />} />
         </Routes>
       </div>
     </div>

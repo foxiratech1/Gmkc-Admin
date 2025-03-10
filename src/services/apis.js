@@ -7,6 +7,7 @@ export const authendpoints = {
   VALID_OTP: BASE_URL + "/api/admin/validate-otp",
   RESET_PASSWORD: BASE_URL + "/api/admin/reset-password",
   IS_AUTORIZED: BASE_URL + "/api/admin/dashboard",
+  CHANGE_PASSWORD: BASE_URL + "/api/admin/change-password",
 };
 
 export const vehicalendpoints = {

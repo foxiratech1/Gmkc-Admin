@@ -30,8 +30,8 @@ function App() {
               <Route path="/sign-in" element={<SignIn />} />
               <Route path="/forget-password" element={<ForgetPassword />} />
               <Route path="/otp" element={<Otp />} />
-              <Route path="/change-password" element={<ChangePassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
+
+              <Route path="/reset-password" element={<ChangePassword />} />
 
               {/* Protected routes */}
 
