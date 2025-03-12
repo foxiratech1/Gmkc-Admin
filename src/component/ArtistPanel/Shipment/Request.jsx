@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { IoEye } from "react-icons/io5";
 import { FiEdit2 } from "react-icons/fi";
+import { MdOutlineRemoveRedEye } from "react-icons/md";
 
 const tableHead = [
   { head: "Id" },
@@ -84,6 +85,7 @@ const Request = () => {
         }
       );
       setShowConfirmModal(false);
+      setPrice("");
       toast.success("Price sent successfully!");
     } catch (error) {
       setShowConfirmModal(false);
@@ -319,7 +321,7 @@ const Request = () => {
                           onClick={() => openModal1(request._id, request)}
                           className="text-yellow-300 text-[20px] hover:cursor-pointer"
                         >
-                          <IoEye size={20} />
+                          <MdOutlineRemoveRedEye size={20} />
                         </button>
                       </td>
 
