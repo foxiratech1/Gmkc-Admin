@@ -80,6 +80,7 @@ const ShipmentTable = () => {
     email: " ",
     contactNumber: "",
     collectionAddress: "",
+    collectionStairs: "",
   });
 
   const [editableDeliveryInfo, setEditableDeliveryInfo] = useState({
@@ -87,6 +88,7 @@ const ShipmentTable = () => {
     deliveryEmail: "",
     deliveryContactNumber: "",
     deliveryAddress: "",
+    deliveryStairs: "",
   });
 
   const [editableIntermediateStops2, setEditableIntermediateStops2] = useState({
@@ -105,7 +107,13 @@ const ShipmentTable = () => {
     },
   ]);
   const [intermediateStops, setIntermediateStops] = useState([
-    { stopName: "", stopEmail: "", stopContactNumber: "", stopAddress: "" },
+    {
+      stopName: "",
+      stopEmail: "",
+      stopContactNumber: "",
+      stopAddress: "",
+      stairs: "",
+    },
   ]);
 
   const handleInputChange = (index, field, value) => {
@@ -117,7 +125,13 @@ const ShipmentTable = () => {
   const handleAddStop = () => {
     setIntermediateStops([
       ...intermediateStops,
-      { stopName: "", stopEmail: "", stopContactNumber: "", stopAddress: "" },
+      {
+        stopName: "",
+        stopEmail: "",
+        stopContactNumber: "",
+        stopAddress: "",
+        stairs: 0,
+      },
     ]);
   };
   const handleRemoveStop = (index) => {
@@ -204,6 +218,7 @@ const ShipmentTable = () => {
           contactNumber: firstContactDetail.collectionInfo?.contactNumber || "",
           collectionAddress:
             firstContactDetail.collectionInfo?.collectionAddress || "",
+          stairs: firstContactDetail.collectionInfo?.stairs || "",
         };
 
         contactDetail.deliveryInfo = {
@@ -213,6 +228,7 @@ const ShipmentTable = () => {
             firstContactDetail.deliveryInfo?.deliveryContactNumber || "",
           deliveryAddress:
             firstContactDetail.deliveryInfo?.deliveryAddress || "",
+          deliveryStairs: firstContactDetail.deliveryInfo?.deliveryStairs || "",
         };
         contactDetail.deliveryInfo.intermediateStops =
           firstContactDetail.deliveryInfo?.intermediateStops?.map((item) => ({
@@ -220,6 +236,7 @@ const ShipmentTable = () => {
             stopEmail: item.stopEmail || "",
             stopContactNumber: item.stopContactNumber || "",
             stopAddress: item.stopAddress || "",
+            stairs: item.stairs || "",
           })) || [];
       }
 
@@ -271,6 +288,7 @@ const ShipmentTable = () => {
         stopEmail: stop.stopEmail || "",
         stopContactNumber: stop.stopContactNumber || "",
         stopAddress: stop.stopAddress || "",
+        stairs: stop.stairs || "",
       }));
       setIntermediateStops(formattedStops);
     }
@@ -306,8 +324,8 @@ const ShipmentTable = () => {
       setEditMode(null);
       if (response.status === 200) {
         setIsModalOpen(false);
-        window.location.reload();
-        closeModal();
+        // window.location.reload();
+        // closeModal();
       }
     } catch (error) {
       throw error;
@@ -606,6 +624,20 @@ const ShipmentTable = () => {
                           className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
                           placeholder="Address"
                         />
+                        <select
+                          value={editableCollectionInfo.stairs}
+                          onChange={(e) =>
+                            handleInputChangeCollection(e, "stairs")
+                          }
+                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                        >
+                          <option value="">Select Stairs</option>
+                          {[1, 2, 3, 4, 5].map((num) => (
+                            <option key={num} value={num}>
+                              {num}
+                            </option>
+                          ))}
+                        </select>
                       </>
                     ) : (
                       <>
@@ -638,6 +670,13 @@ const ShipmentTable = () => {
                                 ? selectedCustomer.collectionAddress
                                 : selectedCustomer?.contactDetail?.[0]
                                     ?.collectionInfo?.collectionAddress}
+                            </p>
+                            <p className="py-1">
+                              Stairs :{" "}
+                              {selectedCustomer.quoteStatus == "half"
+                                ? selectedCustomer.collectionAddress
+                                : selectedCustomer?.contactDetail?.[0]
+                                    ?.collectionInfo?.stairs}
                             </p>
                           </div>
 
@@ -712,6 +751,24 @@ const ShipmentTable = () => {
                               className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
                               placeholder="Stop Address"
                             />
+                            <select
+                              value={stop.stairs}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  index,
+                                  "stairs",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                            >
+                              <option value="">Select stairs</option>
+                              {[1, 2, 3, 4, 5].map((num) => (
+                                <option key={num} value={num}>
+                                  {num}
+                                </option>
+                              ))}
+                            </select>
                           </div>
                         ))}
                         <div className="w-full flex justify-end my-2">
@@ -743,6 +800,7 @@ const ShipmentTable = () => {
                                 <p className="py-1">
                                   Address: {item.stopAddress}
                                 </p>
+                                <p className="py-1">Stairs: {item.stairs}</p>
                               </div>
                             )
                           )}
@@ -803,6 +861,20 @@ const ShipmentTable = () => {
                           className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
                           placeholder="Address"
                         />
+                        <select
+                          value={editableDeliveryInfo.deliveryStairs}
+                          onChange={(e) =>
+                            handleInputChangeDelivery(e, "deliveryStairs")
+                          }
+                          className="w-full p-1 px-2 border mt-1 rounded bg-gray-200 border-gray-400"
+                        >
+                          <option value="">Select deliveryStairs</option>
+                          {[1, 2, 3, 4, 5].map((num) => (
+                            <option key={num} value={num}>
+                              {num}
+                            </option>
+                          ))}
+                        </select>
                       </>
                     ) : (
                       <>
@@ -835,6 +907,14 @@ const ShipmentTable = () => {
                                 ? selectedCustomer.deliveryAddress
                                 : selectedCustomer?.contactDetail?.[0]
                                     ?.deliveryInfo?.deliveryAddress}
+                            </p>
+
+                            <p className="py-1">
+                              delivery Stairs:{" "}
+                              {selectedCustomer.quoteStatus == "half"
+                                ? selectedCustomer.deliveryStairs
+                                : selectedCustomer?.contactDetail?.[0]
+                                    ?.deliveryInfo?.deliveryStairs}
                             </p>
                           </div>
 

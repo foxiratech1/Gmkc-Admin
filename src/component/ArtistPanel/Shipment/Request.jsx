@@ -412,6 +412,13 @@ const Request = () => {
                       ?.collectionAddress
                   }
                 </p>
+                <p>
+                  Stairs:{" "}
+                  {
+                    currentRequest1?.data?.contactDetail[0]?.collectionInfo
+                      ?.stairs
+                  }
+                </p>
               </div>
             </div>
 
@@ -431,6 +438,7 @@ const Request = () => {
                         <p>Email: {stop.stopEmail}</p>
                         <p>Contact: {stop.stopContactNumber}</p>
                         <p>Address: {stop.stopAddress}</p>
+                        <p>Stairs: {stop.stairs}</p>
                       </div>
                     </div>
                   )
@@ -468,6 +476,13 @@ const Request = () => {
                   {
                     currentRequest1?.data?.contactDetail[0]?.deliveryInfo
                       ?.deliveryAddress
+                  }
+                </p>
+                <p>
+                  Stairs:{" "}
+                  {
+                    currentRequest1?.data?.contactDetail[0]?.deliveryInfo
+                      ?.deliveryStairs
                   }
                 </p>
               </div>
